@@ -1,4 +1,5 @@
 +Added BungeeCord/Waterfall support
++Added Cars stopping to a halt in water
 *fixed tour rail config value
 *small fix for dinosaur attack AI
 *temporary fix for growth serum
