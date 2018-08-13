@@ -431,7 +431,9 @@ public abstract class CarEntity extends Entity implements MultiSeatedEntity {
         }
         moveAmount *= speed.modifier;
         if(this.isInWater()) {
-            moveAmount *= 0.1f;
+            moveAmount -= 0.1f;
+            if(moveAmount < 0f)
+                moveAmount = 0f;
         }
         if (this.left()) {
             this.rotationDelta -= 20.0F * moveAmount;
