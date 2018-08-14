@@ -71,6 +71,8 @@ public abstract class CarEntity extends Entity implements MultiSeatedEntity {
     private double interpTargetY;
     private double interpTargetZ;
     private double interpTargetYaw;
+    private Vec3d prevUnairbornPos;
+    private boolean wasOnGroundLastTick;
 
     private static final double INTERP_AMOUNT = 0.15D; //TODO config ?
     
@@ -255,8 +257,34 @@ public abstract class CarEntity extends Entity implements MultiSeatedEntity {
                 world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(0.1f), this::canRunoverEntity).forEach(this::runOverEntity);
             }
         }
+        if(this.isInWater()){
+            for (Seat seat : seats) {
+                if(seat.getOccupant() != null) {
+                    seat.getOccupant().attackEntityFrom(DamageSource.DROWN, 0.5f);
+                }
+            }
+        }
         if(previousPosition == null) {
             previousPosition = this.getPositionVector();
+        }
+        if(!this.onGround){
+            if(!this.wasOnGroundLastTick) {
+                this.prevUnairbornPos = this.previousPosition;
+                this.wasOnGroundLastTick = true;
+            }
+            double amountFallen = this.prevUnairbornPos.y - this.getPositionVector().y;
+            double damageAmount = 0;
+            if(amountFallen / 3 == Math.floor(amountFallen / 3)){
+                damageAmount++;
+            }
+            for (Seat seat : seats) {
+                if(seat.getOccupant() != null) {
+                    if (this.onGround) {
+                        seat.getOccupant().attackEntityFrom(DamageSource.FALL, (float) damageAmount / 2);
+                    }
+                }
+            }
+            this.setHealth(this.getHealth() - (float)(damageAmount * 2.5));
         }
         estimatedSpeed = this.getPositionVector().distanceTo(previousPosition) / (world.getTotalWorldTime() - prevWorldTime);
         previousPosition = this.getPositionVector();
@@ -370,7 +398,6 @@ public abstract class CarEntity extends Entity implements MultiSeatedEntity {
                 world.setBlockToAir(pos);
             }
         }
-        
         this.prevWheelRotateAmount = this.wheelRotateAmount;
         double deltaX = this.posX - this.prevPosX;
         double deltaZ = this.posZ - this.prevPosZ;

@@ -29,6 +29,7 @@ import org.jurassicraft.server.entity.item.PaddockSignEntity;
 import org.jurassicraft.server.entity.vehicle.FordExplorerEntity;
 import org.jurassicraft.server.entity.vehicle.HelicopterBaseEntity;
 import org.jurassicraft.server.entity.vehicle.JeepWranglerEntity;
+import org.jurassicraft.server.entity.vehicle.modules.HelicopterMinigun;
 import org.jurassicraft.server.period.TimePeriod;
 
 import net.minecraft.entity.Entity;
