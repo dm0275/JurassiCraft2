@@ -260,7 +260,7 @@ public abstract class CarEntity extends Entity implements MultiSeatedEntity {
         if(this.isInWater()){
             for (Seat seat : seats) {
                 if(seat.getOccupant() != null) {
-                    seat.getOccupant().attackEntityFrom(DamageSource.FALL, 0.5f);
+                    seat.getOccupant().attackEntityFrom(DamageSource.DROWN, 0.5f);
                 }
             }
         }
