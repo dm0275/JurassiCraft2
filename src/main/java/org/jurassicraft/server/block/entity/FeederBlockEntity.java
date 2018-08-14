@@ -17,6 +17,7 @@ import net.minecraft.util.SoundCategory;
 import org.jurassicraft.JurassiCraft;
 import org.jurassicraft.client.sound.SoundHandler;
 import org.jurassicraft.server.block.machine.FeederBlock;
+import org.jurassicraft.server.container.FeederContainer;
 import org.jurassicraft.server.entity.DinosaurEntity;
 import org.jurassicraft.server.food.FoodHelper;
 
@@ -36,7 +37,7 @@ public class FeederBlockEntity extends TileEntityLockable implements ITickable, 
 
     @Override
     public Container createContainer(InventoryPlayer inventory, EntityPlayer player) {
-        return null;
+        return new FeederContainer(inventory, this);
     }
 
     @Override
