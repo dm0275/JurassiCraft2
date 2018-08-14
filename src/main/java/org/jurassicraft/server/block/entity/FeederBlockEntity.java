@@ -14,6 +14,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import org.jurassicraft.JurassiCraft;
 import org.jurassicraft.client.sound.SoundHandler;
 import org.jurassicraft.server.block.machine.FeederBlock;
