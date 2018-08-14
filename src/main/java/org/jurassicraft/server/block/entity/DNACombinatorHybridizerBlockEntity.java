@@ -222,7 +222,7 @@ public class DNACombinatorHybridizerBlockEntity extends MachineBaseBlockEntity {
 
     @Override
     public String getGuiID() {
-        return JurassiCraft.MODID + ":dna_combinator_hybridizer";
+    	return JurassiCraft.MODID + ":dna_comb_hybrid";
     }
 
     @Override

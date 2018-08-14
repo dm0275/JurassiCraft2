@@ -103,7 +103,7 @@ public class EmbryoCalcificationMachineBlockEntity extends MachineBaseBlockEntit
 
     @Override
     public String getGuiID() {
-        return JurassiCraft.MODID + ":embryo_calcification_machine";
+    	return JurassiCraft.MODID + ":em_calcification_m";
     }
 
     @Override
