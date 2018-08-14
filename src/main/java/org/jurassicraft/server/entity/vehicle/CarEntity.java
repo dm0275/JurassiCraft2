@@ -257,6 +257,13 @@ public abstract class CarEntity extends Entity implements MultiSeatedEntity {
                 world.getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().grow(0.1f), this::canRunoverEntity).forEach(this::runOverEntity);
             }
         }
+        if(this.isInWater()){
+            for (Seat seat : seats) {
+                if(seat.getOccupant() != null) {
+                    seat.getOccupant().attackEntityFrom(DamageSource.FALL, 0.5f);
+                }
+            }
+        }
         if(previousPosition == null) {
             previousPosition = this.getPositionVector();
         }
