@@ -169,11 +169,11 @@ public class ServerEventHandler {
                 bugs.add(ItemHandler.COCKROACHES);
                 bugs.add(ItemHandler.MEALWORM_BEETLES);
             } else if (state.getBlock() == Blocks.GRASS) {
-                if (rand.nextInt(3) == 0) {
+                if (rand.nextInt(6) == 0) {
                     bugs.add(ItemHandler.CRICKETS);
                 }
             } else if (state.getBlock() == Blocks.TALLGRASS) {
-                if (rand.nextInt(4) == 0) {
+                if (rand.nextInt(5) == 0) {
                     bugs.add(ItemHandler.CRICKETS);
                 }
             } else if (state.getBlock() == Blocks.PUMPKIN || state.getBlock() == Blocks.MELON_BLOCK) {
