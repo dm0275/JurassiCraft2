@@ -257,11 +257,11 @@ public class BlockHandler
         //Machines
         for(EnumDyeColor color : EnumDyeColor.values()) { //TODO: make it so blockentities can be registered on their own
             if(color == EnumDyeColor.WHITE) {
-                registerBlock(CultivatorBlockEntity.class, CULTIVATOR_BOTTOM.get(color), "Cultivate Bottom " + color.getDyeColorName(), blockTab);
+                registerBlock(CultivatorBlockEntity.class, CULTIVATOR_BOTTOM.get(color), "Cultivate Bottom " + color.getName(), blockTab);
             } else {
-                registerBlock(CULTIVATOR_BOTTOM.get(color), "Cultivate Bottom " + color.getDyeColorName(), blockTab);
+                registerBlock(CULTIVATOR_BOTTOM.get(color), "Cultivate Bottom " + color.getName(), blockTab);
             }
-            registerBlock(CULTIVATOR_TOP.get(color), "Cultivate Top " + color.getDyeColorName(), null);
+            registerBlock(CULTIVATOR_TOP.get(color), "Cultivate Top " + color.getName(), null);
         }
 
         registerBlock(SKELETON_ASSEMBLY, "Skeleton Assembly", blockTab);

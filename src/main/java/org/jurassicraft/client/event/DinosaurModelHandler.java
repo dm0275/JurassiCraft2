@@ -11,6 +11,9 @@ import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 import org.jurassicraft.JurassiCraft;
 import org.jurassicraft.client.model.DinosaurItemModel;
 import org.jurassicraft.server.api.StackNBTProvider;
@@ -19,7 +22,8 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Map;
 
-@Mod.EventBusSubscriber(modid = JurassiCraft.MODID)
+@SideOnly(Side.CLIENT)
+@Mod.EventBusSubscriber(modid = JurassiCraft.MODID, value = Side.CLIENT)
 public class DinosaurModelHandler {
 
     private static Map<Item, DinosaurItemModel> itemMap = Maps.newHashMap();
