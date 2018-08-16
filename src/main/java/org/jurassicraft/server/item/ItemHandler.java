@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextComponentTranslation;
 import org.jurassicraft.client.sound.SoundHandler;
 import org.jurassicraft.server.api.Hybrid;
@@ -73,7 +74,6 @@ public class ItemHandler {
     public static final BasicItem LASER = new BasicItem(TabHandler.ITEMS);
 
     public static final Item GROWTH_SERUM = new EntityRightClickItem(interaction -> {
-        if(!JurassiCraftConfig.ENTITIES.disableGrowthSerumRecipe)
             if (interaction.getTarget() instanceof DinosaurEntity) {
                 DinosaurEntity dinosaur = (DinosaurEntity) interaction.getTarget();
                 if (!dinosaur.isCarcass()) {
@@ -315,7 +315,8 @@ public class ItemHandler {
         registerItem(PLASTER_AND_BANDAGE, "Plaster And Bandage");
         registerItem(EMPTY_TEST_TUBE, "Empty Test Tube");
         registerItem(EMPTY_SYRINGE, "Empty Syringe");
-        registerItem(GROWTH_SERUM, "Growth Serum");
+        if(!JurassiCraftConfig.ENTITIES.disableGrowthSerumRecipe && !Minecraft.getMinecraft().world.isRemote)
+            registerItem(GROWTH_SERUM, "Growth Serum");
 
         registerItem(BREEDING_WAND, "Breeding Wand");
         registerItem(BIRTHING_WAND, "Birthing_Wand");
