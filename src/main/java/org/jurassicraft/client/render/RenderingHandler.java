@@ -1,18 +1,14 @@
 package org.jurassicraft.client.render;
 
-import java.awt.*;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import net.minecraft.item.ItemBlock;
-import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.jurassicraft.JurassiCraft;
 import org.jurassicraft.client.model.MultipartStateMap;
 import org.jurassicraft.client.model.animation.EntityAnimator;
-import org.jurassicraft.client.model.animation.entity.AlligatorGarAnimator;
 import org.jurassicraft.client.model.animation.entity.BrachiosaurusAnimator;
 import org.jurassicraft.client.model.animation.entity.CoelacanthAnimator;
 import org.jurassicraft.client.model.animation.entity.DilophosaurusAnimator;
@@ -24,16 +20,7 @@ import org.jurassicraft.client.model.animation.entity.TriceratopsAnimator;
 import org.jurassicraft.client.model.animation.entity.TyrannosaurusAnimator;
 import org.jurassicraft.client.model.animation.entity.VelociraptorAnimator;
 import org.jurassicraft.client.render.block.*;
-import org.jurassicraft.client.render.entity.AttractionSignRenderer;
-import org.jurassicraft.client.render.entity.DinosaurEggRenderer;
-import org.jurassicraft.client.render.entity.FordExplorerRenderer;
-import org.jurassicraft.client.render.entity.GoatRenderer;
-import org.jurassicraft.client.render.entity.HelicopterRenderer;
-import org.jurassicraft.client.render.entity.JeepWranglerRenderer;
-import org.jurassicraft.client.render.entity.MuralRenderer;
-import org.jurassicraft.client.render.entity.NullRenderer;
-import org.jurassicraft.client.render.entity.PaddockSignRenderer;
-import org.jurassicraft.client.render.entity.VenomRenderer;
+import org.jurassicraft.client.render.entity.*;
 import org.jurassicraft.client.render.entity.dinosaur.DinosaurRenderInfo;
 import org.jurassicraft.server.block.*;
 import org.jurassicraft.server.block.entity.*;
@@ -51,7 +38,7 @@ import org.jurassicraft.server.entity.item.DinosaurEggEntity;
 import org.jurassicraft.server.entity.item.MuralEntity;
 import org.jurassicraft.server.entity.item.PaddockSignEntity;
 import org.jurassicraft.server.entity.vehicle.FordExplorerEntity;
-import org.jurassicraft.server.entity.vehicle.HelicopterBaseEntity;
+import org.jurassicraft.server.entity.vehicle.HelicopterEntity;
 import org.jurassicraft.server.entity.vehicle.JeepWranglerEntity;
 import org.jurassicraft.server.item.*;
 import org.jurassicraft.server.plant.Plant;
@@ -271,6 +258,7 @@ public enum RenderingHandler {
 
         registerItemRenderer(TRACKER);
         registerItemRenderer(PLANT_CELLS_PETRI_DISH);
+        registerItemRenderer(HELICOPTER);
         registerItemRenderer(PLANT_CELLS);
         registerItemRenderer(GROWTH_SERUM);
         registerItemRenderer(BREEDING_WAND);
@@ -310,7 +298,7 @@ public enum RenderingHandler {
         registerItemRenderer(AMBER, 0, "amber_mosquito");
         registerItemRenderer(AMBER, 1, "amber_aphid");
 
-//        registerItemRenderer(HELICOPTER, "helicopter_spawner");
+        //registerItemRenderer(HELICOPTER, "helicopter_spawner");
 
         registerItemRenderer(JURASSICRAFT_THEME_DISC, "disc_jurassicraft_theme");
         registerItemRenderer(DONT_MOVE_A_MUSCLE_DISC, "disc_dont_move_a_muscle");
@@ -347,7 +335,7 @@ public enum RenderingHandler {
         registerItemRenderer(FIELD_GUIDE, "field_guide");
 
         registerItemRenderer(CAR_CHASSIS, "car_chassis");
-        registerItemRenderer(CAR_ENGINE_SYSTEM, "car_engine_system");
+        registerItemRenderer(ENGINE_SYSTEM, "engine_system");
         registerItemRenderer(CAR_SEATS, "car_seats");
         registerItemRenderer(CAR_TIRE, "car_tire");
         registerItemRenderer(CAR_WINDSCREEN, "car_windscreen");
@@ -462,12 +450,11 @@ public enum RenderingHandler {
 
         RenderingRegistry.registerEntityRenderingHandler(PaddockSignEntity.class, new PaddockSignRenderer());
         RenderingRegistry.registerEntityRenderingHandler(AttractionSignEntity.class, new AttractionSignRenderer());
-        RenderingRegistry.registerEntityRenderingHandler(HelicopterBaseEntity.class, new HelicopterRenderer());
         RenderingRegistry.registerEntityRenderingHandler(DinosaurEggEntity.class, new DinosaurEggRenderer());
         RenderingRegistry.registerEntityRenderingHandler(VenomEntity.class, new VenomRenderer());
         RenderingRegistry.registerEntityRenderingHandler(JeepWranglerEntity.class, JeepWranglerRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(FordExplorerEntity.class, FordExplorerRenderer::new);
-        RenderingRegistry.registerEntityRenderingHandler(HelicopterBaseEntity.class, new HelicopterRenderer());
+        RenderingRegistry.registerEntityRenderingHandler(HelicopterEntity.class, HeliRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(MuralEntity.class, MuralRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(GoatEntity.class, GoatRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(TranquilizerDartEntity.class, NullRenderer::new);

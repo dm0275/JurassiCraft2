@@ -1,209 +1,320 @@
 package org.jurassicraft.server.entity.vehicle;
 
 
-import com.google.common.collect.Lists;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.MoverType;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.block.BlockAir;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.client.model.BlockStateLoader;
+import net.minecraftforge.client.model.b3d.B3DModel;
+import net.minecraftforge.server.permission.context.ContextKeys;
+import org.jurassicraft.server.event.KeyBindingHandler;
+import org.lwjgl.input.Keyboard;
+import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
-import org.jurassicraft.JurassiCraft;
-import org.jurassicraft.server.block.TourRailBlock;
 import org.jurassicraft.server.entity.ai.util.InterpValue;
-import org.jurassicraft.server.entity.ai.util.MathUtils;
-import org.jurassicraft.server.entity.vehicle.util.WheelParticleData;
 import org.jurassicraft.server.item.ItemHandler;
-import org.jurassicraft.server.message.FordExplorerChangeStateMessage;
-import org.jurassicraft.server.message.FordExplorerUpdatePositionStateMessage;
+import org.jurassicraft.server.util.MutableVec3;
 
 import javax.annotation.Nonnull;
-import javax.vecmath.Vector2d;
-import javax.vecmath.Vector4d;
-import java.util.Arrays;
-import java.util.List;
 
-public class FordExplorerEntity extends CarEntity {
+public class HelicopterEntity extends CarEntity {
 
-    public static final BlockPos INACTIVE = new BlockPos(-1, -1, -1);
-    
-    public boolean prevOnRails;
-    public boolean onRails;
-    private BlockPos prevRailTracks = INACTIVE;
-    public BlockPos prevPos = INACTIVE;
-    public BlockPos railTracks = INACTIVE;
-    
+    private static final BlockPos INACTIVE = new BlockPos(-1, -1, -1);
+
+    private BlockPos prevPos = INACTIVE;
+
     private boolean lastDirBackwards;
-
-    public final MinecartLogic minecart = new MinecartLogic();
-    
+    private final float MAX_POWER = 80.0F;
+    private final float REQUIRED_POWER = MAX_POWER / 2.0F;
+    private float enginePower;
+    public float gearLift;
+    public boolean shouldGearLift = true;
     private final InterpValue rotationYawInterp = new InterpValue(this, 4f);
-    
+    private final float SPEEDMODIFIER = 2.5f;
+    public boolean isFlying;
+    public float rotorRotationAmount;
+    public final InterpValue interpRotationPitch = new InterpValue(this, 0.25D);
+    public final InterpValue interpRotationRoll = new InterpValue(this, 0.25D);
+    private MutableVec3 direction;
+    public float rotationAmount;
+    public float sideRotationAmount;
+    private final float MAXMOVEMENTROTATION = 15f;
+    private boolean shouldFallDamage;
+    public double rotAmount = 0D;
+    private Vec3d prevInAirPos;
+    private float damageAmount;
     /* =================================== CAR START ===========================================*/
-    
-    public FordExplorerEntity(World world) {
-    	super(world);
-    	this.speedModifier = 0f;
-	}
+
+    public HelicopterEntity(World worldIn) {
+        super(worldIn);
+        double w = 5f; // width in blocks
+        double h = 3.5f; // height in blocks
+        double d = 8f; // depth in blocks
+        this.setEntityBoundingBox(new AxisAlignedBB( 0, 0, 0, w, h, d));
+        this.setSize(5f, 3.5f);
+        this.speedModifier = 1.5f;
+        this.isFlying = false;
+        this.direction = new MutableVec3(0,1,0);
+    }
 
     @Override
     public void dropItems() {
-        this.dropItem(ItemHandler.FORD_EXPLORER, 1);
+        this.dropItem(ItemHandler.HELICOPTER, 1);
     }
 
     @Override
     protected Seat[] createSeats() {
-        Seat frontLeft = new Seat(0.563F, 0.45F, 0.4F, 0.5F, 0.25F);
-        Seat frontRight = new Seat(-0.563F, 0.45F, 0.4F, 0.5F, 0.25F);
-        Seat backLeft = new Seat( 0.563F, 0.45F, -1F, 0.5F, 0.25F);
-        Seat backRight = new Seat( -0.563F, 0.45F, -1F, 0.5F, 0.25F);
-        return new Seat[] { frontLeft, frontRight, backLeft, backRight };
+        Seat middle = new Seat(0F, -0.23F, 1.2F, 0.5F, 0.25F);
+        Seat frontLeft = new Seat(-0.55F, -0.34F, 0.1F, 0.5F, 0.25F);
+        Seat frontRight = new Seat(0.55F, -0.34F, 0.1F, 0.5F, 0.25F);
+        Seat backLeft = new Seat( 0.4F, 0.25F, -1F, 0.5F, 0.25F);
+        Seat backReft = new Seat( -0.4F, 0.25F, -1F, 0.5F, 0.25F);
+        return new Seat[] { middle, frontLeft, frontRight, backLeft, backReft};
     }
-    
+
     @Override
     protected boolean shouldStopUpdates() {
-        return onRails;
+        return false;
     }
-    
+
     @Override
     public void onUpdate() {
         BlockPos startPos = this.getPosition();
-		if(!world.isRemote) {
-			BlockPos rail = getPosition();
-			boolean isRails = world.getBlockState(rail).getBlock() instanceof TourRailBlock;
-			if(!isRails) {
-				rail = rail.down();
-				isRails = world.getBlockState(rail).getBlock() instanceof TourRailBlock;
-			}
-            if(!isRails && world.getBlockState(rail.down()).getBlock() instanceof TourRailBlock && Arrays.asList(TourRailBlock.EnumRailDirection.ASCENDING_EAST, TourRailBlock.EnumRailDirection.ASCENDING_NORTH, TourRailBlock.EnumRailDirection.ASCENDING_SOUTH, TourRailBlock.EnumRailDirection.ASCENDING_WEST).contains(TourRailBlock.getRailDirection(world, rail.down()))) {
-                rail = rail.down(1);
-				isRails = world.getBlockState(rail).getBlock() instanceof TourRailBlock;
-			}
-
-			if(onRails != isRails) {
-				if(isRails) {
-					minecart.isInReverse = lastDirBackwards;
-				}
-				onRails = isRails;
-				JurassiCraft.NETWORK_WRAPPER.sendToDimension(new FordExplorerChangeStateMessage(this), world.provider.getDimension());
-			}
-			this.railTracks = isRails ? rail : INACTIVE;
-			if(!this.railTracks.equals(prevRailTracks)) {
-				JurassiCraft.NETWORK_WRAPPER.sendToDimension(new FordExplorerUpdatePositionStateMessage(this, rail), world.provider.getDimension());
-            }
-            this.prevRailTracks = railTracks;
-        }
-		if(onRails) {
-			this.setSize(0.75F, 0.25F);
-//			this.stepHeight = 0F;
-		} else {
-			this.setSize(3.0F, 2.5F);
-//			this.stepHeight = 1.5F;
-		}
-		this.setPosition(this.posX, this.posY, this.posZ); //Make sure that the car is in the right position. Can cause issues when changing size of car
-		super.onUpdate();
-		if(onRails) {
-			minecart.onUpdate();
-			Vector4d vec = wheeldata.carVector;
-			this.backValue.setTarget(this.calculateWheelHeight(vec.y, false));
-			this.frontValue.setTarget(this.calculateWheelHeight(vec.w, false));
-			this.leftValue.setTarget(posY);
-			this.rightValue.setTarget(posY);
-		}
-		prevOnRails = onRails;
-		if(!startPos.equals(this.getPosition())) {
+        this.setPosition(this.posX, this.posY, this.posZ); //Make sure that the car is in the right position. Can cause issues when changing size of car
+        super.onUpdate();
+        if(!startPos.equals(this.getPosition())) {
             prevPos = this.getPosition();
         }
     }
 
-	@Override
+    @Override
     protected void doBlockCollisions() {
-		if(!onRails) {
-			super.doBlockCollisions();
-		}
+        super.doBlockCollisions();
+
     }
-    
+
     @Override
     protected void removePassenger(Entity passenger) {
         super.removePassenger(passenger);
         for (Seat seat : this.seats) {
             if (passenger.equals(seat.getOccupant())) {
                 passenger.noClip = false;
-        	break;
+                break;
             }
         }
     }
-    
+
     @Override
     public void onEntityUpdate() {
         super.onEntityUpdate();
-        if(onRails) {
-            if(this.canPassengerSteer()) {
-                if (this.getPassengers().isEmpty() || !(this.getPassengers().get(0) instanceof EntityPlayer)) {
-                    this.setControlState(0);
-                }
-                if(this.world.isRemote) {
-                    this.handleControl(); //+Z-X
-                }
+        //this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, this.posX-0.65f, this.posY+2f, this.posZ+ -2.9, 0.0f, 0.0f, 0.0f, new int[0]);
+        //this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, this.posX+0.65f, this.posY+2f, this.posZ+ -2.9, 0.0f, 0.0f, 0.0f, new int[0]);
+        if (this.forward() && this.isFlying) {
+            this.rotationAmount += 1f;
+        } else if (this.backward() && this.isFlying) {
+            this.rotationAmount -= 1f;
+        }else{
+            if(this.rotationAmount < 0f){
+                this.rotationAmount += 1f;
+            }else if(this.rotationAmount >0f){
+                this.rotationAmount -= 1f;
             }
-        } else {
-            rotationYawInterp.reset(this.rotationYaw - 180D);
         }
-        if(forward()) {
+        if (this.left() && this.isFlying) {
+            this.sideRotationAmount += 1f;
+        } else if (this.right() && this.isFlying) {
+            this.sideRotationAmount -= 1f;
+        }else{
+            if(this.sideRotationAmount < 0f){
+                this.sideRotationAmount += 1f;
+            }else if(this.sideRotationAmount > 0f){
+                this.sideRotationAmount -= 1f;
+            }
+        }
+/*
+        if(!(this.forward())){
+            this.rotationAmount -=1f;
+            if(this.rotationAmount <=0f)
+                this.rotationAmount = 0f;
+        }else if(!this.backward()){
+            this.rotationAmount += 1f;
+            if(this.rotationAmount >= 0f)
+                this.rotationAmount = 0f;
+        }
+        */
+        if(this.rotationAmount >= MAXMOVEMENTROTATION){
+            this.rotationAmount = MAXMOVEMENTROTATION;
+        }
+        if(this.rotationAmount <= -MAXMOVEMENTROTATION){
+            this.rotationAmount = -MAXMOVEMENTROTATION;
+        }
+        if(this.sideRotationAmount >= MAXMOVEMENTROTATION){
+            this.sideRotationAmount = MAXMOVEMENTROTATION;
+        }
+        if(this.sideRotationAmount <= -MAXMOVEMENTROTATION){
+            this.sideRotationAmount = -MAXMOVEMENTROTATION;
+        }
+
+        rotationYawInterp.reset(this.rotationYaw - 180D);
+        if (forward()) {
             lastDirBackwards = false;
-        } else if(backward()) {
+        } else if (backward()) {
             lastDirBackwards = true;
         }
+        this.interpRotationPitch.setTarget(this.direction.zCoord * -30D);
+        this.interpRotationRoll.setTarget(this.direction.xCoord * 20D);
+        if (this.seats[0].getOccupant() != null) {
+            if (KeyBindingHandler.HELICOPTER_UP.isKeyDown()) {
+                this.motionY += 0.2f;
+                if (this.motionY >= 4f) {
+                    this.motionY = 4f;
+                }
+
+                this.isFlying = true;
+                this.shouldFallDamage = true;
+                this.rotorRotationAmount += 0.1f;
+                this.prevInAirPos = this.getPositionVector();
+                this.setNoGravity(true);
+            } else if (KeyBindingHandler.HELICOPTER_DOWN.isKeyDown()) {
+                this.motionY -= 0.3f;
+                if (this.motionY <= -4f) {
+                    this.motionY = -4f;
+                }
+                this.shouldFallDamage = false;
+
+
+            } else {
+                if(!this.isFlying){
+                    this.setNoGravity(false);
+
+                }else{
+                    this.rotorRotationAmount += 5f;
+                }
+            }
+        }
+
+        if(!this.isFlying){
+            this.speedModifier = -0.75f;
+        }else{
+            this.speedModifier = 1.5f;
+
+
+        }
+        if(this.onGround == true) {
+            this.isFlying = false;
+            this.rotorRotationAmount -= 0.2f;
+        }else{
+            this.rotorRotationAmount += 5f;
+        }
+        if(!this.shouldGearLift) {
+            this.gearLift += 0.02f;
+        }else{
+            this.gearLift -= 0.02f;
+        }
+        if(world.getBlockState(new BlockPos.MutableBlockPos((int)Math.floor( this.posX), (int)Math.floor( this.posY - 10f), (int)Math.floor( this.posZ))).getBlock() != Blocks.AIR){
+            this.shouldGearLift = false;
+        }else{
+            this.shouldGearLift = true;
+        }
+        if(this.seats[0].getOccupant() == null){
+            this.setNoGravity(false);
+        }
+        if(this.onGround == true && this.shouldFallDamage == true){
+            this.damageAmount = (float)this.prevInAirPos.y - (float)this.getPositionVector().y;
+            this.setHealth(this.getHealth() - (float)Math.floor((double)(this.damageAmount / 3)));
+            this.shouldFallDamage = false;
+        }
+        if(this.rotorRotationAmount < 0f){
+            this.rotorRotationAmount = 0f;
+        }
+        if(this.rotorRotationAmount > 1.5f){
+            this.rotorRotationAmount = 1.5f;
+        }
+        if(this.gearLift < -0.5f){
+            this.gearLift = -0.5f;
+        }
+        if(this.gearLift > 0){
+            this.gearLift = 0f;
+        }
+        this.rotAmount += this.rotorRotationAmount / 2d;
     }
-    
+
     @Override
     protected void writeEntityToNBT(NBTTagCompound compound) {
         super.writeEntityToNBT(compound);
-        compound.setBoolean("OnRails", onRails);
-        compound.setLong("BlockPosition", railTracks.toLong());
         compound.setLong("PrevBlockPosition", this.prevPos.toLong());
     }
-    
+
     @Override
     protected void readEntityFromNBT(NBTTagCompound compound) {
         super.readEntityFromNBT(compound);
-        onRails = compound.getBoolean("OnRails");
-        railTracks = BlockPos.fromLong(compound.getLong("BlockPosition"));
         this.prevPos = BlockPos.fromLong(compound.getLong("PrevBlockPosition"));
     }
-    
+
     @Override
     public float getSoundVolume() {
-        return onRails ? this.getControllingPassenger() != null ? this.getSpeed().modifier / 2f : 0f : super.getSoundVolume();
+        return this.getControllingPassenger() != null ? this.getSpeed().modifier / 2f : 0f;
     }
+
+
 
     @Nonnull
     @Override
     public EnumFacing getAdjustedHorizontalFacing() {
-        return onRails ? minecart.getAdjustedHorizontalFacing() : super.getAdjustedHorizontalFacing();
+        return super.getAdjustedHorizontalFacing();
     }
 
     @Override
     protected WheelData createWheels() {
-	return new WheelData(1, 2, -1, -2.2);
-    }
-    
-    @Override
-    protected boolean shouldTyresRender() {
-        return super.shouldTyresRender() && !onRails;
+        return new WheelData(1, 2, -1, -2.2);
     }
 
-	@Override
-	public Vector2d getBackWheelRotationPoint() {
+    @Override
+    protected boolean shouldTyresRender() {
+        return false;
+    }
+    @Override
+    public void updatePassenger(Entity passenger) {
+        if (this.isPassenger(passenger)) {
+            Seat seat = null;
+            for (Seat s : this.seats) {
+                if (passenger.equals(s.getOccupant())) {
+                    seat = s;
+                    break;
+                }
+            }
+            Vec3d pos;
+            if (seat == null) {
+                pos = new Vec3d(this.posX, this.posY + this.height, this.posZ);
+            } else {
+                pos = seat.getPos();
+            }
+            passenger.setPosition(pos.x, pos.y + this.interpRotationPitch.getCurrent() / 75D, pos.z);
+            passenger.rotationYaw += this.rotationDelta;
+            passenger.setRotationYawHead(passenger.getRotationYawHead() + this.rotationDelta);
+            if (passenger instanceof EntityLivingBase) {
+                EntityLivingBase living = (EntityLivingBase) passenger;
+                living.renderYawOffset += (living.rotationYaw - living.renderYawOffset) * 0.6F;
+            }
+        }
+    }
+
+/*
+    @Override
+
+    public Vector2d getBackWheelRotationPoint() {
         Vector2d point = super.getBackWheelRotationPoint();
-		return new Vector2d(point.x, onRails ? 0 : point.y);
-	}
+        return new Vector2d(point.x, onRails ? 0 : point.y);
+    }
+    */
 
     @Override
     public float getCollisionBorderSize() {
@@ -212,7 +323,7 @@ public class FordExplorerEntity extends CarEntity {
 
     /* =================================== CAR END ===========================================*/
     /* ================================ MINECART START =======================================*/
-
+/*
 
     public class MinecartLogic {
         private boolean isInReverse;
@@ -227,7 +338,7 @@ public class FordExplorerEntity extends CarEntity {
         public void onUpdate() {
             //CAR STUFF START
             rotationDelta *= 0.8f;
-            allWheels.forEach(FordExplorerEntity.this::processWheel);
+            allWheels.forEach(HelicopterEntity.this::processWheel);
 
             for(int i = 0; i < 4; i++) {
                 List<WheelParticleData> markedRemoved = Lists.newArrayList();
@@ -530,7 +641,7 @@ public class FordExplorerEntity extends CarEntity {
             double max = getSpeedType().modifier / 8f;
             mX = MathHelper.clamp(mX, -max, max);
             mZ = MathHelper.clamp(mZ, -max, max);
-            FordExplorerEntity.this.move(MoverType.SELF, mX, 0D, mZ);
+            HelicopterEntity.this.move(MoverType.SELF, mX, 0D, mZ);
         }
 
         private Speed getSpeedType() {

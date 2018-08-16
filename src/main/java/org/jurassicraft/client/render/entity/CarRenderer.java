@@ -13,6 +13,7 @@ import org.jurassicraft.JurassiCraft;
 import org.jurassicraft.client.model.ResetControlTabulaModel;
 import org.jurassicraft.client.model.TabulaModelUV;
 import org.jurassicraft.client.model.animation.entity.vehicle.CarAnimator;
+import org.jurassicraft.client.model.animation.entity.vehicle.HelicopterAnimator;
 import org.jurassicraft.server.entity.ai.util.MathUtils;
 import org.jurassicraft.server.entity.vehicle.CarEntity;
 
@@ -23,6 +24,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jurassicraft.server.entity.vehicle.HelicopterEntity;
 import org.jurassicraft.server.entity.vehicle.JeepWranglerEntity;
 import org.jurassicraft.server.tabula.TabulaModelHelper;
 
@@ -35,9 +37,8 @@ public abstract class CarRenderer<E extends CarEntity> extends Render<E> {
 
 
     protected final String carName;
-    protected final ResourceLocation texture;
-
     protected CarAnimator animator;
+    protected final ResourceLocation texture;
     protected TabulaModel baseModel;
     protected TabulaModel destroyModel;
 
@@ -91,20 +92,22 @@ public abstract class CarRenderer<E extends CarEntity> extends Render<E> {
     }
 
     protected void doCarRotations(CarEntity entity, float partialTicks) {
-	    double backValue = entity.backValue.getValueForRendering(partialTicks);
-        double frontValue = entity.frontValue.getValueForRendering(partialTicks);
-        double leftValue = entity.leftValue.getValueForRendering(partialTicks);
-        double rightValue = entity.rightValue.getValueForRendering(partialTicks);
-        
-        Vector4d vec = entity.getCarDimensions();
-        Vector2d rot = entity.getBackWheelRotationPoint();
-        	
-        GlStateManager.translate(0, rot.x, rot.y);
-        float localRotationPitch = (float) MathUtils.cosineFromPoints(new Vec3d(frontValue, 0, vec.w), new Vec3d(backValue, 0, vec.w), new Vec3d(backValue, 0, vec.y));//No need for cosine as is a right angled triangle. I'm to lazy to work out the right maths. //TODO: SOHCAHTOA this
-        GlStateManager.rotate(frontValue < backValue ? -localRotationPitch : localRotationPitch, 1, 0, 0);
-        GlStateManager.translate(0, -rot.x, -rot.y);
-        float localRotationRoll = (float) MathUtils.cosineFromPoints(new Vec3d(rightValue, 0, vec.z), new Vec3d(leftValue, 0, vec.z), new Vec3d(leftValue, 0, vec.x));//TODO: same as above
-        GlStateManager.rotate(leftValue < rightValue ? localRotationRoll : -localRotationRoll, 0, 0, 1);
+        if(!(entity instanceof HelicopterEntity)) {
+            double backValue = entity.backValue.getValueForRendering(partialTicks);
+            double frontValue = entity.frontValue.getValueForRendering(partialTicks);
+            double leftValue = entity.leftValue.getValueForRendering(partialTicks);
+            double rightValue = entity.rightValue.getValueForRendering(partialTicks);
+
+            Vector4d vec = entity.getCarDimensions();
+            Vector2d rot = entity.getBackWheelRotationPoint();
+
+            GlStateManager.translate(0, rot.x, rot.y);
+            float localRotationPitch = (float) MathUtils.cosineFromPoints(new Vec3d(frontValue, 0, vec.w), new Vec3d(backValue, 0, vec.w), new Vec3d(backValue, 0, vec.y));//No need for cosine as is a right angled triangle. I'm to lazy to work out the right maths. //TODO: SOHCAHTOA this
+            GlStateManager.rotate(frontValue < backValue ? -localRotationPitch : localRotationPitch, 1, 0, 0);
+            GlStateManager.translate(0, -rot.x, -rot.y);
+            float localRotationRoll = (float) MathUtils.cosineFromPoints(new Vec3d(rightValue, 0, vec.z), new Vec3d(leftValue, 0, vec.z), new Vec3d(leftValue, 0, vec.x));//TODO: same as above
+            GlStateManager.rotate(leftValue < rightValue ? localRotationRoll : -localRotationRoll, 0, 0, 1);
+        }
     }
 
     protected abstract CarAnimator createCarAnimator();

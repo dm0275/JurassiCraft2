@@ -9,11 +9,10 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.jurassicraft.server.entity.vehicle.HelicopterBaseEntity;
+import org.jurassicraft.server.entity.vehicle.HelicopterEntity;
 import org.jurassicraft.server.tab.TabHandler;
 
 import java.util.List;
-import java.util.UUID;
 
 public class HelicopterItem extends Item {
     public HelicopterItem() {
@@ -25,14 +24,15 @@ public class HelicopterItem extends Item {
     public void addInformation(ItemStack stack, World world, List<String> tooltip, ITooltipFlag tooltipFlag) {
         super.addInformation(stack, world, tooltip, tooltipFlag);
         tooltip.add("Right click on a block to spawn the helicopter");
+        this.setUnlocalizedName("helicopter");
     }
 
     @Override
     public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (!world.isRemote) {
-            HelicopterBaseEntity helicopter = new HelicopterBaseEntity(world);
+            HelicopterEntity helicopter = new HelicopterEntity(world);
             helicopter.setPosition(pos.getX() + hitX, pos.getY() + hitY, pos.getZ() + hitZ);
-//            world.spawnEntity(helicopter); //Uncomment for testing
+            world.spawnEntity(helicopter); //Uncomment for testing
         }
 
         return EnumActionResult.SUCCESS;

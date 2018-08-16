@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.jurassicraft.client.sound.SoundHandler;
 import org.jurassicraft.server.api.Hybrid;
 import org.jurassicraft.server.block.BlockHandler;
@@ -14,8 +15,9 @@ import org.jurassicraft.server.dinosaur.Dinosaur;
 import org.jurassicraft.server.entity.DinosaurEntity;
 import org.jurassicraft.server.entity.EntityHandler;
 import org.jurassicraft.server.item.block.AncientDoorItem;
+//import org.jurassicraft.server.item.vehicles.HelicopterItem;
+//import org.jurassicraft.server.item.vehicles.HelicopterModuleItem;
 import org.jurassicraft.server.item.vehicles.HelicopterItem;
-import org.jurassicraft.server.item.vehicles.HelicopterModuleItem;
 import org.jurassicraft.server.tab.TabHandler;
 import org.jurassicraft.server.util.RegistryHandler;
 
@@ -128,7 +130,7 @@ public class ItemHandler {
     public static final PlantCallusItem PLANT_CALLUS = new PlantCallusItem();
     public static final BasicItem PLANT_CELLS_PETRI_DISH = new BasicItem(TabHandler.ITEMS);
     public static final HelicopterItem HELICOPTER = new HelicopterItem();
-    public static final HelicopterModuleItem MINIGUN_MODULE = new HelicopterModuleItem("minigun");
+    //public static final HelicopterModuleItem MINIGUN_MODULE = new HelicopterModuleItem("minigun");
 
     public static final BasicItem TRACKER = new BasicItem(TabHandler.ITEMS);
 
@@ -189,7 +191,7 @@ public class ItemHandler {
     public static final BasicItem STAMP_SET = new BasicItem(TabHandler.ITEMS);
 
     public static final BasicItem CAR_CHASSIS = new BasicItem(TabHandler.ITEMS);
-    public static final BasicItem CAR_ENGINE_SYSTEM = new BasicItem(TabHandler.ITEMS);
+    public static final BasicItem ENGINE_SYSTEM = new BasicItem(TabHandler.ITEMS);
     public static final BasicItem CAR_SEATS = new BasicItem(TabHandler.ITEMS);
     public static final BasicItem CAR_TIRE = new BasicItem(TabHandler.ITEMS);
     public static final BasicItem CAR_WINDSCREEN = new BasicItem(TabHandler.ITEMS);
@@ -355,7 +357,7 @@ public class ItemHandler {
         registerItem(PLANT_FOSSIL, "Plant Fossil");
         registerItem(TWIG_FOSSIL, "Twig Fossil");
 
-//        registerItem(HELICOPTER, "Helicopter Spawner");
+        registerItem(HELICOPTER, "Helicopter");
 //        registerItem(MINIGUN_MODULE, "Helicopter Minigun");
 
         registerItem(AMBER_CANE, "Amber Cane");
@@ -396,7 +398,7 @@ public class ItemHandler {
         registerItem(MEALWORM_BEETLES, "Mealworm Beetles");
 
         registerItem(CAR_CHASSIS, "Car Chassis");
-        registerItem(CAR_ENGINE_SYSTEM, "Car Engine System");
+        registerItem(ENGINE_SYSTEM, "Engine System");
         registerItem(CAR_SEATS, "Car Seats");
         registerItem(CAR_TIRE, "Car Tire");
         registerItem(CAR_WINDSCREEN, "Car Windscreen");
@@ -426,7 +428,6 @@ public class ItemHandler {
         registerItem(DART_POISON_CYCASIN, "Dart Poison Cycasin");
         registerItem(DART_POISON_EXECUTIONER_CONCOCTION, "Dart Poison Executioner Concoction");
         registerItem(DART_TIPPED_POTION, "Dart Tipped Potion");
-        
         for (TreeType type : TreeType.values()) {
             registerTreeType(type);
         }

@@ -1,2 +1,11 @@
++Added BungeeCord/Waterfall support
++Both player and vehicle will now be damaged on fall
++Damage dealt when running over an entity now escalates with the overall speed of the car
++Added Cars stopping to a halt in water
+*fixed tour rail config value
+*small fix for dinosaur attack AI
+*temporary fix for growth serum
+*Fixed cultivator's upper part to not drop a bugged item
+*fixed IDs being longer than they should be
 *Decreased the chance of dropping crickets from grass
 *Fixed an incompatibility with Immersive Engineering W.I.P

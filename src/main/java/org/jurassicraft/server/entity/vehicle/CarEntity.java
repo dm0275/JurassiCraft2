@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemRecord;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -66,15 +67,16 @@ public abstract class CarEntity extends Entity implements MultiSeatedEntity {
 
     protected float rotationDelta;
 
-    private int interpProgress;
+    public int interpProgress;
     double interpTargetX;
-    private double interpTargetY;
-    private double interpTargetZ;
-    private double interpTargetYaw;
-    private Vec3d prevUnairbornPos;
-    private boolean wasOnGroundLastTick;
-
+    public double interpTargetY;
+    public double interpTargetZ;
+    public double interpTargetYaw;
+    public float speedModifier = 0f;
     private static final double INTERP_AMOUNT = 0.15D; //TODO config ?
+    public boolean wasOnGroundLastTick;
+    private Vec3d prevUnairbornPos;
+
     
     public final InterpValue backValue = new InterpValue(this, INTERP_AMOUNT);
     public final InterpValue frontValue = new InterpValue(this, INTERP_AMOUNT);
@@ -386,7 +388,7 @@ public abstract class CarEntity extends Entity implements MultiSeatedEntity {
         if(shouldStopUpdates()) {
             return;
         }
-        AxisAlignedBB aabb = this.getEntityBoundingBox().shrink(0.9f);
+        AxisAlignedBB aabb = this.getEntityBoundingBox();
         for(BlockPos pos : BlockPos.getAllInBoxMutable(new BlockPos(Math.floor(aabb.minX), Math.floor(aabb.minY), Math.floor(aabb.minZ)), new BlockPos(Math.ceil(aabb.maxX), Math.ceil(aabb.maxY), Math.ceil(aabb.maxZ)))) {
             IBlockState state = world.getBlockState(pos);
             if(state.getMaterial() == Material.VINE) {
@@ -396,7 +398,10 @@ public abstract class CarEntity extends Entity implements MultiSeatedEntity {
                     state.getBlock().dropBlockAsItem(world, pos, state, 0);
                 }
                 world.setBlockToAir(pos);
+            }else if(state.getMaterial() == Material.LEAVES){
+                world.setBlockToAir(pos);
             }
+
         }
         this.prevWheelRotateAmount = this.wheelRotateAmount;
         double deltaX = this.posX - this.prevPosX;
@@ -416,7 +421,9 @@ public abstract class CarEntity extends Entity implements MultiSeatedEntity {
         this.motionY *= resist;
         this.motionZ *= resist;
         this.rotationDelta *= resist;
-        this.motionY -= 0.15F;
+        if(!this.hasNoGravity())
+            this.motionY -= 0.15F;
+
     }
 
     protected void handleControl() {
@@ -446,7 +453,7 @@ public abstract class CarEntity extends Entity implements MultiSeatedEntity {
     protected void applyMovement() {
 	    Speed speed = this.getSpeed();
         
-        float moveAmount = 0.0F;
+	    float moveAmount = 0.0f;
         if ((this.left() || this.right()) && !(this.forward() || this.backward())) {
             moveAmount += 0.05F;
         }
@@ -455,7 +462,7 @@ public abstract class CarEntity extends Entity implements MultiSeatedEntity {
         } else if (this.backward()) {
             moveAmount -= 0.05F;
         }
-        moveAmount *= speed.modifier;
+        moveAmount *= (speed.modifier + this.speedModifier);
         if(this.isInWater()) {
             moveAmount -= 0.1f;
             if(moveAmount < 0f)
