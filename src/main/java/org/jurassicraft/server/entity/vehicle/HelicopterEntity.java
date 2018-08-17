@@ -227,7 +227,7 @@ public class HelicopterEntity extends CarEntity {
         if(this.seats[0].getOccupant() == null){
             this.setNoGravity(false);
         }
-        if(this.onGround == true && this.shouldFallDamage == true){
+        if(this.onGround && this.shouldFallDamage){
             this.damageAmount = (float)this.prevInAirPos.y - (float)this.getPositionVector().y;
             this.setHealth(this.getHealth() - (float)Math.floor((double)(this.damageAmount / 3)));
             this.shouldFallDamage = false;
