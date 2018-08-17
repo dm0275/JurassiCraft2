@@ -1,3 +1,4 @@
++Reimplemented a helicopter
 +Added BungeeCord/Waterfall support
 +Both player and vehicle will now be damaged on fall
 +Damage dealt when running over an entity now escalates with the overall speed of the car
