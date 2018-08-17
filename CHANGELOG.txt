@@ -10,4 +10,4 @@
 *fixed IDs being longer than they should be
 *Decreased the chance of dropping crickets from grass
 *Fixed an incompatibility with Immersive Engineering W.I.P
-*Fixed that player-placed leaves did not decay
+*Fixed that player-placed leaves did decay
