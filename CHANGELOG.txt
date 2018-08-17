@@ -9,6 +9,5 @@
 *Fixed cultivator's upper part to not drop a bugged item
 *fixed IDs being longer than they should be
 *Decreased the chance of dropping crickets from grass
-*temporary fix for growth serum
 *Fixed an incompatibility with Immersive Engineering W.I.P
 *Fixed that player-placed leaves did decay
