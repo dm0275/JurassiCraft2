@@ -1,5 +1,6 @@
 package org.jurassicraft.server.item;
 
+import net.minecraft.client.util.ITooltipFlag;
 import org.jurassicraft.server.entity.vehicle.FordExplorerEntity;
 import org.jurassicraft.server.tab.TabHandler;
 
@@ -12,11 +13,17 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.List;
+
 public final class FordExplorerItem extends Item {
     public FordExplorerItem() {
         this.setCreativeTab(TabHandler.ITEMS);
     }
-
+    @Override
+    public void addInformation(ItemStack stack, World world, List<String> tooltip, ITooltipFlag tooltipFlag) {
+        super.addInformation(stack, world, tooltip, tooltipFlag);
+        tooltip.add("Right click on a block to spawn the ford");
+    }
     @Override
     public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         ItemStack stack = player.getHeldItem(hand);
