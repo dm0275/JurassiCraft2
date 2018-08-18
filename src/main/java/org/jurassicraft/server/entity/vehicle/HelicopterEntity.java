@@ -2,9 +2,11 @@ package org.jurassicraft.server.entity.vehicle;
 
 
 import net.minecraft.block.BlockAir;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.Vec3d;
@@ -101,6 +103,9 @@ public class HelicopterEntity extends CarEntity {
 
     }
 
+    public static Entity getEntity(){
+        return new HelicopterEntity(Minecraft.getMinecraft().world);
+    }
     @Override
     protected void removePassenger(Entity passenger) {
         super.removePassenger(passenger);
@@ -183,6 +188,12 @@ public class HelicopterEntity extends CarEntity {
                 this.rotorRotationAmount += 0.1f;
                 this.prevInAirPos = this.getPositionVector();
                 this.setNoGravity(true);
+                for(Seat seat : this.seats){
+                    if(seat.getOccupant() != null) {
+                        seat.getOccupant().setNoGravity(false);
+                    }
+                }
+
             } else if (KeyBindingHandler.HELICOPTER_DOWN.isKeyDown()) {
                 this.motionY -= 0.3f;
                 if (this.motionY <= -4f) {
@@ -194,6 +205,11 @@ public class HelicopterEntity extends CarEntity {
             } else {
                 if(!this.isFlying){
                     this.setNoGravity(false);
+                    for(Seat seat : this.seats){
+                        if(seat.getOccupant() != null) {
+                            seat.getOccupant().setNoGravity(false);
+                        }
+                    }
 
                 }else{
                     this.rotorRotationAmount += 5f;

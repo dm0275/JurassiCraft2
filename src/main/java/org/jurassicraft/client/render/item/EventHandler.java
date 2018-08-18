@@ -1,5 +1,7 @@
 package org.jurassicraft.client.render.item;
 
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jurassicraft.JurassiCraft;
 import org.jurassicraft.client.render.item.models.GuiItemModelWrapper;
@@ -41,7 +43,6 @@ public class EventHandler {
             }
         }
     }
-    
     private static IBakedModel getModel(ResourceLocation resourceLocation, TextureMap map) {
 	IModel model;
 	try {

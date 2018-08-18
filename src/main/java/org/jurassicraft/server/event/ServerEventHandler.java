@@ -1,6 +1,9 @@
 package org.jurassicraft.server.event;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -15,6 +18,7 @@ import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraft.world.storage.loot.LootTable;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.event.LootTableLoadEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.terraingen.DecorateBiomeEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.WorldEvent;
@@ -26,6 +30,8 @@ import org.jurassicraft.server.block.BlockHandler;
 import org.jurassicraft.server.block.FossilizedTrackwayBlock;
 import org.jurassicraft.server.block.plant.DoublePlantBlock;
 import org.jurassicraft.server.conf.JurassiCraftConfig;
+import org.jurassicraft.server.entity.vehicle.CarEntity;
+import org.jurassicraft.server.entity.vehicle.HelicopterEntity;
 import org.jurassicraft.server.item.ItemHandler;
 import org.jurassicraft.server.util.GameRuleHandler;
 import org.jurassicraft.server.world.WorldGenCoal;
@@ -150,6 +156,9 @@ public class ServerEventHandler {
         }
     }
 
+
+
+
     @SubscribeEvent
     public void onLootTableLoad(LootTableLoadEvent event) {
         ResourceLocation name = event.getName();
@@ -158,7 +167,10 @@ public class ServerEventHandler {
 
         Loot.handleTable(table, name);
     }
-
+    @SubscribeEvent
+    public void fall(LivingFallEvent e){
+        e.setCanceled(e.getEntity().getRidingEntity() instanceof HelicopterEntity);
+    }
     @SubscribeEvent
     public void onHarvest(BlockEvent.HarvestDropsEvent event) {
         IBlockState state = event.getState();

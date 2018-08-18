@@ -29,10 +29,12 @@ public class HelicopterItem extends Item {
 
     @Override
     public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+        ItemStack stack = player.getHeldItem(hand);
         if (!world.isRemote) {
             HelicopterEntity helicopter = new HelicopterEntity(world);
             helicopter.setPosition(pos.getX() + hitX, pos.getY() + hitY, pos.getZ() + hitZ);
             world.spawnEntity(helicopter); //Uncomment for testing
+            stack.shrink(1);
         }
 
         return EnumActionResult.SUCCESS;
