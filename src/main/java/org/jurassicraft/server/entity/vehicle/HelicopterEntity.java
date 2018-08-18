@@ -103,9 +103,9 @@ public class HelicopterEntity extends CarEntity {
 
     }
 
-    public static Entity getEntity(){
+    /*public static Entity getEntity(){
         return new HelicopterEntity(Minecraft.getMinecraft().world);
-    }
+    }*/
     @Override
     protected void removePassenger(Entity passenger) {
         super.removePassenger(passenger);
