@@ -338,7 +338,7 @@ public abstract class CarEntity extends Entity implements MultiSeatedEntity {
     }
     
     protected void runOverEntity(Entity entity) {
-        if(this.estimatedSpeed > 0D) {
+        if(this.estimatedSpeed > 0.1D) {
             entity.attackEntityFrom(DamageSources.CAR, (float) (this.estimatedSpeed));
         }
     }
