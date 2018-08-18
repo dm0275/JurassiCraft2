@@ -1,1 +1,1 @@
-*Fixed a serverside crash occuring on startup
+*Fixed the dinosaur's order gui
