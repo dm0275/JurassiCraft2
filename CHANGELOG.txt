@@ -1,2 +1,3 @@
 *Fixed the dinosaur's order gui
 *The helicopter is now capable of flying on multiplayer servers
+*Fixed color rendering on tour rails
