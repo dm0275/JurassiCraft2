@@ -1,3 +1,1 @@
-*Fixed the dinosaur's order gui
-*The helicopter is now capable of flying on multiplayer servers
-*Fixed color rendering on tour rails
+*Fixed that spawning action figures of a certain gender didn't work on servers
