@@ -1193,7 +1193,7 @@ public abstract class DinosaurEntity extends EntityCreature implements IEntityAd
             this.carcassHealth = Math.max(1, (int) Math.sqrt(this.width * this.height) * 2);
             this.ticksExisted = 0;
             this.inventory.dropItems(this.world, this.rand);
-        }else{
+        }else if (carcass){
             this.setAnimation(EntityAnimation.DYING.get());
             this.carcassHealth = 0;
             this.inventory.dropItems(this.world, this.rand);
@@ -1788,6 +1788,9 @@ public abstract class DinosaurEntity extends EntityCreature implements IEntityAd
         this.setFullyGrown();
         this.setMale(this.rand.nextBoolean());
         this.setDNAQuality(100);
+        
+        // Assure that the width and height attributes have proper values
+        this.updateBounds();
         return data;
     }
 
