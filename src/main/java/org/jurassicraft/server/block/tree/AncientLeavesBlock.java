@@ -83,9 +83,9 @@ public class AncientLeavesBlock extends BlockLeaves implements SubBlocksBlock {
 
                                 // Store the surrounding blocks in the array
                                 if (BlockHandler.ANCIENT_LOGS.values().contains(block) && ((AncientLogBlock) block).getType() == this.getTreeType()) { // Check if the block is a JC log (non-vanilla behavior) and corresponds to the current leaf type
-                                	this.surroundings[index] = 0; // A log
+                                    this.surroundings[index] = 0; // A log
                                 } else {
-                                	if (this == block) { // Non-Vanilla behavior: Only leaves of the same kind (same block instance) are relevant
+                                    if (this == block) { // Non-Vanilla behavior: Only leaves of the same kind (same block instance) are relevant
                                         this.surroundings[index] = -2; // A leaf block
                                     } else {
                                         this.surroundings[index] = -1; // Every other block
@@ -210,24 +210,32 @@ public class AncientLeavesBlock extends BlockLeaves implements SubBlocksBlock {
 
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        boolean dec = meta < 4;
-        boolean check = meta < 8;
-        return this.getDefaultState().withProperty(DECAYABLE, dec).withProperty(CHECK_DECAY, check);
+        /*
+         * For compatibility reasons, we've to account for the old metadata
+         * 
+         * 0: DECAYABLE and CHECK_DECAY
+         * 4: CHECK_DECAY
+         * 8: DECAYABLE or none (we assume none)
+         */
+        
+        return this.getDefaultState().withProperty(DECAYABLE, meta == 0 || meta == 1).withProperty(CHECK_DECAY, meta == 0 || meta == 4);
     }
 
     @Override
     public int getMetaFromState(IBlockState state) {
-        int i = 0;
-
-        if (!state.getValue(DECAYABLE)) {
-            i = 4;
+        // Because of compatibility reasons we've to create the metadata that ugly way
+        boolean decayable = state.getValue(DECAYABLE);
+        boolean checkDecay = state.getValue(CHECK_DECAY);
+        
+        if(decayable && checkDecay) {
+            return 0;
+        }else if(decayable) {
+            return 1;
+        }else if(checkDecay) {
+            return 4;
+        }else {
+            return 8;
         }
-
-        if (!state.getValue(CHECK_DECAY)) {
-            i = 8;
-        }
-
-        return i;
     }
 
     @Override

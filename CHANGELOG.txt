@@ -1,2 +1,3 @@
 *Fixed that spawning action figures of a certain gender didn't work on servers
 *Fixed that dinosaurs weren't rendered correctly in mob spawners
+*Fixed that decayable JC leaves are loosing that property after some time
