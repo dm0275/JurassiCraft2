@@ -106,10 +106,11 @@ public class InterpValue implements INBTSerializable<NBTTagCompound> {
     public static void onTick(TickEvent event) {
         Side side = FMLCommonHandler.instance().getSide();
         if((event instanceof ClientTickEvent && side.isClient()) || (event instanceof ServerTickEvent && side.isServer())) {
-            synchronized (MARKED_REMOVE){
-            INSTANCES.forEach(InterpValue::tickInterp);
-            MARKED_REMOVE.forEach(INSTANCES::remove);
-            MARKED_REMOVE.clear();}
+            synchronized (MARKED_REMOVE) {
+            	INSTANCES.forEach(InterpValue::tickInterp);
+            	MARKED_REMOVE.forEach(INSTANCES::remove);
+            	MARKED_REMOVE.clear();
+            }
         }
     }
 }
