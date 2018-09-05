@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 
 @EventBusSubscriber(modid=JurassiCraft.MODID)
 public class InterpValue implements INBTSerializable<NBTTagCompound> {
-    
+
     private static final List<InterpValue> INSTANCES = Lists.newArrayList();
     private static final List<InterpValue> MARKED_REMOVE = Lists.newArrayList();
 
@@ -44,7 +44,7 @@ public class InterpValue implements INBTSerializable<NBTTagCompound> {
         this.supplier = supplier;
         INSTANCES.add(this);
     }
-    
+
     public void setTarget(double target) {
         if(!initilized) {
             initilized = true;
@@ -53,7 +53,7 @@ public class InterpValue implements INBTSerializable<NBTTagCompound> {
             this.target = target;
         }
     }
-    
+
     public void reset(double target) {
 	    this.previousCurrent = target;
         this.current = target;
@@ -74,11 +74,11 @@ public class InterpValue implements INBTSerializable<NBTTagCompound> {
             current -= speed;
         }
     }
-    
+
     public double getValueForRendering(float partialTicks) {
         return previousCurrent + (current - previousCurrent) * partialTicks;
     }
-    
+
     public double getCurrent() {
 	return current;
     }
@@ -101,14 +101,15 @@ public class InterpValue implements INBTSerializable<NBTTagCompound> {
         this.current = nbt.getDouble("current");
         this.previousCurrent = current;
     }
-    
+
     @SubscribeEvent
     public static void onTick(TickEvent event) {
         Side side = FMLCommonHandler.instance().getSide();
         if((event instanceof ClientTickEvent && side.isClient()) || (event instanceof ServerTickEvent && side.isServer())) {
+            synchronized (MARKED_REMOVE){
             INSTANCES.forEach(InterpValue::tickInterp);
             MARKED_REMOVE.forEach(INSTANCES::remove);
-            MARKED_REMOVE.clear();
+            MARKED_REMOVE.clear();}
         }
     }
 }
