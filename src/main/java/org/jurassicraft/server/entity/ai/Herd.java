@@ -299,7 +299,7 @@ public class Herd implements Iterable<DinosaurEntity> {
 
                     otherHerd.disband();
                 } else if (originalSize + 1 > this.herdType.getMaxHerdSize()) {
-                    if (GameRuleHandler.KILL_HERD_OUTCAST.getBoolean(this.leader.world) && this.herdType.getDinosaurType() == Dinosaur.DinosaurType.AGGRESSIVE) {
+                    if (this.leader != null && GameRuleHandler.KILL_HERD_OUTCAST.getBoolean(this.leader.world) && this.herdType.getDinosaurType() == Dinosaur.DinosaurType.AGGRESSIVE) {
                         for (DinosaurEntity entity : otherHerd) {
                             if (!this.enemies.contains(entity)) {
                                 this.enemies.add(entity);
