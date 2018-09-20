@@ -151,7 +151,6 @@ public class DisplayBlockItem extends Item {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
     	ItemStack stack = player.getHeldItem(hand);
         if (!this.isSkeleton(stack)) {

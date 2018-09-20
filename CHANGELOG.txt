@@ -2,3 +2,4 @@
 *Fixed that dinosaurs weren't rendered correctly in mob spawners
 *Fixed that decayable JC leaves are loosing that property after some time
 *Fixed a rare crash problem with the dart gun
+-Removed the JurassiCraft Iron Nugget
