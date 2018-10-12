@@ -273,20 +273,26 @@ public abstract class CarEntity extends Entity implements MultiSeatedEntity {
 
     private void resetFlyTicks(EntityPlayerMP entity) {
     	entity.fallDistance = 0F;
-		 Field field = null;
-		 try {
-			 if((Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment")){
-			 field = NetHandlerPlayServer.class.getDeclaredField("vehicleFloatingTickCount");
-		 }else{
-			 field = NetHandlerPlayServer.class.getDeclaredField("field_184346_E");
-		 }
+		Field field = null;
+		Field field2 = null;
+		try {
+			if ((Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment")) {
+				field = NetHandlerPlayServer.class.getDeclaredField("vehicleFloatingTickCount");
+				field2 = NetHandlerPlayServer.class.getDeclaredField("floatingTickCount");
+			} else {
+				field = NetHandlerPlayServer.class.getDeclaredField("field_184346_E");
+				field2 = NetHandlerPlayServer.class.getDeclaredField("field_147365_f");
+			}
 
-            field.setAccessible(true);
-            field.set(entity.connection, -1);
-		 }catch(NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			 e.printStackTrace();
-		 }
-    }
+			field.setAccessible(true);
+			field.set(entity.connection, 0);
+			field2.setAccessible(true);
+			field2.set(entity.connection, 0);
+
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
     
 	@Override
 	public void fall(float distance, float damageMultiplier) {

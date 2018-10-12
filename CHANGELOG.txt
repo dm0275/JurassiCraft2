@@ -3,4 +3,9 @@
 *Fixed that decayable JC leaves are loosing that property after some time
 *Fixed a rare crash problem with the dart gun
 -Removed the JurassiCraft Iron Nugget
++Gypsum stone blocks are affected by fortune when destroyed
+*Adjusted the chances of rare drops from plant fossil blocks
++Added two new config options for goat spawning and the rarity of raptor paddocks
+*dinosaur meat without DNA will no longer be processed by the DNA extractor
+*Fixed an incompatibility with the Ice and Fire mod
 *Improved the helicopter's behaviour (Kicks for flying etc.)
