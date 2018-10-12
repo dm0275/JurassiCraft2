@@ -51,21 +51,25 @@ public class TranquilizerDartEntity extends EntityThrowable implements IEntityAd
     	    -this.motionZ / 20.0D);
     }
 
-    @Override
-    protected void onImpact(RayTraceResult result) {
-	Item item = stack.getItem();
-	if(result.entityHit instanceof DinosaurEntity) {
-	    if(item instanceof Dart) {
-			((Dart)item).getConsumer().accept((DinosaurEntity)result.entityHit, stack);
-	    } else {
-			JurassiCraft.getLogger().error("Expected Dart Item, got {} ", item.getRegistryName());
-	    }
+	@Override
+	protected void onImpact(RayTraceResult result) {
+		if (stack == null)
+			return;
+		Item item = stack.getItem();
+		if (item != null && item instanceof Dart) {
+			if (result.entityHit instanceof DinosaurEntity) {
+				if (item instanceof Dart) {
+					((Dart) item).getConsumer().accept((DinosaurEntity) result.entityHit, stack);
+				} else {
+					JurassiCraft.getLogger().error("Expected Dart Item, got {} ", item.getRegistryName());
+				}
+			}
+			if (!this.world.isRemote) {
+				this.world.setEntityState(this, (byte) 3);
+				this.setDead();
+			}
+		}
 	}
-	if (!this.world.isRemote) {
-            this.world.setEntityState(this, (byte)3);
-            this.setDead();
-        }
-    }
 
     @Override
     public void writeSpawnData(ByteBuf buffer) {
