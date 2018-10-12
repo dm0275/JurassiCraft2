@@ -1,5 +1,6 @@
 package org.jurassicraft.server.event;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -18,6 +19,7 @@ import net.minecraft.world.gen.feature.WorldGenMinable;
 import net.minecraft.world.storage.loot.LootTable;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.event.LootTableLoadEvent;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.terraingen.DecorateBiomeEvent;
 import net.minecraftforge.event.world.BlockEvent;
@@ -34,6 +36,7 @@ import org.jurassicraft.server.entity.vehicle.CarEntity;
 import org.jurassicraft.server.entity.vehicle.HelicopterEntity;
 import org.jurassicraft.server.item.ItemHandler;
 import org.jurassicraft.server.util.GameRuleHandler;
+import org.jurassicraft.server.util.JCBlockVine;
 import org.jurassicraft.server.world.WorldGenCoal;
 import org.jurassicraft.server.world.loot.Loot;
 
@@ -42,10 +45,21 @@ import java.util.List;
 import java.util.Random;
 
 public class ServerEventHandler {
+	
+	public static ArrayList<Block> vinesException = new ArrayList<>();
+	
+	public ServerEventHandler() {
+		this.vinesException.add(BlockHandler.CLEAR_GLASS);
+	}
 
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load event) {
         GameRuleHandler.register(event.getWorld());
+    }
+    
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void blockRegistry(RegistryEvent.Register<Block> e) {
+    	e.getRegistry().register(new JCBlockVine().setRegistryName("minecraft", "vine"));
     }
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
@@ -68,8 +82,8 @@ public class ServerEventHandler {
             if (BiomeDictionary.hasType(biome, BiomeDictionary.Type.FOREST) || BiomeDictionary.hasType(biome, BiomeDictionary.Type.CONIFEROUS) || BiomeDictionary.hasType(biome, BiomeDictionary.Type.SWAMP) || BiomeDictionary.hasType(biome, BiomeDictionary.Type.JUNGLE)) {
                 if (rand.nextInt(8) == 0) {
                     BlockPos topBlock = world.getTopSolidOrLiquidBlock(pos);
-
-                    if (world.getBlockState(topBlock.down()).isOpaqueCube() && !world.getBlockState(topBlock).getMaterial().isLiquid()) {
+                    IBlockState state = world.getBlockState(topBlock);
+                    if (world.getBlockState(topBlock.down()).isOpaqueCube() && !state.getMaterial().isLiquid() && !(state.getBlock() == Blocks.GRASS || state.getBlock() == Blocks.DIRT || state.getBlock() == Blocks.FARMLAND)) {
                         world.setBlockState(topBlock, BlockHandler.MOSS.getDefaultState(), 2 | 16);
                     }
                 }
@@ -80,7 +94,8 @@ public class ServerEventHandler {
             if (BiomeDictionary.hasType(biome, BiomeDictionary.Type.SWAMP) || BiomeDictionary.hasType(biome, BiomeDictionary.Type.JUNGLE)) {
                 if (rand.nextInt(8) == 0) {
                     BlockPos topBlock = world.getTopSolidOrLiquidBlock(pos);
-                    if (world.getBlockState(topBlock.down()).isOpaqueCube() && !world.getBlockState(topBlock).getMaterial().isLiquid()) {
+                    IBlockState state = world.getBlockState(topBlock);
+                    if (world.getBlockState(topBlock.down()).isOpaqueCube() && !state.getMaterial().isLiquid() && !(state.getBlock() == Blocks.GRASS || state.getBlock() == Blocks.DIRT || state.getBlock() == Blocks.FARMLAND)) {
                         world.setBlockState(topBlock.up(), BlockHandler.WEST_INDIAN_LILAC.getDefaultState(), 2 | 16);
                         world.setBlockState(topBlock, BlockHandler.WEST_INDIAN_LILAC.getDefaultState().withProperty(DoublePlantBlock.HALF, DoublePlantBlock.BlockHalf.LOWER), 2 | 16);
                     }
@@ -91,7 +106,8 @@ public class ServerEventHandler {
         if (BiomeDictionary.hasType(biome, BiomeDictionary.Type.JUNGLE)) {
             if (rand.nextInt(8) == 0) {
                 BlockPos topBlock = world.getTopSolidOrLiquidBlock(pos);
-                if (world.getBlockState(topBlock.down()).isOpaqueCube() && !world.getBlockState(topBlock).getMaterial().isLiquid()) {
+            	IBlockState state = world.getBlockState(topBlock);
+                if (world.getBlockState(topBlock.down()).isOpaqueCube() && !state.getMaterial().isLiquid() && !(state.getBlock() == Blocks.GRASS || state.getBlock() == Blocks.DIRT || state.getBlock() == Blocks.FARMLAND)) {
                     world.setBlockState(topBlock.up(), BlockHandler.HELICONIA.getDefaultState(), 2 | 16);
                     world.setBlockState(topBlock, BlockHandler.HELICONIA.getDefaultState().withProperty(DoublePlantBlock.HALF, DoublePlantBlock.BlockHalf.LOWER), 2 | 16);
                 }
