@@ -5,7 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
@@ -19,14 +19,13 @@ import org.jurassicraft.server.dinosaur.Dinosaur;
 import org.jurassicraft.server.entity.DinosaurEntity;
 import org.jurassicraft.server.entity.EntityHandler;
 import org.jurassicraft.server.item.block.AncientDoorItem;
-//import org.jurassicraft.server.item.vehicles.HelicopterItem;
-//import org.jurassicraft.server.item.vehicles.HelicopterModuleItem;
 import org.jurassicraft.server.item.vehicles.HelicopterItem;
 import org.jurassicraft.server.tab.TabHandler;
 import org.jurassicraft.server.util.RegistryHandler;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
@@ -36,6 +35,7 @@ import net.minecraft.item.ItemSeedFood;
 import net.minecraft.item.ItemSeeds;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.SPacketChat;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionUtils;
 import net.minecraftforge.oredict.OreDictionary;
@@ -92,7 +92,10 @@ public class ItemHandler {
                 }
             	}else {
             		if(!interaction.getTarget().world.isRemote) {
-            			interaction.getPlayer().sendStatusMessage(new TextComponentString(TextFormatting.RED + I18n.format("growth_serum.denied.name")), true);
+            			EntityPlayerMP player = (EntityPlayerMP) interaction.getPlayer();
+            			TextComponentTranslation growthTranslation = new TextComponentTranslation("item.growth_serum.denied");
+            			growthTranslation.getStyle().setColor(TextFormatting.RED);
+                        player.connection.sendPacket(new SPacketChat(growthTranslation, ChatType.GAME_INFO));
             		}
             		return false;
             	}
