@@ -346,7 +346,9 @@ public enum RenderingHandler {
 
         for (Dinosaur dinosaur : EntityHandler.getDinosaurs().values()) {
             int meta = EntityHandler.getDinosaurId(dinosaur);
-
+            
+            registerItemRenderer(DISPLAY_BLOCK_ITEM, DISPLAY_BLOCK_ITEM.getMetadata(meta, 0, false), "action_figure/action_figure_" + dinosaur.getName());
+            
             String formattedName = dinosaur.getName().toLowerCase(Locale.ENGLISH).replaceAll(" ", "_");
 
             for (Map.Entry<String, FossilItem> entry : ItemHandler.FOSSILS.entrySet()) {
@@ -368,7 +370,6 @@ public enum RenderingHandler {
             registerItemRenderer(DINOSAUR_STEAK, meta, "meat/steak_" + formattedName);
             registerItemRenderer(SOFT_TISSUE, meta, "soft_tissue/soft_tissue_" + formattedName);
             registerItemRenderer(SYRINGE, meta, "syringe/syringe_" + formattedName);
-            //registerItemRenderer(ACTION_FIGURE, meta, "action_figure/action_figure_" + formattedName);
 
             if (!dinosaur.givesDirectBirth()) {
                 registerItemRenderer(EGG, meta, "egg/egg_" + formattedName);
@@ -432,7 +433,7 @@ public enum RenderingHandler {
 
     public void preInit() {
         TabulaModelHandler.INSTANCE.addDomain(JurassiCraft.MODID);
-        ItemHandler.DISPLAY_BLOCK.initModels(EntityHandler.getDinosaurs().values(), this);
+        ItemHandler.DISPLAY_BLOCK_ITEM.initModels(EntityHandler.getDinosaurs().values(), this);
 
         registerRenderInfo(EntityHandler.BRACHIOSAURUS, new BrachiosaurusAnimator(), 1.5F);
         registerRenderInfo(EntityHandler.COELACANTH, new CoelacanthAnimator(), 0.0F);

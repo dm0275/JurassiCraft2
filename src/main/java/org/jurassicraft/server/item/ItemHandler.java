@@ -151,7 +151,7 @@ public class ItemHandler {
     public static final AncientRecordItem TROODONS_AND_RAPTORS_DISC = new AncientRecordItem("troodons_and_raptors", SoundHandler.TROODONS_AND_RAPTORS);
     public static final AncientRecordItem DONT_MOVE_A_MUSCLE_DISC = new AncientRecordItem("dont_move_a_muscle", SoundHandler.DONT_MOVE_A_MUSCLE);
 
-    public static final DisplayBlockItem DISPLAY_BLOCK = new DisplayBlockItem();
+    public static final DisplayBlockItem DISPLAY_BLOCK_ITEM = new DisplayBlockItem();
 
     public static final BasicItem AMBER_KEYCHAIN = new BasicItem(TabHandler.DECORATIONS);
     public static final BasicItem AMBER_CANE = new BasicItem(TabHandler.DECORATIONS);
@@ -373,7 +373,7 @@ public class ItemHandler {
         registerItem(AMBER_KEYCHAIN, "Amber Keychain");
         registerItem(MR_DNA_KEYCHAIN, "Mr DNA Keychain");
 
-        registerItem(DISPLAY_BLOCK, "Display Block Item");
+        registerItem(DISPLAY_BLOCK_ITEM, "Display Block Item");
 
        registerItem(DINO_SCANNER, "Dino Scanner");
 
