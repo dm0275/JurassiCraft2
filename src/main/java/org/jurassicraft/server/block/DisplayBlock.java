@@ -93,7 +93,7 @@ public class DisplayBlock extends BlockContainer {
 
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return ItemHandler.DISPLAY_BLOCK;
+        return ItemHandler.DISPLAY_BLOCK_ITEM;
     }
 
     @Override
@@ -143,7 +143,7 @@ public class DisplayBlock extends BlockContainer {
 
     public ItemStack getItemFromTile(DisplayBlockEntity tile) {
         int metadata = DisplayBlockItem.getMetadata(EntityHandler.getDinosaurId(tile.getEntity().getDinosaur()), tile.isMale() ? 1 : 2, tile.isSkeleton());
-        return new ItemStack(ItemHandler.DISPLAY_BLOCK, 1, metadata);
+        return new ItemStack(ItemHandler.DISPLAY_BLOCK_ITEM, 1, metadata);
     }
 
     @Override
