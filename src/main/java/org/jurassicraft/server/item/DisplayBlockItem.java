@@ -46,7 +46,7 @@ public class DisplayBlockItem extends Item {
     public void initModels(Collection<Dinosaur> dinos, RenderingHandler renderer) {
         for (Dinosaur dino : dinos) {
             int dex = EntityHandler.getDinosaurId(dino);
-            String dinoName = dino.getName().toLowerCase(Locale.ENGLISH).replaceAll(" ", "_");
+            String dinoName = dino.getIdentifier().getResourcePath();
             renderer.registerItemRenderer(this, getMetadata(dex, 0, false), "action_figure/action_figure_" + dinoName);
             renderer.registerItemRenderer(this, getMetadata(dex, 1, false), "action_figure/action_figure_" + dinoName);
             renderer.registerItemRenderer(this, getMetadata(dex, 2, false), "action_figure/action_figure_" + dinoName);
