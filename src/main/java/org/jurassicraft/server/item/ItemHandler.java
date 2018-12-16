@@ -302,7 +302,7 @@ public class ItemHandler {
         for (Map.Entry<Integer, Dinosaur> entry : EntityHandler.getDinosaurs().entrySet()) {
             Dinosaur dinosaur = entry.getValue();
 
-            String[] boneTypes = dinosaur.getBones();
+            String[] boneTypes = dinosaur.getMetadata().getBones();
 
             for (String boneType : boneTypes) {
                 if (!(dinosaur instanceof Hybrid)) {
