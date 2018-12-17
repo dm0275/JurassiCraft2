@@ -5,3 +5,4 @@
 *Fixed syncing issues of the cultivator
 *Fixed Growth Serum issues
 *Fixed an incompatibility with Chisels & Bits
++Added cleaning animation to cleaning station
