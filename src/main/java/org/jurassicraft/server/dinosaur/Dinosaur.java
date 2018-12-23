@@ -42,7 +42,6 @@ import org.jurassicraft.server.tabula.TabulaModelHelper;
 import org.jurassicraft.server.util.LangUtils;
 
 import com.google.common.io.Files;
-import com.sun.deploy.uitoolkit.impl.fx.ui.resources.ResourceManager;
 
 import net.ilexiconn.llibrary.client.model.tabula.container.TabulaCubeContainer;
 import net.ilexiconn.llibrary.client.model.tabula.container.TabulaModelContainer;
