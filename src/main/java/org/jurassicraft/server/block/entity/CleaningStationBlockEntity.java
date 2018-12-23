@@ -66,9 +66,8 @@ public class CleaningStationBlockEntity extends TileEntityLockable implements IT
 
 	private boolean prevIsCleaning;
 
-	@SideOnly(Side.CLIENT)
 	public float cleaingRotation = 0;
-	@SideOnly(Side.CLIENT)
+
 	public float rotationAmount = 0;
 
 	@SideOnly(Side.CLIENT)
@@ -282,6 +281,7 @@ public class CleaningStationBlockEntity extends TileEntityLockable implements IT
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void spawnClientWaterParticles() {
 		IBlockState state = this.world.getBlockState(this.getPos());
 		EnumFacing value = state.getValue(OrientedBlock.FACING);

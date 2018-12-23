@@ -355,6 +355,7 @@ public abstract class VehicleEntity extends Entity implements MultiSeatedEntity 
 
 	@Override
 	public void onEntityUpdate() {
+		
 		if (!world.isRemote) {
 			if (this.getHealth() < 0 && !this.isDead) {
 				this.setDead();
@@ -367,6 +368,13 @@ public abstract class VehicleEntity extends Entity implements MultiSeatedEntity 
 				}
 			}
 
+		}
+		
+		for (int i = 0; i < this.seats.length; i++) {
+			Entity e = this.getEntityInSeat(i);
+			if(e != null && e instanceof EntityPlayerMP) {
+    			resetFlyTicks((EntityPlayerMP) e);
+    		}
 		}
 
 		if (this.getSpeed() == Speed.FAST) {
@@ -673,8 +681,7 @@ public abstract class VehicleEntity extends Entity implements MultiSeatedEntity 
 					this.dataManager.set(RECORD_ITEM, stack);
 					player.setHeldItem(hand, currentStack);
 					if (!stack.isEmpty()) {
-						JurassiCraft.NETWORK_WRAPPER
-								.sendToAll(new CarEntityPlayRecord(this, (ItemRecord) stack.getItem()));
+						JurassiCraft.NETWORK_WRAPPER.sendToAll(new CarEntityPlayRecord(this, stack));
 					}
 				}
 			} else if (!player.isSneaking()) {
@@ -711,7 +718,8 @@ public abstract class VehicleEntity extends Entity implements MultiSeatedEntity 
 			if (this.getControllingPassenger() == null) {
 				if (this.getControlState() != (byte) 0) {
 					this.setControlState((byte) 0);
-					JurassiCraft.NETWORK_WRAPPER.sendToServer(new UpdateVehicleControlMessage(this));
+					if(this.world.isRemote)
+						JurassiCraft.NETWORK_WRAPPER.sendToServer(new UpdateVehicleControlMessage(this));//asd
 				}
 			}
 		}
