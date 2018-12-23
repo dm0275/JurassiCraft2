@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.jurassicraft.JurassiCraft;
-import org.jurassicraft.client.entity.DummyCameraEntity;
+import org.jurassicraft.client.model.animation.EntityAnimation;
+import org.jurassicraft.server.api.Animatable;
 import org.jurassicraft.server.api.Hybrid;
 import org.jurassicraft.server.conf.JurassiCraftConfig;
 import org.jurassicraft.server.dinosaur.BrachiosaurusDinosaur;
@@ -30,11 +32,19 @@ import org.jurassicraft.server.entity.item.PaddockSignEntity;
 import org.jurassicraft.server.entity.vehicle.FordExplorerEntity;
 import org.jurassicraft.server.entity.vehicle.HelicopterEntity;
 import org.jurassicraft.server.entity.vehicle.JeepWranglerEntity;
+import org.jurassicraft.server.message.SpecialAnimationMessage;
 import org.jurassicraft.server.period.TimePeriod;
 
+import net.ilexiconn.llibrary.LLibrary;
+import net.ilexiconn.llibrary.server.animation.Animation;
+import net.ilexiconn.llibrary.server.animation.IAnimatedEntity;
+import net.ilexiconn.llibrary.server.network.AnimationMessage;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.fml.common.ProgressManager;
@@ -118,7 +128,6 @@ public class EntityHandler {
 
         registerEntity(DinosaurEggEntity.class, "Dinosaur Egg");
         registerEntity(HelicopterEntity.class, "Helicopter base");
-        //registerEntity(DummyCameraEntity.class, "DummyCameraEntity");
     }
 
     private static void initDinosaurs() {
@@ -257,5 +266,17 @@ public class EntityHandler {
 
     public static int getHighestID() {
         return highestID;
+    }
+    
+    public static <T extends Entity & Animatable> void sendSpecialAnimationMessage(T entity, Animation animation, byte variant) {
+        if (entity.world.isRemote) {
+            return;
+        }
+        for (EntityPlayer trackingPlayer : ((WorldServer) entity.world).getEntityTracker().getTrackingPlayers(entity)) {
+      
+     //   entity.setAnimation(animation);
+       
+        	JurassiCraft.NETWORK_WRAPPER.sendTo(new SpecialAnimationMessage(entity.getEntityId(), ArrayUtils.indexOf(entity.getAnimations(), animation), variant), (EntityPlayerMP) trackingPlayer);
+        }
     }
 }
