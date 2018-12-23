@@ -56,6 +56,7 @@ public class ServerEventHandler {
 	
 	public ServerEventHandler() {
 		this.vinesException.add(BlockHandler.CLEAR_GLASS);
+		this.vinesException.add(BlockHandler.REINFORCED_GLASS);
 	}
 
     @SubscribeEvent

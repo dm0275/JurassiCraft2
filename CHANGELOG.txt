@@ -6,5 +6,8 @@
 *Fixed Growth Serum issues
 *Fixed an incompatibility with Chisels & Bits
 +Added cleaning animation to cleaning station
++Added clear glass block panes
++Added reinforced glass block
++Added reinforced glass block panes
 +Added Digsite
 +Added paleontologist villager
