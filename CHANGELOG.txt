@@ -15,3 +15,5 @@
 +Added reinforced glass block panes
 +Added Digsite
 +Added paleontologist villager
++Revamped paddock signs
+*Fixed car music ability

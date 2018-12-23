@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemRecord;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -20,27 +21,26 @@ import org.jurassicraft.server.entity.vehicle.VehicleEntity;
 public class CarEntityPlayRecord extends AbstractMessage<CarEntityPlayRecord> {
 
     private int entityId;
-    private SoundEvent soundEvent;
+    private ItemStack record;
 
-    @SuppressWarnings("unused")
     public CarEntityPlayRecord(){}
 
-    public CarEntityPlayRecord(VehicleEntity entity, ItemRecord record){
-        soundEvent = record.getSound();
-        entityId = entity.getEntityId();
+    public CarEntityPlayRecord(VehicleEntity entity, ItemStack record){
+        this.record = record;
+        this.entityId = entity.getEntityId();
     }
 
 
     @Override
     public void toBytes(ByteBuf buf) {
-        buf.writeInt(entityId);
-        ByteBufUtils.writeRegistryEntry(buf, soundEvent);
+        buf.writeInt(this.entityId);
+        ByteBufUtils.writeItemStack(buf, this.record);
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
         entityId = buf.readInt();
-        soundEvent = ByteBufUtils.readRegistryEntry(buf, ForgeRegistries.SOUND_EVENTS);
+        record = ByteBufUtils.readItemStack(buf);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class CarEntityPlayRecord extends AbstractMessage<CarEntityPlayRecord> {
             if(carEntity.sound != null) {
                 carEntity.sound.setFinished();
             }
-            carEntity.sound = new EntitySound<>(carEntity, message.soundEvent, SoundCategory.RECORDS, car -> car.getItem().getItem() instanceof ItemRecord && ((ItemRecord)car.getItem().getItem()).getSound() == message.soundEvent);
+            carEntity.sound = new EntitySound<>(carEntity, ((ItemRecord) message.record.getItem()).getSound(), SoundCategory.RECORDS, car -> car.getItem().getItem() instanceof ItemRecord && ((ItemRecord)car.getItem().getItem()).getSound() == ((ItemRecord) message.record.getItem()).getSound());
             client.getSoundHandler().playSound(carEntity.sound);
         }
     }

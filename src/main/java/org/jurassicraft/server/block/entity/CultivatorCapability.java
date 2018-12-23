@@ -96,21 +96,21 @@ public class CultivatorCapability implements IItemHandlerModifiable {
 	@Override
 	@Nonnull
 	public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+
 		CultivatorBlockEntity tile = getMainTile();
 		if (tile == null)
 			return stack;
 		
 		int starting = stack.getCount();
 		ItemStack retValue = tile.getCapabilityHandler().insertItem(slot, stack, simulate);
-	
-		
-	if (retValue.getCount() != starting && !simulate) {
+		if (retValue.getCount() != starting && !simulate) {
 			tile = getMainTile();
 			if (tile != null)
 				tile.markDirty();
 		}
 
 		return retValue;
+
 	}
 
 	@Override
