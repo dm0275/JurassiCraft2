@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Random;
 
 public class Loot {
+
 	public static final ResourceLocation GENETICIST_HOUSE_CHEST = new ResourceLocation(JurassiCraft.MODID,
 			"structure/geneticist_house");
 
