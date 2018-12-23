@@ -326,7 +326,7 @@ public class Loot {
 				DisplayBlockItem s = (DisplayBlockItem) stack.getItem();
 				List<Dinosaur> dinosaurs = EntityHandler.getRegisteredDinosaurs();
 				Dinosaur dinosaur = dinosaurs.get(rand.nextInt(dinosaurs.size()));
-				stack.setItemDamage(s.getMetadata(EntityHandler.getDinosaurId(dinosaur), 0, false));
+				stack.setItemDamage(s.getMetadata(EntityHandler.getDinosaurId(dinosaur), (byte) 0, 0, false));
 				return stack;
 			}
 			// List<Dinosaur> dinosaurs = EntityHandler.getRegisteredDinosaurs();
