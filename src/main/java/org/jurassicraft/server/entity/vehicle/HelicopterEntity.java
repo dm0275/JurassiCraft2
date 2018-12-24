@@ -201,7 +201,7 @@ public class HelicopterEntity extends VehicleEntity {
 			}
 		}
 
-		if (this.world.isRemote) {
+		if (this.world.isRemote && !isFlying) {
 			float damage = MathHelper.ceil((distance - 3F) * damageMultiplier);
 			if (damage > 0) {
 				float tmp = this.getHealth() - (float) (damage * 1.25F);
