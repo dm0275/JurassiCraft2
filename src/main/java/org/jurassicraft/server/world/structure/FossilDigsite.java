@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Random;
 
 public class FossilDigsite extends StructureVillagePieces.Village {
+	
 	public static final int WIDTH = 8;
 	public static final int HEIGHT = 13;
 	public static final int DEPTH = 7;
@@ -77,23 +78,19 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 		} else {
 			switch (facing) {
 			case SOUTH:
-				// this.mirror = Mirror.LEFT_RIGHT;
 				this.mirror = Mirror.NONE;
 				this.rotation = Rotation.NONE;
 				break;
 			case WEST:
-				// this.mirror = Mirror.LEFT_RIGHT;
 				this.mirror = Mirror.NONE;
 				this.rotation = Rotation.CLOCKWISE_90;
 				break;
 			case EAST:
-				// this.mirror = Mirror.NONE;
 				this.mirror = Mirror.LEFT_RIGHT;
 				this.rotation = Rotation.CLOCKWISE_90;
 				break;
 			default:
-				// this.mirror = Mirror.NONE;
-				this.mirror = Mirror.LEFT_RIGHT;
+				this.mirror = Mirror.FRONT_BACK;
 				this.rotation = Rotation.NONE;
 			}
 		}
@@ -101,8 +98,7 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 
 	@Override
 	public boolean addComponentParts(World world, Random random, StructureBoundingBox bounds) {
-		PlacementSettings settings = new PlacementSettings().setRotation(this.rotation).setMirror(this.mirror)
-				.setIgnoreEntities(true);
+		PlacementSettings settings = new PlacementSettings().setRotation(this.rotation).setMirror(this.mirror).setIgnoreEntities(true);
 		if (this.averageGroundLvl < 0) {
 			this.averageGroundLvl = this.getAverageGroundLevel(world, bounds);
 			if (this.averageGroundLvl < 0) {
@@ -132,11 +128,8 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 
 		int ox = (this.rotation == Rotation.CLOCKWISE_90 && this.mirror == Mirror.NONE) ? 6 : 0;
 		int oz = (this.rotation == Rotation.NONE && this.mirror == Mirror.LEFT_RIGHT) ? 6 : 0;
-		BlockPos lowerCorner = new BlockPos(this.boundingBox.minX + ox, this.boundingBox.minY,
-				this.boundingBox.minZ + oz);
-		settings.setBoundingBox(
-				new StructureBoundingBox(this.boundingBox.minX + ox, this.boundingBox.minY, this.boundingBox.minZ + oz,
-						this.boundingBox.maxX + ox, this.boundingBox.maxZ, this.boundingBox.maxZ + oz));
+		BlockPos lowerCorner = new BlockPos(this.boundingBox.minX + ox, this.boundingBox.minY, this.boundingBox.minZ + oz);
+		settings.setBoundingBox(new StructureBoundingBox(this.boundingBox.minX + ox, this.boundingBox.minY, this.boundingBox.minZ + oz, this.boundingBox.maxX + ox, this.boundingBox.maxZ, this.boundingBox.maxZ + oz));
 
 		
 		Map<BlockPos, String> dataBlocks2 = template.getDataBlocks(lowerCorner, settings);
@@ -164,10 +157,8 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 
 	private void spawnPaleontologist(World world, Random random) {
 		if (random.nextInt(2) == 0) {
-			EntityVillager paleontologist = new EntityVillager(world,
-					VillagerRegistry.getId(VillagerHandler.PALEONTOLOGIST));
-			paleontologist.setPosition(boundingBox.minX + (boundingBox.maxX - boundingBox.minX) / 2,
-					boundingBox.minY + 3, boundingBox.minZ + (boundingBox.maxZ - boundingBox.minZ) / 2);
+			EntityVillager paleontologist = new EntityVillager(world, VillagerRegistry.getId(VillagerHandler.PALEONTOLOGIST));
+			paleontologist.setPosition(boundingBox.minX + (boundingBox.maxX - boundingBox.minX) / 2, boundingBox.minY + 3, boundingBox.minZ + (boundingBox.maxZ - boundingBox.minZ) / 2);
 			world.spawnEntity(paleontologist);
 		}
 	}
@@ -184,8 +175,7 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 		return defaultBlocks;
 	}
 
-	private void setDynamicBlocks(Map<BlockPos, String> dataBlocks, World world, Random random,
-			HashMap<BlockPos, IBlockState> defaultBlocks) {
+	private void setDynamicBlocks(Map<BlockPos, String> dataBlocks, World world, Random random, HashMap<BlockPos, IBlockState> defaultBlocks) {
 		int dinoType = random.nextInt(FossilBlock.VARIANT.getAllowedValues().size());
 		// System.out.println("Should generate! " + dataBlocks.size() + " " +
 		// this.rotation + " " + this.mirror);
@@ -193,8 +183,7 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 			int spawnFossile = 0;
 			switch (type) {
 			case "FossileChest":
-				world.setBlockState(pos, Blocks.CHEST.getDefaultState()
-						.withRotation(this.rotation.add(Rotation.CLOCKWISE_90)).withMirror(this.mirror));
+				world.setBlockState(pos, Blocks.CHEST.getDefaultState().withRotation(this.rotation.add(Rotation.COUNTERCLOCKWISE_90)).withMirror(this.mirror));
 				((TileEntityChest) world.getTileEntity(pos)).setLootTable(Loot.FOSSIL_DIGSITE_LOOT, random.nextLong());
 				break;
 			case "Log":
@@ -225,8 +214,7 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 				world.setBlockState(pos, Blocks.TORCH.getDefaultState());
 				break;
 			case "Ladder":
-				world.setBlockState(pos, Blocks.LADDER.getDefaultState()
-						.withRotation(this.rotation.add(Rotation.CLOCKWISE_180)).withMirror(this.mirror));
+				world.setBlockState(pos, Blocks.LADDER.getDefaultState().withRotation(this.rotation.add(Rotation.CLOCKWISE_180)).withMirror(this.mirror));
 				break;
 			case "Stairs":
 				if (this.rotation == Rotation.CLOCKWISE_90 && this.mirror == Mirror.LEFT_RIGHT) {
@@ -278,8 +266,7 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 				if (spawnFossile == 0) {
 //					world.setBlockState(pos, defaultBlocks.get(pos));
 				} else {
-					world.setBlockState(pos,
-							BlockHandler.FOSSILS.get(0).getDefaultState().withProperty(FossilBlock.VARIANT, dinoType));
+					world.setBlockState(pos, BlockHandler.FOSSILS.get(0).getDefaultState().withProperty(FossilBlock.VARIANT, dinoType));
 				}
 				break;
 			case "Shovel":
@@ -287,10 +274,11 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 				AncientItemHoldingBlockEntity tile = (AncientItemHoldingBlockEntity) world.getTileEntity(pos);
 				if (tile != null) {
 					int shovelYN = random.nextInt(2);
+					int durability = random.nextInt(229) + 20;
 					if (shovelYN == 1) {
-						tile.setDisplayItemStack(new ItemStack(Items.IRON_SHOVEL, 1));
+						tile.setDisplayItemStack(new ItemStack(Items.IRON_SHOVEL, 1, durability));
 					} else {
-						tile.setDisplayItemStack(new ItemStack(Items.IRON_PICKAXE, 1));
+						tile.setDisplayItemStack(new ItemStack(Items.IRON_PICKAXE, 1, durability));
 					}
 					tile.setDisplayItemYOffset(0.5f);
 				}
