@@ -183,6 +183,7 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 			int spawnFossile = 0;
 			switch (type) {
 			case "FossileChest":
+				//Rework the data blocks position
 				world.setBlockState(pos, Blocks.CHEST.getDefaultState().withRotation(this.rotation.add(Rotation.COUNTERCLOCKWISE_90)).withMirror(this.mirror));
 				((TileEntityChest) world.getTileEntity(pos)).setLootTable(Loot.FOSSIL_DIGSITE_LOOT, random.nextLong());
 				break;
@@ -209,12 +210,6 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 				break;
 			case "Fence":
 				world.setBlockState(pos, this.getBiomeSpecificBlockState(Blocks.OAK_FENCE.getDefaultState()));
-				break;
-			case "Torch":
-				world.setBlockState(pos, Blocks.TORCH.getDefaultState());
-				break;
-			case "Ladder":
-				world.setBlockState(pos, Blocks.LADDER.getDefaultState().withRotation(this.rotation.add(Rotation.CLOCKWISE_180)).withMirror(this.mirror));
 				break;
 			case "Stairs":
 				if (this.rotation == Rotation.CLOCKWISE_90 && this.mirror == Mirror.LEFT_RIGHT) {
