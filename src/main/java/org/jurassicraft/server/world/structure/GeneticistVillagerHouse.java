@@ -28,6 +28,7 @@ import org.jurassicraft.server.world.loot.Loot;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class GeneticistVillagerHouse extends StructureVillagePieces.Village {
     public static final int WIDTH = 8;
@@ -116,31 +117,39 @@ public class GeneticistVillagerHouse extends StructureVillagePieces.Village {
         template.addBlocksToWorldChunk(world, lowerCorner, settings);
         this.count++;
         Map<BlockPos, String> dataBlocks = template.getDataBlocks(lowerCorner, settings);
+        Map<BlockPos, String> dataBlocksClone = dataBlocks.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         dataBlocks.forEach((pos, type) -> {
             switch (type) {
                 case "GeneticistChest":
                     world.setBlockState(pos, Blocks.CHEST.getDefaultState().withRotation(this.rotation.add(Rotation.CLOCKWISE_90)).withMirror(this.mirror));
                     ((TileEntityChest) world.getTileEntity(pos)).setLootTable(Loot.GENETICIST_HOUSE_CHEST, random.nextLong());
+                    dataBlocksClone.remove(pos);
                     break;
                 case "GeneticistMachine":
                     if (random.nextInt(4) == 0) {
                         world.setBlockState(pos, MACHINES[random.nextInt(MACHINES.length)].withRotation(this.rotation.add(Rotation.CLOCKWISE_90)).withMirror(this.mirror));
                     }
+                    dataBlocksClone.remove(pos);
                     break;
                 case "Log":
                     world.setBlockState(pos, this.getBiomeSpecificBlockState(Blocks.LOG.getDefaultState()));
+                    dataBlocksClone.remove(pos);
                     break;
                 case "Base":
                     world.setBlockState(pos, this.getBiomeSpecificBlockState(Blocks.COBBLESTONE.getDefaultState()));
+                    dataBlocksClone.remove(pos);
                     break;
                 case "BaseStairs":
                     world.setBlockState(pos, this.getBiomeSpecificBlockState(Blocks.STONE_STAIRS.getDefaultState().withRotation(this.rotation).withMirror(this.mirror)));
+                    dataBlocksClone.remove(pos);
                     break;
                 case "Wall":
                     world.setBlockState(pos, this.getBiomeSpecificBlockState(Blocks.PLANKS.getDefaultState()));
+                    dataBlocksClone.remove(pos);
                     break;
                 case "Fence":
                     world.setBlockState(pos, this.getBiomeSpecificBlockState(Blocks.OAK_FENCE.getDefaultState()));
+                    dataBlocksClone.remove(pos);
                     break;
                 case "FenceGate":
                     IBlockState gate;
@@ -156,6 +165,7 @@ public class GeneticistVillagerHouse extends StructureVillagePieces.Village {
                             break;
                     }
                     world.setBlockState(pos, gate.withRotation(this.rotation).withMirror(this.mirror));
+                    dataBlocksClone.remove(pos);
                     break;
                 case "StainedClay":
                     IBlockState state = this.getBiomeSpecificBlockState(Blocks.LOG.getDefaultState());
@@ -163,6 +173,7 @@ public class GeneticistVillagerHouse extends StructureVillagePieces.Village {
                         state = state.withProperty(BlockLog.LOG_AXIS, BlockLog.EnumAxis.Y);
                     }
                     world.setBlockState(pos, state);
+                    dataBlocksClone.remove(pos);
                     break;
                 case "Bricks":
                     IBlockState brick = Blocks.STONEBRICK.getDefaultState();
@@ -170,11 +181,12 @@ public class GeneticistVillagerHouse extends StructureVillagePieces.Village {
                         brick = Blocks.SANDSTONE.getDefaultState();
                     }
                     world.setBlockState(pos, brick);
+                    dataBlocksClone.remove(pos);
                     break;
             }
         });
 
-        dataBlocks.forEach((pos, type) -> {
+        dataBlocksClone.forEach((pos, type) -> {
             switch (type) {
                 case "Door":
                     world.setBlockState(pos, this.biomeDoor().getDefaultState().withRotation(this.rotation).withMirror(this.mirror));
@@ -190,6 +202,7 @@ public class GeneticistVillagerHouse extends StructureVillagePieces.Village {
                     break;
             }
         });
+        dataBlocksClone.clear();
         return true;
     }
 

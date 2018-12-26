@@ -34,22 +34,14 @@ import org.jurassicraft.server.entity.villager.VillagerHandler;
 import org.jurassicraft.server.entity.villager.ai.EntityAIResearchFossil;
 import org.jurassicraft.server.world.loot.Loot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class FossilDigsite extends StructureVillagePieces.Village {
-	
-	public static final int WIDTH = 8;
-	public static final int HEIGHT = 13;
-	public static final int DEPTH = 7;
-
-	private static final ResourceLocation STRUCTURE1 = new ResourceLocation(JurassiCraft.MODID, "fossildigsite_1");
-	private static final ResourceLocation STRUCTURE2 = new ResourceLocation(JurassiCraft.MODID, "fossildigsite_2");
-	private static final ResourceLocation STRUCTURE3 = new ResourceLocation(JurassiCraft.MODID, "fossildigsite_3");
-
-	private static ResourceLocation STRUCTURES = new ResourceLocation(JurassiCraft.MODID, "");
 
 	private int count;
 	private EnumFacing coordBaseMode;
@@ -60,14 +52,18 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 	public FossilDigsite() {
 	}
 
-	public FossilDigsite(StructureVillagePieces.Start start, Random random, int type, StructureBoundingBox bounds,
-			EnumFacing facing) {
+	public FossilDigsite(StructureVillagePieces.Start start, Random random, int type, StructureBoundingBox bounds, EnumFacing facing, int structureType) {
 		super(start, type);
 		this.setCoordBaseMode(facing);
 		this.boundingBox = bounds;
-		this.structureType = random.nextInt(100);
+		this.structureType = structureType;
 	}
 
+	private ResourceLocation getResource(final int type) {
+		
+		return new ResourceLocation(JurassiCraft.MODID, "fossildigsite_" + type);	
+	}
+	
 	@Override
 	public void setCoordBaseMode(EnumFacing facing) {
 		super.setCoordBaseMode(facing);
@@ -90,7 +86,7 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 				this.rotation = Rotation.CLOCKWISE_90;
 				break;
 			default:
-				this.mirror = Mirror.FRONT_BACK;
+				this.mirror = Mirror.LEFT_RIGHT;
 				this.rotation = Rotation.NONE;
 			}
 		}
@@ -106,39 +102,37 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 			}
 			settings.setIgnoreEntities(false);
 		}
-		this.boundingBox.offset(0, ((this.averageGroundLvl - this.boundingBox.maxY) + HEIGHT), 0);
+		this.boundingBox.offset(0, ((this.averageGroundLvl - this.boundingBox.maxY) + /*height*/13), 0);
 
-		if (structureType < 50) {
-			STRUCTURES = STRUCTURE3;
+		if (structureType == 3) {
 			BlockPos offset3 = Template.transformedBlockPos(settings, new BlockPos(0, -12, 0));
 			this.boundingBox.offset(offset3.getX(), offset3.getY(), offset3.getZ());
-		} else if (structureType < 80) {
-			STRUCTURES = STRUCTURE1;
+		} else if (structureType == 1) {
 			BlockPos offset1 = Template.transformedBlockPos(settings, new BlockPos(0, -6, 0));
 			this.boundingBox.offset(offset1.getX(), offset1.getY(), offset1.getZ());
-		} else {
-			STRUCTURES = STRUCTURE2;
+		} else if(structureType == 2){
 			BlockPos offset2 = Template.transformedBlockPos(settings, new BlockPos(0, -9, 0));
 			this.boundingBox.offset(offset2.getX(), offset2.getY(), offset2.getZ());
 		}
 
 		MinecraftServer server = world.getMinecraftServer();
 		TemplateManager templateManager = world.getSaveHandler().getStructureTemplateManager();
-		Template template = templateManager.getTemplate(server, STRUCTURES);
+		Template template = templateManager.getTemplate(server, getResource(this.structureType));
+		
+		int sizeRot = (this.structureType == 3) ? 8 : this.structureType == 2 ? 7 : 6;
 
-		int ox = (this.rotation == Rotation.CLOCKWISE_90 && this.mirror == Mirror.NONE) ? 6 : 0;
-		int oz = (this.rotation == Rotation.NONE && this.mirror == Mirror.LEFT_RIGHT) ? 6 : 0;
+		int ox = (this.rotation == Rotation.CLOCKWISE_90 && this.mirror == Mirror.NONE) ? sizeRot : 0;
+		int oz = (this.rotation == Rotation.NONE && this.mirror == Mirror.LEFT_RIGHT) ? sizeRot : 0;
 		BlockPos lowerCorner = new BlockPos(this.boundingBox.minX + ox, this.boundingBox.minY, this.boundingBox.minZ + oz);
 		settings.setBoundingBox(new StructureBoundingBox(this.boundingBox.minX + ox, this.boundingBox.minY, this.boundingBox.minZ + oz, this.boundingBox.maxX + ox, this.boundingBox.maxZ, this.boundingBox.maxZ + oz));
 
-		
 		Map<BlockPos, String> dataBlocks2 = template.getDataBlocks(lowerCorner, settings);
 		HashMap<BlockPos, IBlockState> defaultBlocks = getWorldDefaultBlocks(dataBlocks2, world);
 		template.addBlocksToWorldChunk(world, lowerCorner, settings);
 		spawnPaleontologist(world, random);
 		Map<BlockPos, String> dataBlocks = template.getDataBlocks(lowerCorner, settings);
-		setDynamicBlocks(dataBlocks, world, random, defaultBlocks);
-
+		Map<BlockPos, String> dataBlocksClone = dataBlocks.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		setDynamicBlocks(dataBlocks, dataBlocksClone, world, random, defaultBlocks);
 		this.count++;
 		return true;
 	}
@@ -164,6 +158,7 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 	}
 
 	private HashMap<BlockPos, IBlockState> getWorldDefaultBlocks(Map<BlockPos, String> dataBlocks, World world) {
+		
 		HashMap<BlockPos, IBlockState> defaultBlocks = new HashMap<BlockPos, IBlockState>();
 		dataBlocks.forEach((pos, type) -> {
 			switch (type) {
@@ -175,17 +170,22 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 		return defaultBlocks;
 	}
 
-	private void setDynamicBlocks(Map<BlockPos, String> dataBlocks, World world, Random random, HashMap<BlockPos, IBlockState> defaultBlocks) {
+	private void setDynamicBlocks(Map<BlockPos, String> dataBlocks, Map<BlockPos, String> dataBlocksClone, World world, Random random, HashMap<BlockPos, IBlockState> defaultBlocks) {
 		int dinoType = random.nextInt(FossilBlock.VARIANT.getAllowedValues().size());
-		// System.out.println("Should generate! " + dataBlocks.size() + " " +
-		// this.rotation + " " + this.mirror);
 		dataBlocks.forEach((pos, type) -> {
+			
 			int spawnFossile = 0;
 			switch (type) {
-			case "FossileChest":
-				//Rework the data blocks position
-				world.setBlockState(pos, Blocks.CHEST.getDefaultState().withRotation(this.rotation.add(Rotation.COUNTERCLOCKWISE_90)).withMirror(this.mirror));
-				((TileEntityChest) world.getTileEntity(pos)).setLootTable(Loot.FOSSIL_DIGSITE_LOOT, random.nextLong());
+			case "Stair":
+				BlockPos stair = pos.down();
+				world.setBlockState(stair, this.getBiomeSpecificBlockState(world.getBlockState(stair)));
+				world.setBlockToAir(pos);
+				dataBlocksClone.remove(pos);
+				break;
+			case "Chest":
+				((TileEntityChest) world.getTileEntity(pos.down())).setLootTable(Loot.FOSSIL_DIGSITE_LOOT, random.nextLong());
+				world.setBlockToAir(pos);
+				dataBlocksClone.remove(pos);
 				break;
 			case "Log":
 				if (this.rotation == Rotation.CLOCKWISE_90) {
@@ -195,6 +195,7 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 					world.setBlockState(pos, this.getBiomeSpecificBlockState(
 							Blocks.LOG.getDefaultState().withProperty(BlockLog.LOG_AXIS, BlockLog.EnumAxis.Z)));
 				}
+				dataBlocksClone.remove(pos);
 				break;
 			case "Log2":
 				if (this.rotation == Rotation.CLOCKWISE_90) {
@@ -204,48 +205,15 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 					world.setBlockState(pos, this.getBiomeSpecificBlockState(
 							Blocks.LOG.getDefaultState().withProperty(BlockLog.LOG_AXIS, BlockLog.EnumAxis.X)));
 				}
+				dataBlocksClone.remove(pos);
 				break;
 			case "Log1":
 				world.setBlockState(pos, this.getBiomeSpecificBlockState(Blocks.LOG.getDefaultState()));
+				dataBlocksClone.remove(pos);
 				break;
 			case "Fence":
 				world.setBlockState(pos, this.getBiomeSpecificBlockState(Blocks.OAK_FENCE.getDefaultState()));
-				break;
-			case "Stairs":
-				if (this.rotation == Rotation.CLOCKWISE_90 && this.mirror == Mirror.LEFT_RIGHT) {
-					world.setBlockState(pos, this.getBiomeSpecificBlockState(Blocks.OAK_STAIRS.getDefaultState()
-							.withRotation(this.rotation.add(Rotation.CLOCKWISE_90)).withMirror(this.mirror)));
-				} else {
-					world.setBlockState(pos, this.getBiomeSpecificBlockState(Blocks.OAK_STAIRS.getDefaultState()
-							.withRotation(this.rotation.add(Rotation.COUNTERCLOCKWISE_90)).withMirror(this.mirror)));
-				}
-				break;
-			case "Stairs1":
-				if (this.rotation == Rotation.CLOCKWISE_90 && this.mirror == Mirror.LEFT_RIGHT) {
-					world.setBlockState(pos, this.getBiomeSpecificBlockState(Blocks.OAK_STAIRS.getDefaultState()
-							.withRotation(this.rotation.add(Rotation.CLOCKWISE_180)).withMirror(this.mirror)));
-				} else {
-					world.setBlockState(pos, this.getBiomeSpecificBlockState(
-							Blocks.OAK_STAIRS.getDefaultState().withRotation(this.rotation).withMirror(this.mirror)));
-				}
-				break;
-			case "Stairs2":
-				if (this.rotation == Rotation.CLOCKWISE_90 && this.mirror == Mirror.LEFT_RIGHT) {
-					world.setBlockState(pos, this.getBiomeSpecificBlockState(Blocks.OAK_STAIRS.getDefaultState()
-							.withRotation(this.rotation.add(Rotation.COUNTERCLOCKWISE_90)).withMirror(this.mirror)));
-				} else {
-					world.setBlockState(pos, this.getBiomeSpecificBlockState(Blocks.OAK_STAIRS.getDefaultState()
-							.withRotation(this.rotation.add(Rotation.CLOCKWISE_90)).withMirror(this.mirror)));
-				}
-				break;
-			case "Stairs3":
-				if (this.rotation == Rotation.CLOCKWISE_90 && this.mirror == Mirror.LEFT_RIGHT) {
-					world.setBlockState(pos, this.getBiomeSpecificBlockState(
-							Blocks.OAK_STAIRS.getDefaultState().withRotation(this.rotation).withMirror(this.mirror)));
-				} else {
-					world.setBlockState(pos, this.getBiomeSpecificBlockState(Blocks.OAK_STAIRS.getDefaultState()
-							.withRotation(this.rotation.add(Rotation.CLOCKWISE_180)).withMirror(this.mirror)));
-				}
+				dataBlocksClone.remove(pos);
 				break;
 			case "Fossile":
 				spawnFossile = random.nextInt(2);
@@ -255,14 +223,14 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 					world.setBlockState(pos,
 							BlockHandler.FOSSILS.get(0).getDefaultState().withProperty(FossilBlock.VARIANT, dinoType));
 				}
+				dataBlocksClone.remove(pos);
 				break;
 			case "Fossile2":
 				spawnFossile = random.nextInt(2);
-				if (spawnFossile == 0) {
-//					world.setBlockState(pos, defaultBlocks.get(pos));
-				} else {
+				if (!(spawnFossile == 0)) 
 					world.setBlockState(pos, BlockHandler.FOSSILS.get(0).getDefaultState().withProperty(FossilBlock.VARIANT, dinoType));
-				}
+				
+				dataBlocksClone.remove(pos);
 				break;
 			case "Shovel":
 				world.setBlockState(pos, BlockHandler.ANCIENT_ITEM_HOLDING_BLOCK.getDefaultState());
@@ -277,9 +245,21 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 					}
 					tile.setDisplayItemYOffset(0.5f);
 				}
+				dataBlocksClone.remove(pos);
 				break;
+			
 			}
 		});
+		
+		dataBlocksClone.forEach((pos, type) -> {
+			switch (type) {
+			case "Torch":
+				world.setBlockState(pos, Blocks.TORCH.getDefaultState(), 2);
+				break;
+			}
+			
+		});
+		dataBlocksClone.clear();
 	}
 
 	public static class CreationHandler implements VillagerRegistry.IVillageCreationHandler {
@@ -294,14 +274,28 @@ public class FossilDigsite extends StructureVillagePieces.Village {
 		}
 
 		@Override
-		public StructureVillagePieces.Village buildComponent(StructureVillagePieces.PieceWeight villagePiece,
-				StructureVillagePieces.Start startPiece, List<StructureComponent> pieces, Random random, int minX,
-				int minY, int minZ, EnumFacing facing, int componentType) {
-			StructureBoundingBox bounds = StructureBoundingBox.getComponentToAddBoundingBox(minX, minY, minZ, 0, 0, 0,
-					WIDTH, HEIGHT, DEPTH, facing);
-			return StructureComponent.findIntersecting(pieces, bounds) == null
-					? new FossilDigsite(startPiece, random, componentType, bounds, facing)
-					: null;
+		public StructureVillagePieces.Village buildComponent(StructureVillagePieces.PieceWeight villagePiece, StructureVillagePieces.Start startPiece, List<StructureComponent> pieces, Random random, int minX, int minY, int minZ, EnumFacing facing, int componentType) {
+			int randomValue = random.nextInt(100);
+			
+            int type = -1;
+            int width = 0;
+            int height = 13;
+            int depth = 0;
+			if (randomValue < 50) {
+				type = 3;
+				width = 9;
+				depth = 9;
+			} else if (randomValue < 80) {
+				type = 1;
+				width = 8;
+				depth = 7;
+			} else {
+				type = 2;
+				width = 8;
+				depth = 8;
+			}
+			StructureBoundingBox bounds = StructureBoundingBox.getComponentToAddBoundingBox(minX, minY, minZ, 0, 0, 0, width, height, depth, facing);
+			return StructureComponent.findIntersecting(pieces, bounds) == null ? new FossilDigsite(startPiece, random, componentType, bounds, facing, type) : null;
 		}
 	}
 
