@@ -5,30 +5,21 @@ import javax.vecmath.Vector3d;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.stats.RecipeBook;
 import net.minecraft.stats.StatisticsManager;
 import net.minecraft.world.World;
 
-public class DummyCameraEntity extends EntityPlayerSP {
+public class DummyCameraEntity2 extends Entity {
 
-	public static DummyCameraEntity instance;
+	public static DummyCameraEntity2 instance;
 
-	public DummyCameraEntity(Minecraft mc, World world) {
-		super(mc, world, Minecraft.getMinecraft().player.connection,
-				Minecraft.getMinecraft().player.getStatFileWriter(), Minecraft.getMinecraft().player.getRecipeBook());
-		this.movementInput = Minecraft.getMinecraft().player.movementInput;
+	public DummyCameraEntity2(World world) {
+		super(world);
 		if (instance == null) {
 			instance = this;
 		}
-	}
-
-	public DummyCameraEntity(World world) {
-		this(Minecraft.getMinecraft(), world);
-	}
-
-	@Override
-	public float getFovModifier() {
-		return super.getFovModifier();
 	}
 
 	public static void onUnloadWorld() {
@@ -45,10 +36,20 @@ public class DummyCameraEntity extends EntityPlayerSP {
 		if (rotationYaw == 365) {
 			rotationYaw = 0;
 		}
-		
-		this.rotationYawHead++;
-		if (rotationYawHead == 365) {
-			rotationYawHead = 0;
-		}
+	}
+
+	@Override
+	protected void entityInit() {
+
+	}
+
+	@Override
+	protected void readEntityFromNBT(NBTTagCompound compound) {
+
+	}
+
+	@Override
+	protected void writeEntityToNBT(NBTTagCompound compound) {
+
 	}
 }

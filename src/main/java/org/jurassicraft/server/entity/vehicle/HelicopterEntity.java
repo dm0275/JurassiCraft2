@@ -211,6 +211,21 @@ public class HelicopterEntity extends VehicleEntity {
 			}
 		}
 	}
+	
+	@Override
+	protected void addPassenger(Entity passenger) {
+		super.addPassenger(passenger);
+		
+		if (this.world.isRemote) {
+			System.out.println("ADDED");
+			EntityPlayerSP player = Minecraft.getMinecraft().player;
+			DummyCameraEntity dummyCamera = new DummyCameraEntity(Minecraft.getMinecraft(), this.world);
+			dummyCamera.setPosition(player.posX + 4, player.posY + 5, player.posZ);
+			this.world.spawnEntity(dummyCamera);
+			Minecraft.getMinecraft().setRenderViewEntity(dummyCamera);
+			Minecraft.getMinecraft().gameSettings.thirdPersonView = 1;
+		}
+	}
 
 	@Override
 	protected void removePassenger(Entity passenger) {
@@ -221,17 +236,6 @@ public class HelicopterEntity extends VehicleEntity {
 				break;
 			}
 		}
-
-		// !!!DO NOT DELETE!!!
-		/*
-		 * if (this.world.isRemote) { System.out.println("REMOVED"); EntityPlayerSP
-		 * player = Minecraft.getMinecraft().player; DummyCameraEntity dummyCamera = new
-		 * DummyCameraEntity(Minecraft.getMinecraft(), this.world);
-		 * dummyCamera.setPosition(player.posX, player.posY, player.posZ);
-		 * this.world.spawnEntity(dummyCamera);
-		 * Minecraft.getMinecraft().setRenderViewEntity(dummyCamera); }
-		 */
-		//
 	}
 
 	@Override

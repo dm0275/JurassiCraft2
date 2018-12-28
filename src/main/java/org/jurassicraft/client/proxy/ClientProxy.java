@@ -55,7 +55,7 @@ public class ClientProxy extends ServerProxy {
 	public void onPreInit(FMLPreInitializationEvent event) {
 		super.onPreInit(event);
 
-//		registerEntity(DummyCameraEntity.class, "DummyCameraEntity");
+		registerEntity(DummyCameraEntity.class, "DummyCameraEntity");
 		KeyBindingHandler.init();
 
 		try {
