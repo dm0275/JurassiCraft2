@@ -6,3 +6,4 @@
 *Fixed a Tyrannosaurus teeth rendering issue
 *Most of the temporal messages now use the player's actionbar instead of the chat
 +Added gender-specific elements to the T. Rex skeletons
++Implemented more realistic falling physics for tyrannosaurus when dying

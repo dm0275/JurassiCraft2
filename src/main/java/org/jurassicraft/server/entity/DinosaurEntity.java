@@ -212,6 +212,8 @@ public abstract class DinosaurEntity extends EntityCreature implements IEntityAd
 
 	public boolean isRendered;
 
+	private int moveTicks = -5;
+
     public DinosaurEntity(World world) {
         super(world);
         this.moveHelper = new DinosaurMoveHelper(this);
@@ -742,8 +744,25 @@ public abstract class DinosaurEntity extends EntityCreature implements IEntityAd
     @Override
     public void onLivingUpdate() {
         super.onLivingUpdate();
-        
-        if(this.isCarcass() && (this instanceof TyrannosaurusEntity ? this.dataManager.get(WATCHER_WAS_MOVED) : true) && !(this instanceof MicroraptorEntity)){
+		if (!this.world.isRemote && this instanceof TyrannosaurusEntity) {
+			if (this.moveTicks > 0) {
+				this.moveTicks--;
+				this.motionX = 0;
+				this.motionZ = 0;
+				this.motionX += MathHelper.sin(-(float) Math.toRadians(this.rotationYaw - 90)) * 0.03;
+				this.motionZ += MathHelper.cos((float) Math.toRadians(this.rotationYaw - 90)) * 0.03;
+				this.motionX *= 6.3;
+				this.motionZ *= 6.3;
+			}
+			if (this.moveTicks > -5) {
+				this.moveTicks--;
+
+				if (this.moveTicks == -4) {
+					this.wasMoved = true;
+				}
+			}
+		}
+        if(this.isCarcass() && (this instanceof TyrannosaurusEntity ? this.wasMoved : true) && !(this instanceof MicroraptorEntity)){
         	this.motionX = 0;
         	this.motionZ = 0;
         }
@@ -1053,6 +1072,7 @@ public abstract class DinosaurEntity extends EntityCreature implements IEntityAd
         }
 
         if (!this.world.isRemote) {
+        	this.dataManager.set(WATCHER_WAS_MOVED, this.wasMoved);
             this.dataManager.set(WATCHER_AGE, this.dinosaurAge);
             this.dataManager.set(WATCHER_IS_SLEEPING, this.isSleeping);
             this.dataManager.set(WATCHER_IS_CARCASS, this.isCarcass);
@@ -1062,7 +1082,7 @@ public abstract class DinosaurEntity extends EntityCreature implements IEntityAd
             this.dataManager.set(WATCHER_IS_RUNNING, this.getAIMoveSpeed() > this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
         } else {
             this.updateTailBuffer();
-
+            this.wasMoved = this.dataManager.get(WATCHER_WAS_MOVED);
             this.dinosaurAge = this.dataManager.get(WATCHER_AGE);
             this.isSleeping = this.dataManager.get(WATCHER_IS_SLEEPING);
             this.isCarcass = this.dataManager.get(WATCHER_IS_CARCASS);
@@ -1239,7 +1259,9 @@ public abstract class DinosaurEntity extends EntityCreature implements IEntityAd
     }
 
     public void setCarcass(boolean carcass) {
-
+    	if(!this.world.isRemote && carcass != this.isCarcass && !this.wasMoved) {
+    		this.moveTicks = 18;
+    	}
         this.isCarcass = carcass;
 
         boolean carcassAllowed = JurassiCraftConfig.ENTITIES.allowCarcass;
@@ -1574,6 +1596,7 @@ public abstract class DinosaurEntity extends EntityCreature implements IEntityAd
         this.deserializing = true;
 
         super.readFromNBT(nbt);
+        this.wasMoved = nbt.getBoolean("WasMoved");
         this.setAge(nbt.getInteger("DinosaurAge"));
         this.setCarcass(nbt.getBoolean("IsCarcass"));
         this.geneticsQuality = nbt.getInteger("DNAQuality");
@@ -1586,8 +1609,6 @@ public abstract class DinosaurEntity extends EntityCreature implements IEntityAd
         this.order = Order.values()[nbt.getByte("Order")];
         this.breedCooldown = nbt.getInteger("BreedCooldown");
         this.pregnantTime = nbt.getInteger("PregnantTime");
-        this.wasMoved = nbt.getBoolean("WasMoved");
-
         this.metabolism.readFromNBT(nbt);
 
         String ownerUUID = nbt.getString("OwnerUUID");
