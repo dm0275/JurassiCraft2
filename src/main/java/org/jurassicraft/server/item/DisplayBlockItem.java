@@ -221,7 +221,7 @@ public class DisplayBlockItem extends Item {
 			if (player.isSneaking()) {
 				int oldVariant = this.getSkeletonType(stack);
 				int variant = this.changeSkeletonVariant(stack);
-				if (variant != oldVariant && !world.isRemote) {
+				if (variant != oldVariant && world.isRemote) {
 					TextComponentString change = new TextComponentString(LangUtils.translate(LangUtils.SKELETON_CHANGE.get("variant")).replace("{mode}", LangUtils.getSkeletonMode(EntityHandler.getDinosaurById(this.getDinosaurID(stack)), variant)));
 					change.getStyle().setColor(TextFormatting.YELLOW);
 					Minecraft.getMinecraft().ingameGUI.addChatMessage(ChatType.GAME_INFO, change);
