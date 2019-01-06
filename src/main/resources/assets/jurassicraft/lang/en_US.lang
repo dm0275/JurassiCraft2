@@ -573,6 +573,10 @@ key.vehicle_7.switch=Attempt to move to Seat 8
 key.vehicle_8.switch=Attempt to move to Seat 9
 key.vehicle_helicopter.up=Ascend
 key.vehicle_helicopter.down=Descend
+key.vehicle_helicopter.third_person_view_zoom_in=Third person view zoom in
+key.vehicle_helicopter.third_person_view_zoom_out=Third person view zoom out
+key.vehicle_helicopter.autopilot=Autopilot on/off
+key.vehicle_helicopter.lock=Rotation lock on/off
 
 //Other =============
 message.tame.name=You have tamed a {dinosaur}

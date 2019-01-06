@@ -10,11 +10,16 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 import org.apache.logging.log4j.Logger;
+import org.jurassicraft.client.render.entity.OverridenEntityRenderer;
 import org.jurassicraft.server.command.ForceAnimationCommand;
 import org.jurassicraft.server.command.SpawnStructureCommand;
 import org.jurassicraft.server.message.*;
 import org.jurassicraft.server.proxy.ServerProxy;
+import org.lwjgl.input.Keyboard;
 
 @Mod(modid = JurassiCraft.MODID, name = JurassiCraft.NAME, version = JurassiCraft.VERSION, dependencies = "required-after:llibrary@[" + JurassiCraft.LLIBRARY_VERSION + ",);required-after:forge@[14.23.4.2705,)")
 public class JurassiCraft {

@@ -1,10 +1,13 @@
 package org.jurassicraft.server.entity.vehicle;
 
 import net.minecraft.block.BlockAir;
+import net.minecraft.block.state.BlockStateBase;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.Sound;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.EntityLivingBase;
@@ -16,6 +19,8 @@ import net.minecraft.util.MovementInput;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
 import net.minecraftforge.client.model.BlockStateLoader;
 import net.minecraftforge.client.model.b3d.B3DModel;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -23,6 +28,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.server.permission.context.ContextKeys;
 import org.lwjgl.input.Keyboard;
+
+import com.google.common.collect.TreeMultiset;
+import com.ibm.icu.impl.ICUService.Key;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
@@ -32,12 +41,21 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import org.jurassicraft.JurassiCraft;
-import org.jurassicraft.client.entity.DummyCameraEntity;
 import org.jurassicraft.client.proxy.ClientProxy;
+import org.jurassicraft.client.render.RenderingHandler;
+import org.jurassicraft.client.render.entity.ThirdPersonViewRenderer;
+import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer;
+import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer.HudElement;
+import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer.HudElementAltimeter;
+import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer.HudElementArtificialHorizon;
+import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer.HudElementStatsDisplay;
+import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer.HudOverlay;
+import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer.HudElementTachometer;
 import org.jurassicraft.client.sound.EntitySound;
 import org.jurassicraft.server.entity.ai.util.InterpValue;
 import org.jurassicraft.server.entity.vehicle.VehicleEntity.Seat;
@@ -47,54 +65,119 @@ import org.jurassicraft.server.message.CarEntityPlayRecord;
 import org.jurassicraft.server.message.UpdateVehicleControlMessage;
 import org.jurassicraft.server.util.MutableVec3;
 
+import java.lang.reflect.Field;
+
 import javax.annotation.Nonnull;
 
 public class HelicopterEntity extends VehicleEntity {
 
 	private static final byte UPWARD = 0b010000;
 	private static final byte DOWNWARD = 0b100000;
-	private boolean lastDirBackwards;
-	private final float MAX_POWER = 80.0F;
-	private final float REQUIRED_POWER = MAX_POWER / 2.0F;
-	private float enginePower;
 	public float gearLift;
 	public boolean shouldGearLift = true;
 	private final InterpValue rotationYawInterp = new InterpValue(this, 4f);
-	private final float SPEEDMODIFIER = 2.5f;
 	public boolean isFlying;
-	public float rotorRotationAmount;
 	public final InterpValue interpRotationPitch = new InterpValue(this, 0.25D);
 	public final InterpValue interpRotationRoll = new InterpValue(this, 0.25D);
 	private MutableVec3 direction;
 	public float pitch;
 	public float roll;
-	private final int MAXMOVEMENTROTATION = 15;
+	private final int MAX_MOVEMENT_ROTATION = 15;
 	private boolean shouldFallDamage;
 	public double rotAmount = 0D;
 	private Vec3d prevInAirPos;
 	private float damageAmount;
 	private MutableBlockPos mb = new MutableBlockPos();
+	private boolean lockOn;
+	@SideOnly(Side.CLIENT)
+	private HudOverlay hud;
 
-	private float acceleration = 0.0f;
-	private float airResistance = 0.4f;
-	private int maxSpeed = 20;
-	private float speed = 0;
+	private float currentEngineSpeed = 0;
+	private float torque;
+
 	/*
-	 * =================================== CAR START
-	 * ===========================================
+	 * Technical specifications
 	 */
+	private int enginePower; // In PS
+	private int engineSpeed; // In rotations per minute(recommended range: 1 - 300)
+	private int rotorLength; // In blocks
+	private int weight; // In kilograms
+	private float physicalWidth; // In blocks
+	private float physicalHeight; // In blocks
+	private float physicalDepth; // In blocks
+	protected float qualityGrade = 0.75f;
+	private boolean simpleControle;
+
+	/*
+	 * =============================================================================
+	 * Note: The helicopters physics do not work for an helicopter flying upside
+	 * down
+	 * =============================================================================
+	 * Disclaimer: Do not take the formulas from this code for an physical project,
+	 * they do not fulfill the academical standard you need and are only working for
+	 * hobby helicopter constructors(as they came out of model helicopter
+	 * constructing)
+	 * =============================================================================
+	 */
+
+	// Later Superclass Constructor
+	/**
+	 * widthIn, heightIn, depthIn in blocks; enginePower in PS; engineSpeedIn in
+	 * rotations per minute; weightIn in kilograms; rotorLengthIn in blocks
+	 */
+	public HelicopterEntity(World worldIn, int widthIn, int heightIn, int depthIn, int enginePowerIn, int engineSpeedIn, int weightIn,
+			int rotorLengthIn) {
+		super(worldIn);
+
+		this.physicalWidth = widthIn;
+		this.physicalHeight = heightIn;
+		this.physicalDepth = depthIn;
+
+		this.enginePower = (int) ((float) enginePowerIn * 735.5f);
+		this.engineSpeed = engineSpeedIn;
+		this.weight = weightIn;
+		this.rotorLength = rotorLengthIn;
+		this.torque = computeTorque();
+
+		this.setEntityBoundingBox(new AxisAlignedBB(0, 0, 0, this.physicalWidth, this.physicalHeight, this.physicalDepth));
+		this.setSize((float) this.physicalWidth, (float) this.physicalHeight);
+		this.speedModifier = 1.5f;
+		this.isFlying = false;
+		this.direction = new MutableVec3(0, 1, 0);
+
+		this.simpleControle = true;
+		if (this.world.isRemote) {
+			this.hud = new HudOverlay();
+		}
+	}
 
 	public HelicopterEntity(World worldIn) {
 		super(worldIn);
 		double w = 5f; // width in blocks
-		double h = 3.5f; // height in blocks
+		this.physicalHeight = 3.5f; // height in blocks
 		double d = 8f; // depth in blocks
-		this.setEntityBoundingBox(new AxisAlignedBB(0, 0, 0, w, h, d));
-		this.setSize(5f, 3.5f);
+		this.setEntityBoundingBox(new AxisAlignedBB(0, 0, 0, w, this.physicalHeight, d));
+		this.setSize((float) w, (float) this.physicalHeight);
 		this.speedModifier = 1.5f;
 		this.isFlying = false;
 		this.direction = new MutableVec3(0, 1, 0);
-		this.enginePower = 1.0f;
+
+		// this.enginePower = (int) (3392.0 * 735.5);
+		this.enginePower = (int) (3992.0 * 735.5);
+		// this.enginePower = (int) (2600.0 * 735.5);
+		this.engineSpeed = 300;
+		this.weight = 6838;
+		this.rotorLength = 5;
+		this.simpleControle = true;
+		this.torque = computeTorque();
+		if (this.world.isRemote) {
+			this.hud = new HudOverlay();
+		}
+		this.lockOn = true;
+		this.addHudOverlayElement(HudElementAltimeter.class);
+		this.addHudOverlayElement(HudElementArtificialHorizon.class);
+		this.addHudOverlayElement(HudElementTachometer.class);
+		this.addHudOverlayElement(HudElementStatsDisplay.class);
 	}
 
 	public boolean upward() {
@@ -147,12 +230,10 @@ public class HelicopterEntity extends VehicleEntity {
 	@Override
 	protected void doBlockCollisions() {
 		super.doBlockCollisions();
-
 	}
 
-	private boolean isController(EntityPlayer e) {
-		if ((!this.getIfExists(0, false).equals("")
-				&& this.getIfExists(0, false).equals(Integer.toString(e.getEntityId())))) {
+	public boolean isController(EntityPlayer e) {
+		if ((!this.getIfExists(0, false).equals("") && this.getIfExists(0, false).equals(Integer.toString(e.getEntityId())))) {
 			return true;
 		}
 		return false;
@@ -179,6 +260,10 @@ public class HelicopterEntity extends VehicleEntity {
 			} else {
 				this.upward(ClientProxy.getKeyHandler().HELICOPTER_UP.isKeyDown());
 				this.downward(ClientProxy.getKeyHandler().HELICOPTER_DOWN.isKeyDown());
+				this.increaseThirdPersonViewDistance(ClientProxy.getKeyHandler().HELICOPTER_THIRD_PERSON_VIEW_ZOOM_OUT.isKeyDown());
+				this.decreaseThirdPersonViewDistance(ClientProxy.getKeyHandler().HELICOPTER_THIRD_PERSON_VIEW_ZOOM_IN.isKeyDown());
+				this.handleKeyEnableAutoPilot(ClientProxy.getKeyHandler().HELICOPTER_AUTOPILOT.isPressed());
+				this.handleKeyLock(ClientProxy.getKeyHandler().HELICOPTER_LOCK.isPressed());
 			}
 			super.handleControl();
 		}
@@ -211,21 +296,6 @@ public class HelicopterEntity extends VehicleEntity {
 			}
 		}
 	}
-	
-	@Override
-	protected void addPassenger(Entity passenger) {
-		super.addPassenger(passenger);
-		
-		if (this.world.isRemote) {
-			System.out.println("ADDED");
-			EntityPlayerSP player = Minecraft.getMinecraft().player;
-			DummyCameraEntity dummyCamera = new DummyCameraEntity(Minecraft.getMinecraft(), this.world);
-			dummyCamera.setPosition(player.posX + 4, player.posY + 5, player.posZ);
-			this.world.spawnEntity(dummyCamera);
-			Minecraft.getMinecraft().setRenderViewEntity(dummyCamera);
-			Minecraft.getMinecraft().gameSettings.thirdPersonView = 1;
-		}
-	}
 
 	@Override
 	protected void removePassenger(Entity passenger) {
@@ -235,6 +305,9 @@ public class HelicopterEntity extends VehicleEntity {
 				passenger.noClip = false;
 				break;
 			}
+		}
+		if (this.world.isRemote) {
+			resetThirdPersonViewDistance();
 		}
 	}
 
@@ -247,12 +320,7 @@ public class HelicopterEntity extends VehicleEntity {
 
 		if (!this.isInWater()) {
 			float dist = this.getDistanceToGround();
-			// this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, this.posX-0.65f,
-			// this.posY+2f, this.posZ+ -2.9, 0.0f, 0.0f, 0.0f, new int[0]);
-			// this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, this.posX+0.65f,
-			// this.posY+2f, this.posZ+ -2.9, 0.0f, 0.0f, 0.0f, new int[0]);
 			if (!world.isRemote) {
-
 				for (int i = 0; i < this.seats.length; i++) {
 					Entity e = this.getEntityInSeat(i);
 					if (e != null) {
@@ -261,94 +329,104 @@ public class HelicopterEntity extends VehicleEntity {
 				}
 			}
 			if (forward() && this.isFlying) {
-				this.pitch += 1f;
-				this.acceleration = this.enginePower;
+				this.pitch += this.computeThrottleUpDown();
 			} else if (this.backward() && this.isFlying) {
-				this.pitch -= 1f;
-				this.acceleration = -this.enginePower;
-			} else {
-				if (this.pitch < 0f) {
-					this.pitch += 1f;
+				this.pitch -= this.computeThrottleUpDown();
+			} else if (this.simpleControle && this.isFlying && this.lockOn) {
+				if (Math.abs(this.pitch) > 0 && Math.abs(this.pitch) < 1.0f) {
+					this.pitch = 0;
+					// this.setCurrentEngineSpeed(this.computeRequiredEngineSpeedForHover());
+				} else if (this.pitch < 0f) {
+					this.pitch += this.computeThrottleUpDown();
+					// this.changeCurrentEngineSpeed(this.getCurrentEngineSpeed() -
+					// this.computeRequiredEngineSpeedForHover());
 				} else if (this.pitch > 0f) {
-					this.pitch -= 1f;
-				}
-				if (this.speed < 0) {
-					this.acceleration = this.airResistance;
-				} else {
-					this.acceleration = -this.airResistance;
+					this.pitch -= this.computeThrottleUpDown();
+					// this.changeCurrentEngineSpeed(this.getCurrentEngineSpeed()
+					// -this.computeRequiredEngineSpeedForHover());
 				}
 			}
-			if (this.left() && this.isFlying) {
-				this.roll += 1f;
-				if (!this.forward() && !this.backward()) {
-					this.acceleration = this.enginePower / 2;
-				}
+			if (this.left() && !Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && this.isFlying) {
+				this.roll += this.computeThrottleUpDown();
 			} else if (this.right() && this.isFlying) {
-				this.roll -= 1f;
-				if (!this.forward() && !this.backward()) {
-					this.acceleration = this.enginePower / 2;
-				}
-			} else {
-				if (this.roll < 0f) {
-					this.roll += 1f;
+				this.roll -= this.computeThrottleUpDown();
+			} else if (this.simpleControle && this.isFlying && this.lockOn) {
+				if (Math.abs(this.roll) > 0 && Math.abs(this.roll) < 1.0f) {
+					this.roll = 0;
+					// this.setCurrentEngineSpeed(this.computeRequiredEngineSpeedForHover());
+				} else if (this.roll < 0f) {
+					this.roll += this.computeThrottleUpDown();
+					// this.changeCurrentEngineSpeed(this.getCurrentEngineSpeed()
+					// -this.computeRequiredEngineSpeedForHover());
 				} else if (this.roll > 0f) {
-					this.roll -= 1f;
+					this.roll -= this.computeThrottleUpDown();
+					// this.changeCurrentEngineSpeed(this.getCurrentEngineSpeed()
+					// -this.computeRequiredEngineSpeedForHover());
 				}
 			}
-			if (this.pitch >= computeMaxMovementRotation(dist)) {
-				this.pitch = computeMaxMovementRotation(dist);
+			// if (this.pitch >= computeMaxMovementRotation(dist)) {
+			// this.pitch = computeMaxMovementRotation(dist);
+			// }
+			// if (this.pitch <= -computeMaxMovementRotation(dist)) {
+			// this.pitch = -computeMaxMovementRotation(dist);
+			// }
+			if (this.pitch > 180) {
+				this.pitch = -180 + (this.pitch - 180);
 			}
-			if (this.pitch <= -computeMaxMovementRotation(dist)) {
-				this.pitch = -computeMaxMovementRotation(dist);
+			if (this.pitch < -180) {
+				this.pitch = this.pitch + 360;
 			}
-			if (this.roll >= computeMaxMovementRotation(dist)) {
-				this.roll = computeMaxMovementRotation(dist);
+			if (this.pitch > this.computeMaxMovementRotation(dist)) {
+				this.pitch -= this.computeThrottleUpDown();
+			} else if (this.pitch < -this.computeMaxMovementRotation(dist)) {
+				this.pitch += this.computeThrottleUpDown();
 			}
-			if (this.roll <= -computeMaxMovementRotation(dist)) {
-				this.roll = -computeMaxMovementRotation(dist);
+			if (this.roll >= this.computeMaxMovementRotation(dist)) {
+				this.roll = this.computeMaxMovementRotation(dist);
+			}
+			if (this.roll <= -this.computeMaxMovementRotation(dist)) {
+				this.roll = -this.computeMaxMovementRotation(dist);
+			}
+
+			// if ((this.forward() || this.backward() || this.left() || this.right()) &&
+			// this.isFlying && this.simpleControle) {
+			// this.changeCurrentEngineSpeed((this.computeRequiredEngineSpeedForHover() -
+			// this.getCurrentEngineSpeed()));
+			// } else if (this.isFlying && this.simpleControle && !(this.upward() ||
+			// this.downward())) {
+			// this.changeCurrentEngineSpeed(this.computeRequiredEngineSpeedForHover() -
+			// this.getCurrentEngineSpeed());
+			// // System.out.println(this.computeRequiredEngineSpeedForHover() -
+			// // this.getCurrentEngineSpeed());
+			// }
+
+			float requiredSpeedForHovering = this.computeRequiredEngineSpeedForHover();
+			if ((this.shouldAdjustEngineSpeedByHorizontalControls(requiredSpeedForHovering)
+					|| this.shouldAdjustEngineSpeedWithoutHorizontalControls(requiredSpeedForHovering)) && this.simpleControle
+					&& this.isFlying && this.getControllingPassenger() != null
+					&& Math.abs(this.getCurrentEngineSpeed() - requiredSpeedForHovering) <= 8f) {
+				if (Math.abs(this.getCurrentEngineSpeed() - requiredSpeedForHovering) <= 2) {
+					this.setCurrentEngineSpeed(requiredSpeedForHovering);
+				} else if (this.getCurrentEngineSpeed() > requiredSpeedForHovering) {
+					this.changeCurrentEngineSpeed(this.computeRequiredEngineSpeedForHover() - this.getCurrentEngineSpeed());
+				} else if (this.getCurrentEngineSpeed() < requiredSpeedForHovering) {
+					this.changeCurrentEngineSpeed(this.computeRequiredEngineSpeedForHover() - this.getCurrentEngineSpeed());
+				}
 			}
 
 			rotationYawInterp.reset(this.rotationYaw - 180D);
-			if (forward()) {
-				lastDirBackwards = false;
-			} else if (backward()) {
-				lastDirBackwards = true;
-			}
 			this.interpRotationPitch.setTarget(this.direction.zCoord * -30D);
 			this.interpRotationRoll.setTarget(this.direction.xCoord * 20D);
 			if ((this.getControllingPassenger() != null)) {
 				if (this.upward()) {
-					this.motionY += 0.005f;
-					if (this.motionY > 0)
-						this.motionY *= 1.35f;
-					if (this.motionY >= 1.5f) {
-						this.motionY = 1.5f;
-					}
-
-					this.isFlying = true;
-					this.shouldFallDamage = true;
-					this.rotorRotationAmount += 0.1f;
-					this.prevInAirPos = this.getPositionVector();
-					this.setNoGravity(true);
-					for (int i = 0; i < this.seats.length; i++) {
-						Entity e = this.getEntityInSeat(i);
-						if (e != null) {
-							e.setNoGravity(false);
-						}
-					}
-
+					this.changeCurrentEngineSpeed(this.computeThrottleUpDown());
+					// if (!this.isFlying) {
+					this.setFlying();
+					// }
 				} else if (this.downward() && this.isFlying) {
-					this.motionY -= 0.02f;
-
-					if (this.motionY < 0)
-						this.motionY *= 1.3f;
-					if (this.motionY <= -1.3f) {
-						this.motionY = -1.3f;
-					}
 					this.shouldFallDamage = false;
-
+					this.changeCurrentEngineSpeed(-this.computeThrottleUpDown());
 				} else {
-
 					if (!this.isFlying) {
 						this.setNoGravity(false);
 						for (int i = 0; i < this.seats.length; i++) {
@@ -357,21 +435,26 @@ public class HelicopterEntity extends VehicleEntity {
 								e.setNoGravity(false);
 							}
 						}
-
+						if (this.simpleControle) {
+							if (this.getCurrentEngineSpeed() > 0) {
+								this.changeCurrentEngineSpeed(-1);
+							}
+						}
 					} else {
-						this.rotorRotationAmount += 0.01f;
+						if (this.simpleControle) {
+							if (Math.abs(this.getCurrentEngineSpeed() - requiredSpeedForHovering) <= 2) {
+								this.setCurrentEngineSpeed(requiredSpeedForHovering);
+							} else if (this.getCurrentEngineSpeed() > requiredSpeedForHovering) {
+								this.changeCurrentEngineSpeed(-1.5f);
+							} else if (this.getCurrentEngineSpeed() < requiredSpeedForHovering) {
+								this.changeCurrentEngineSpeed(1.5f);
+							}
+						}
 					}
 				}
+			} else if (this.getCurrentEngineSpeed() > 0) {
+				this.changeCurrentEngineSpeed(-1);
 			}
-			this.speed += this.acceleration;
-			if (this.speed > this.maxSpeed) {
-				this.speed = this.maxSpeed;
-			} else if (this.speed < -this.maxSpeed) {
-				this.speed = -this.maxSpeed;
-			}
-
-			// System.out.println("speed: " + this.speed + ";acceleration: " +
-			// this.acceleration);
 
 			if (!this.isFlying) {
 				this.speedModifier = -0.75f;
@@ -380,9 +463,12 @@ public class HelicopterEntity extends VehicleEntity {
 			}
 			if (this.onGround == true) {
 				this.isFlying = false;
-				this.rotorRotationAmount -= 0.05f;
-			} else {
-				this.rotorRotationAmount += 0.0001f;
+				if ((this.pitch > 30 || this.pitch < -30)) {
+					this.setHealth(-3);
+					if (this.world.isRemote) {
+						this.playHelicopterExplosion();
+					}
+				}
 			}
 			if (world.isRemote) {
 				if (!this.shouldGearLift) {
@@ -407,12 +493,6 @@ public class HelicopterEntity extends VehicleEntity {
 				this.setHealth(this.getHealth() - (float) Math.floor((double) (this.damageAmount / 3)));
 				this.shouldFallDamage = false;
 			}
-			if (this.rotorRotationAmount < 0f) {
-				this.rotorRotationAmount = 0f;
-			}
-			if (this.rotorRotationAmount > 1.5f) {
-				this.rotorRotationAmount = 1.5f;
-			}
 			if (world.isRemote) {
 				if (this.gearLift < -0.5f) {
 					this.gearLift = -0.5f;
@@ -421,36 +501,38 @@ public class HelicopterEntity extends VehicleEntity {
 					this.gearLift = 0f;
 				}
 			}
-			this.rotAmount += this.rotorRotationAmount / 2d;
+			this.rotAmount += this.getCurrentEngineSpeed() * 0.00666666666 / 2d;
+
+			if (this.getCurrentEngineSpeed() >= 1 && !this.isRotorAreaFree()) {
+				this.setHealth(this.getHealth() - 1);
+			}
 		} else {
 			this.setNoGravity(false);
 			this.wheelRotateAmount = 0;
-			this.rotorRotationAmount = 0;
+			this.setCurrentEngineSpeed(1);
+		}
+
+		if (this.world.isRemote) {
+			this.updateHudOverlay();
 		}
 	}
 
 	@Override
 	protected void applyMovement() {
-		Speed speed = this.getSpeed();
 		float moveAmount = 0.0f;
-		if ((this.left() || this.right()) && !(this.forward() || this.backward())) {
-			moveAmount += 0.05F;
-		}
-		if (this.forward()) {
-			// moveAmount += 0.1F;
-			moveAmount += 0.1F;
-		} else if (this.backward()) {
-			moveAmount += 0.05F;
-		} else {
-			moveAmount = 0.05F;
-		}
-		moveAmount *= (speed.modifier + this.speedModifier);
-		if (this.isInWater()) {
-			moveAmount -= 0.1f;
-			if (moveAmount < 0f)
-				moveAmount = 0f;
-		}
-		moveAmount *= (1.0f / (float) (this.maxSpeed)) * this.speed;
+
+		// A(side) = this.depth * this.height;
+		float surfaceFront = this.physicalWidth * this.physicalHeight;
+		float surfaceTop = this.physicalWidth * this.physicalDepth;
+		float horizontalSpeed = (float) Math.abs(Math.sqrt(Math.pow(this.motionX, 2) + Math.pow(this.motionZ, 2)) * 20);
+		float verticalSpeed = (float) Math.abs(this.motionY * 20);
+		float flowResistanceFront = (float) (2 * surfaceFront * 0.5f * 1.2f * Math.pow(horizontalSpeed, 2));
+		float flowResistanceTop = (float) (2 * surfaceTop * 0.5f * 1.2f * Math.pow(verticalSpeed, 2));
+
+		moveAmount = ((computeHorizontalForceFrontBack() - flowResistanceFront) / this.weight) / 20;
+		// moveAmount *= 0.5;
+		this.motionY += ((computeVerticalForce() - flowResistanceTop) / this.weight - 9.81) / 20;
+
 		if (this.left()) {
 			this.rotationDelta -= 20.0F * moveAmount;
 		} else if (this.right()) {
@@ -459,8 +541,16 @@ public class HelicopterEntity extends VehicleEntity {
 
 		this.rotationDelta = MathHelper.clamp(this.rotationDelta, -30 * 0.1F, 30 * 0.1F);
 		this.rotationYaw += this.rotationDelta;
-		this.motionX += MathHelper.sin(-this.rotationYaw * 0.017453292F) * moveAmount;
-		this.motionZ += MathHelper.cos(this.rotationYaw * 0.017453292F) * moveAmount;
+		float rotYaw = this.rotationYaw;
+		if (this.left() && !this.forward() && !this.backward() && !this.right()) {
+			rotYaw -= 90;
+			moveAmount = ((computeHorizontalForceLeftRight() - flowResistanceFront) / this.weight) / 20;
+		} else if (!this.left() && !this.forward() && !this.backward() && this.right()) {
+			rotYaw -= 90;
+			moveAmount = ((computeHorizontalForceLeftRight() - flowResistanceFront) / this.weight) / 20;
+		}
+		this.motionX += MathHelper.sin(-rotYaw * 0.017453292F) * moveAmount;
+		this.motionZ += MathHelper.cos(rotYaw * 0.017453292F) * moveAmount;
 	}
 
 	@Override
@@ -475,11 +565,9 @@ public class HelicopterEntity extends VehicleEntity {
 
 	@Override
 	public float getSoundVolume() {
-		return this.rotorRotationAmount > 0
-				? (Math.abs(this.rotorRotationAmount) + 0.001F)
-						/ (this.sound == null || this.sound.isDonePlaying() ? 2f : 4f)
-				: (Math.abs(this.wheelRotateAmount) + 0.001F)
-						/ (this.sound == null || this.sound.isDonePlaying() ? 2f : 4f);
+		return this.getCurrentEngineSpeed() > 0
+				? (Math.abs(this.getCurrentEngineSpeed()) + 0.001F) / (this.sound == null || this.sound.isDonePlaying() ? 2f : 4f)
+				: (Math.abs(this.wheelRotateAmount) + 0.001F) / (this.sound == null || this.sound.isDonePlaying() ? 2f : 4f);
 	}
 
 	@Nonnull
@@ -507,7 +595,7 @@ public class HelicopterEntity extends VehicleEntity {
 
 			Vec3d pos;
 			if (seat == null) {
-				pos = new Vec3d(this.posX, this.posY + this.height, this.posZ);
+				pos = new Vec3d(this.posX, this.posY + this.physicalHeight, this.posZ);
 			} else {
 				pos = seat.getPos();
 			}
@@ -523,14 +611,12 @@ public class HelicopterEntity extends VehicleEntity {
 
 	private void playHelicopterExplosion() {
 		this.world.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.posX, this.posY, this.posZ, 0.1, 0.1, 0.1);
-		this.world.playSound(this.posX, this.posY, this.posZ, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.NEUTRAL,
-				4.0F, (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F, false);
+		this.world.playSound(this.posX, this.posY, this.posZ, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.NEUTRAL, 4.0F,
+				(1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F, false);
 	}
 
-	private int computeMaxMovementRotation(float dist) {
-		// max dist: 1.4
-		return (dist <= 3) ? ((dist > 1) ? (int) ((float) (MAXMOVEMENTROTATION) / (2.0f - ((dist - 1) * 0.5f))) : 0)
-				: MAXMOVEMENTROTATION;
+	private float computeMaxMovementRotation(float dist) {
+		return (dist <= 3) ? (dist / 3.0f) * 90f : (this.lockOn) ? MAX_MOVEMENT_ROTATION : 180f;
 	}
 
 	private float getDistanceToGround() {
@@ -551,6 +637,25 @@ public class HelicopterEntity extends VehicleEntity {
 		return dist;
 	}
 
+	@SideOnly(Side.CLIENT)
+	private void increaseThirdPersonViewDistance(boolean shouldIncrease) {
+		if (shouldIncrease) {
+			RenderingHandler.INSTANCE.setThirdPersonViewDistance(RenderingHandler.INSTANCE.getThirdPersonViewDistance() + 1);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void decreaseThirdPersonViewDistance(boolean shouldDecrease) {
+		if (shouldDecrease) {
+			RenderingHandler.INSTANCE.setThirdPersonViewDistance(RenderingHandler.INSTANCE.getThirdPersonViewDistance() - 1);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void resetThirdPersonViewDistance() {
+		RenderingHandler.INSTANCE.resetThirdPersonViewDistance();
+	}
+
 	@Override
 	public void setDead() {
 		if (!world.isRemote) {
@@ -563,4 +668,160 @@ public class HelicopterEntity extends VehicleEntity {
 	public float getCollisionBorderSize() {
 		return 2.25f;
 	}
+
+	private boolean isRotorAreaFree() {
+		boolean isFree = true;
+		for (int x = -this.rotorLength; x < this.rotorLength && isFree; x++) {
+			for (int z = -this.rotorLength; z < this.rotorLength && isFree; z++) {
+				if (!(world.getBlockState(new BlockPos(this.posX + x, this.posY + this.physicalHeight, this.posZ + z))
+						.getBlock() instanceof BlockAir)) {
+					isFree = false;
+				}
+			}
+		}
+		return isFree;
+	}
+
+	protected void setFlying() {
+		this.isFlying = true;
+		this.shouldFallDamage = true;
+		this.prevInAirPos = this.getPositionVector();
+		this.setNoGravity(true);
+		for (int i = 0; i < this.seats.length; i++) {
+			Entity e = this.getEntityInSeat(i);
+			if (e != null) {
+				e.setNoGravity(false);
+			}
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public HudOverlay getHudOverlay() {
+		return this.hud;
+	}
+
+	protected void addHudOverlayElement(Class element) {
+		if (this.world.isRemote) {
+			this.getHudOverlay().enableHudElement(element);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	protected void updateHudOverlay() {
+		if (this.getControllingPassenger() == Minecraft.getMinecraft().player) {
+			this.getHudOverlay().updateHudElement(HudElementArtificialHorizon.class, this.roll, this.pitch);
+			this.getHudOverlay().updateHudElement(HudElementTachometer.class, this.getCurrentEngineSpeed(),
+					this.getCurrentEngineSpeed() / (float) this.engineSpeed,
+					this.computeRequiredEngineSpeedForHover() / (float) this.engineSpeed);
+			this.getHudOverlay().updateHudElement(HudElementAltimeter.class, (float) (this.posY), this.getDistanceToGround());
+			this.getHudOverlay().updateHudElement(HudElementStatsDisplay.class, this.simpleControle, this.lockOn);
+		}
+	}
+
+	private boolean shouldAdjustEngineSpeedByHorizontalControls(float requiredSpeedForHovering) {
+		return (this.forward() || this.backward() || this.left() || this.right())
+				&& !(this.getCurrentEngineSpeed() > requiredSpeedForHovering && this.upward())
+				&& !(this.getCurrentEngineSpeed() < requiredSpeedForHovering && this.downward());
+	}
+
+	private boolean shouldAdjustEngineSpeedWithoutHorizontalControls(float requiredSpeedForHovering) {
+		return !(this.forward() || this.backward() || this.left() || this.right())
+				&& !(this.getCurrentEngineSpeed() > requiredSpeedForHovering && this.upward())
+				&& !(this.getCurrentEngineSpeed() < requiredSpeedForHovering && this.downward());
+	}
+
+	protected void handleKeyEnableAutoPilot(boolean shouldChange) {
+		if (shouldChange) {
+			if (this.simpleControle) {
+				this.simpleControle = false;
+			} else {
+				this.simpleControle = true;
+			}
+		}
+	}
+
+	protected void handleKeyLock(boolean shouldChange) {
+		if (shouldChange) {
+			if (this.lockOn) {
+				this.lockOn = false;
+			} else {
+				this.lockOn = true;
+			}
+		}
+	}
+
+	// Physics
+
+	protected void changeCurrentEngineSpeed(float changeSpeed) {
+		this.setCurrentEngineSpeed(this.getCurrentEngineSpeed() + changeSpeed);
+	}
+
+	protected void setCurrentEngineSpeed(float speed) {
+		this.currentEngineSpeed = speed;
+		if (this.currentEngineSpeed > this.engineSpeed) {
+			this.currentEngineSpeed = this.engineSpeed;
+		} else if (this.currentEngineSpeed < 0) {
+			this.currentEngineSpeed = 0;
+		}
+	}
+
+	// F
+	protected float computeRotorSweptArea() {
+		return (float) (Math.PI * Math.pow(this.rotorLength, 2));
+	}
+
+	// P
+	protected float computeShaftPower() {
+		// M * n * (Math.PI / 30)
+		// M * this.getCurrentEngineSpeed() * (Math.PI / 30)
+		return (float) (this.torque * this.getCurrentEngineSpeed() * (Math.PI / 30));
+	}
+
+	protected float computeRotorForce() {
+		// (2 * p * F * (ζ * P) ^ 2) ^ (1 / 3)
+		return (float) Math.pow(2 * 1.2f * this.computeRotorSweptArea() * Math.pow(this.qualityGrade * this.computeShaftPower(), 2),
+				(1.0 / 3.0));
+	}
+
+	protected float computeVerticalForce() {
+		return ((1.0f - Math.abs(this.pitch) / 90) * (1 - Math.abs(this.roll) / 90)) * this.computeRotorForce();
+	}
+
+	protected float computeHorizontalForceFrontBack() {
+		if (this.pitch <= 90.0f && this.pitch >= -90.0f) {
+			return ((this.pitch / 90.0f) * (1.0f - Math.abs(this.roll) / 90.0f))
+					* (((1.0f - Math.abs(this.pitch) / 90.0f) * (1.0f - Math.abs(this.roll) / 90.0f)) * 5f) * this.computeRotorForce();
+		} else {
+			if (this.pitch < 0) {
+				return ((1.0f + (this.pitch + 90.0f) / 90.0f) * (1.0f - Math.abs(this.roll) / 90.0f))
+						* (((Math.abs(this.pitch + 90) / 90.0f) * (1.0f - Math.abs(this.roll) / 90.0f)) * 5f) * this.computeRotorForce();
+			} else {
+				return ((1.0f - (this.pitch - 90.0f) / 90.0f) * (1.0f - Math.abs(this.roll) / 90.0f))
+						* (((Math.abs(this.pitch - 90) / 90.0f) * (1.0f - Math.abs(this.roll) / 90.0f)) * 5f) * this.computeRotorForce();
+			}
+		}
+	}
+
+	protected float computeHorizontalForceLeftRight() {
+		return ((this.roll / 90.0f) * (1.0f - this.pitch / 90.0f)) * this.computeRotorForce();
+	}
+
+	protected float getCurrentEngineSpeed() {
+		return this.currentEngineSpeed;
+	}
+
+	protected float computeRequiredEngineSpeedForHover() {
+		float S = (9.81f * this.weight) / ((1 - Math.abs(this.pitch) / 90.0f) * (1.0f - Math.abs(this.roll) / 90.0f));
+		return (float) (((1 / this.qualityGrade) * Math.sqrt(Math.pow(S, 3) / (2 * 1.2f * this.computeRotorSweptArea())))
+				/ (this.torque * (Math.PI / 30)));
+	}
+
+	protected float computeThrottleUpDown() {
+		return ((float) this.enginePower / 735.5f) * 0.00029481132f;
+	}
+
+	protected float computeTorque() {
+		return (float) (enginePower / (engineSpeed * (Math.PI / 30)));
+	}
+
 }

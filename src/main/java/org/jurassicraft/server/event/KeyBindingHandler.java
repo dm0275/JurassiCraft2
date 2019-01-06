@@ -20,6 +20,8 @@ public class KeyBindingHandler {
     public static KeyBinding MICRORAPTOR_DISMOUNT = new KeyBinding("key.microraptor_dismount", Keyboard.KEY_C, "JurassiCraft");
     public static KeyBinding HELICOPTER_UP = new KeyBinding("key.vehicle_helicopter.up", Keyboard.KEY_SPACE, "JurassiCraft");
     public static KeyBinding HELICOPTER_DOWN = new KeyBinding("key.vehicle_helicopter.down", Keyboard.KEY_LCONTROL, "JurassiCraft");
+    public static KeyBinding HELICOPTER_THIRD_PERSON_VIEW_ZOOM_IN = new KeyBinding("key.vehicle_helicopter.third_person_view_zoom_in", Keyboard.KEY_NEXT, "JurassiCraft");
+    public static KeyBinding HELICOPTER_THIRD_PERSON_VIEW_ZOOM_OUT = new KeyBinding("key.vehicle_helicopter.third_person_view_zoom_out", Keyboard.KEY_PRIOR, "JurassiCraft");
 
     private static IKeyConflictContext context = new IKeyConflictContext() {
         @Override
@@ -33,6 +35,9 @@ public class KeyBindingHandler {
             return true;
         }
     };
+    
+    public static KeyBinding HELICOPTER_AUTOPILOT = new KeyBinding("key.vehicle_helicopter.autopilot", context, KeyModifier.CONTROL, Keyboard.KEY_A, "JurassiCraft");
+    public static KeyBinding HELICOPTER_LOCK = new KeyBinding("key.vehicle_helicopter.lock", context, KeyModifier.CONTROL, Keyboard.KEY_D, "JurassiCraft");
 
     public static List<KeyBinding> VEHICLE_KEY_BINDINGS = IntStream.range(0, 9)
             .mapToObj(i -> new KeyBinding("key.vehicle_" + i + ".switch", context, KeyModifier.CONTROL, Keyboard.KEY_1 + i, "JurassiCraft"))
@@ -42,6 +47,10 @@ public class KeyBindingHandler {
         ClientRegistry.registerKeyBinding(MICRORAPTOR_DISMOUNT);
         ClientRegistry.registerKeyBinding(HELICOPTER_UP);
         ClientRegistry.registerKeyBinding(HELICOPTER_DOWN);
+        ClientRegistry.registerKeyBinding(HELICOPTER_THIRD_PERSON_VIEW_ZOOM_IN);
+        ClientRegistry.registerKeyBinding(HELICOPTER_THIRD_PERSON_VIEW_ZOOM_OUT);
+        ClientRegistry.registerKeyBinding(HELICOPTER_AUTOPILOT);
+        ClientRegistry.registerKeyBinding(HELICOPTER_LOCK);
         VEHICLE_KEY_BINDINGS.forEach(ClientRegistry::registerKeyBinding);
     }
 }

@@ -16,7 +16,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
@@ -29,7 +32,10 @@ import java.util.List;
 
 import org.jurassicraft.JurassiCraft;
 import org.jurassicraft.client.proxy.ClientProxy;
+import org.jurassicraft.client.render.entity.ThirdPersonViewRenderer;
+import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer;
 import org.jurassicraft.server.entity.DinosaurEntity;
+import org.jurassicraft.server.entity.vehicle.HelicopterEntity;
 import org.jurassicraft.server.entity.vehicle.MultiSeatedEntity;
 import org.jurassicraft.server.item.DartGun;
 import org.jurassicraft.server.item.ItemHandler;
@@ -61,9 +67,16 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public void onGameOverlay(RenderGameOverlayEvent.Post event) {
+    public void onGameOverlay(RenderGameOverlayEvent.Text event) {
         Minecraft mc = Minecraft.getMinecraft();
         EntityPlayer player = mc.player;
+        
+        if(player.getRidingEntity() != null && player.getRidingEntity() instanceof HelicopterEntity && player.getRidingEntity().isEntityAlive()) {
+        	HelicopterEntity heli = (HelicopterEntity) player.getRidingEntity();
+        	if(heli.isController(player)) {
+        		HelicopterHUDRenderer.render(heli, event.getPartialTicks());
+        	}
+        }
 
         for(EnumHand hand : EnumHand.values()) {
             ItemStack stack = player.getHeldItem(hand);
