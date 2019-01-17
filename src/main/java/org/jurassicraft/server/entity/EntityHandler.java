@@ -32,6 +32,7 @@ import org.jurassicraft.server.entity.item.PaddockSignEntity;
 import org.jurassicraft.server.entity.vehicle.FordExplorerEntity;
 import org.jurassicraft.server.entity.vehicle.HelicopterEntity;
 import org.jurassicraft.server.entity.vehicle.JeepWranglerEntity;
+import org.jurassicraft.server.entity.vehicle.TransportHelicopterEntity;
 import org.jurassicraft.server.message.SpecialAnimationMessage;
 import org.jurassicraft.server.period.TimePeriod;
 
@@ -127,7 +128,7 @@ public class EntityHandler {
 //        EntityRegistry.addSpawn(GoatEntity.class, 15, 1, 3, EnumCreatureType.CREATURE, biomeHills.toArray(new Biome[biomeForest.size()]));
 
         registerEntity(DinosaurEggEntity.class, "Dinosaur Egg");
-        registerEntity(HelicopterEntity.class, "Helicopter base");
+        registerEntity(TransportHelicopterEntity.class, "Helicopter base");
     }
 
     private static void initDinosaurs() {

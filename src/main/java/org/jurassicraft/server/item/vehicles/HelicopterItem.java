@@ -10,6 +10,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jurassicraft.server.entity.vehicle.HelicopterEntity;
+import org.jurassicraft.server.entity.vehicle.TransportHelicopterEntity;
 import org.jurassicraft.server.tab.TabHandler;
 
 import java.util.List;
@@ -31,7 +32,8 @@ public class HelicopterItem extends Item {
     public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         ItemStack stack = player.getHeldItem(hand);
         if (!world.isRemote) {
-            HelicopterEntity helicopter = new HelicopterEntity(world);
+            TransportHelicopterEntity helicopter = new TransportHelicopterEntity(world);
+//        	HelicopterEntity helicopter = new HelicopterEntity(world);
             helicopter.setPositionAndRotation(pos.getX() + hitX, pos.getY() + hitY, pos.getZ() + hitZ, player.rotationYaw, 0.0F);
             world.spawnEntity(helicopter); //Uncomment for testing
             stack.shrink(1);

@@ -1,6 +1,9 @@
 package org.jurassicraft.client.event;
 
 import net.ilexiconn.llibrary.LLibrary;
+import net.ilexiconn.llibrary.client.event.ApplyRenderRotationsEvent;
+import net.ilexiconn.llibrary.client.event.PlayerModelEvent;
+import net.ilexiconn.llibrary.client.event.PlayerViewDistanceEvent;
 import net.ilexiconn.llibrary.client.util.ClientUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -32,6 +35,7 @@ import java.util.List;
 
 import org.jurassicraft.JurassiCraft;
 import org.jurassicraft.client.proxy.ClientProxy;
+import org.jurassicraft.client.render.RenderingHandler;
 import org.jurassicraft.client.render.entity.ThirdPersonViewRenderer;
 import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer;
 import org.jurassicraft.server.entity.DinosaurEntity;
@@ -42,6 +46,7 @@ import org.jurassicraft.server.item.ItemHandler;
 import org.jurassicraft.server.message.AttemptMoveToSeatMessage;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GLSync;
 
 public class ClientEventHandler {
     private static final Minecraft MC = Minecraft.getMinecraft();
@@ -201,6 +206,42 @@ public class ClientEventHandler {
 					((DinosaurEntity) entity).isRendered = false;
 				}
 			}
+		}
+	}
+	
+	@SubscribeEvent
+	public void onSetupAngles(RenderPlayerEvent.Pre event) {
+		EntityPlayer player = event.getEntityPlayer();
+		if (player.getRidingEntity() instanceof HelicopterEntity) {
+			// GlStateManager.pushMatrix();
+			HelicopterEntity heli = (HelicopterEntity) player.getRidingEntity();
+			GlStateManager.translate(Math.cos(Math.toRadians(heli.rotationYaw - 90)) * 1.0f, 1.5f, Math.sin(Math.toRadians(heli.rotationYaw - 90)) * 1.0f);
+			GlStateManager.rotate((float) (Math.cos(Math.toRadians(heli.rotationYaw)) * heli.pitch), 1, 0, 0);
+			GlStateManager.rotate((float) (Math.sin(Math.toRadians(heli.rotationYaw)) * heli.pitch), 0, 0, 1);
+			// GlStateManager.rotate((float) (Math.cos(Math.toRadians(heli.rotationYaw -
+			// 90)) * heli.roll), 1, 0, 0);
+			// GlStateManager.rotate((float) (Math.sin(Math.toRadians(heli.rotationYaw -
+			// 90)) * heli.roll), 0, 0, 1);
+//			System.out.println(Math.sin(Math.toRadians(heli.rotationYaw)) * heli.pitch);
+			GlStateManager.translate(-Math.cos(Math.toRadians(heli.rotationYaw - 90)) * 1.0f, -1.5f, -Math.sin(Math.toRadians(heli.rotationYaw - 90)) * 1.0f);
+			// GlStateManager.popMatrix();
+		}
+	}
+
+	@SubscribeEvent
+	public void onSetupAngles(RenderPlayerEvent.Post event) {
+		EntityPlayer player = event.getEntityPlayer();
+		if (player.getRidingEntity() instanceof HelicopterEntity) {
+			HelicopterEntity heli = (HelicopterEntity) player.getRidingEntity();
+			GlStateManager.translate(Math.cos(Math.toRadians(heli.rotationYaw - 90)) * 1.0f, 1.5f, Math.sin(Math.toRadians(heli.rotationYaw - 90)) * 1.0f);
+			GlStateManager.rotate(-(float) (Math.cos(Math.toRadians(heli.rotationYaw)) * heli.pitch), 1, 0, 0);
+			GlStateManager.rotate(-(float) (Math.sin(Math.toRadians(heli.rotationYaw)) * heli.pitch), 0, 0, 1);
+			// GlStateManager.rotate(-(float) (Math.cos(Math.toRadians(heli.rotationYaw -
+			// 90)) * heli.roll), 1, 0, 0);
+			// GlStateManager.rotate(-(float) (Math.sin(Math.toRadians(heli.rotationYaw -
+			// 90)) * heli.roll), 0, 0, 1);
+			GlStateManager.translate(-Math.cos(Math.toRadians(heli.rotationYaw - 90)) * 1.0f, -1.5f, -Math.sin(Math.toRadians(heli.rotationYaw - 90)) * 1.0f);
+			// GlStateManager.popMatrix();
 		}
 	}
 }

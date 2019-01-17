@@ -179,19 +179,13 @@ public class OverridenEntityRenderer extends EntityRenderer {
 	private float itemActivationOffX;
 	private float itemActivationOffY;
 	private ShaderGroup shaderGroup;
-	private static final ResourceLocation[] SHADERS_TEXTURES = new ResourceLocation[] { new ResourceLocation("shaders/post/notch.json"),
-			new ResourceLocation("shaders/post/fxaa.json"), new ResourceLocation("shaders/post/art.json"),
-			new ResourceLocation("shaders/post/bumpy.json"), new ResourceLocation("shaders/post/blobs2.json"),
-			new ResourceLocation("shaders/post/pencil.json"), new ResourceLocation("shaders/post/color_convolve.json"),
-			new ResourceLocation("shaders/post/deconverge.json"), new ResourceLocation("shaders/post/flip.json"),
-			new ResourceLocation("shaders/post/invert.json"), new ResourceLocation("shaders/post/ntsc.json"),
-			new ResourceLocation("shaders/post/outline.json"), new ResourceLocation("shaders/post/phosphor.json"),
-			new ResourceLocation("shaders/post/scan_pincushion.json"), new ResourceLocation("shaders/post/sobel.json"),
-			new ResourceLocation("shaders/post/bits.json"), new ResourceLocation("shaders/post/desaturate.json"),
-			new ResourceLocation("shaders/post/green.json"), new ResourceLocation("shaders/post/blur.json"),
-			new ResourceLocation("shaders/post/wobble.json"), new ResourceLocation("shaders/post/blobs.json"),
-			new ResourceLocation("shaders/post/antialias.json"), new ResourceLocation("shaders/post/creeper.json"),
-			new ResourceLocation("shaders/post/spider.json") };
+	private static final ResourceLocation[] SHADERS_TEXTURES = new ResourceLocation[] { new ResourceLocation("shaders/post/notch.json"), new ResourceLocation("shaders/post/fxaa.json"),
+			new ResourceLocation("shaders/post/art.json"), new ResourceLocation("shaders/post/bumpy.json"), new ResourceLocation("shaders/post/blobs2.json"), new ResourceLocation("shaders/post/pencil.json"),
+			new ResourceLocation("shaders/post/color_convolve.json"), new ResourceLocation("shaders/post/deconverge.json"), new ResourceLocation("shaders/post/flip.json"),
+			new ResourceLocation("shaders/post/invert.json"), new ResourceLocation("shaders/post/ntsc.json"), new ResourceLocation("shaders/post/outline.json"), new ResourceLocation("shaders/post/phosphor.json"),
+			new ResourceLocation("shaders/post/scan_pincushion.json"), new ResourceLocation("shaders/post/sobel.json"), new ResourceLocation("shaders/post/bits.json"),
+			new ResourceLocation("shaders/post/desaturate.json"), new ResourceLocation("shaders/post/green.json"), new ResourceLocation("shaders/post/blur.json"), new ResourceLocation("shaders/post/wobble.json"),
+			new ResourceLocation("shaders/post/blobs.json"), new ResourceLocation("shaders/post/antialias.json"), new ResourceLocation("shaders/post/creeper.json"), new ResourceLocation("shaders/post/spider.json") };
 	public static final int SHADER_COUNT = SHADERS_TEXTURES.length;
 	private int shaderIndex;
 	private boolean useShader;
@@ -261,8 +255,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 
 	public void loadShader(ResourceLocation resourceLocationIn) {
 		try {
-			this.shaderGroup = new ShaderGroup(this.mc.getTextureManager(), this.resourceManager, this.mc.getFramebuffer(),
-					resourceLocationIn);
+			this.shaderGroup = new ShaderGroup(this.mc.getTextureManager(), this.resourceManager, this.mc.getFramebuffer(), resourceLocationIn);
 			this.shaderGroup.createBindFramebuffers(this.mc.displayWidth, this.mc.displayHeight);
 			this.useShader = true;
 		} catch (IOException ioexception) {
@@ -399,8 +392,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 				this.pointedEntity = null;
 				Vec3d vec3d3 = null;
 				float f = 1.0F;
-				List<Entity> list = this.mc.world.getEntitiesInAABBexcluding(entity,
-						entity.getEntityBoundingBox().expand(vec3d1.x * d0, vec3d1.y * d0, vec3d1.z * d0).grow(1.0D, 1.0D, 1.0D),
+				List<Entity> list = this.mc.world.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().expand(vec3d1.x * d0, vec3d1.y * d0, vec3d1.z * d0).grow(1.0D, 1.0D, 1.0D),
 						Predicates.and(EntitySelectors.NOT_SPECTATING, new Predicate<Entity>() {
 							public boolean apply(@Nullable Entity p_apply_1_) {
 								return p_apply_1_ != null && p_apply_1_.canBeCollidedWith();
@@ -542,8 +534,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 			float f1 = -(entityplayer.distanceWalkedModified + f * partialTicks);
 			float f2 = entityplayer.prevCameraYaw + (entityplayer.cameraYaw - entityplayer.prevCameraYaw) * partialTicks;
 			float f3 = entityplayer.prevCameraPitch + (entityplayer.cameraPitch - entityplayer.prevCameraPitch) * partialTicks;
-			GlStateManager.translate(MathHelper.sin(f1 * (float) Math.PI) * f2 * 0.5F, -Math.abs(MathHelper.cos(f1 * (float) Math.PI) * f2),
-					0.0F);
+			GlStateManager.translate(MathHelper.sin(f1 * (float) Math.PI) * f2 * 0.5F, -Math.abs(MathHelper.cos(f1 * (float) Math.PI) * f2), 0.0F);
 			GlStateManager.rotate(MathHelper.sin(f1 * (float) Math.PI) * f2 * 3.0F, 0.0F, 0.0F, 1.0F);
 			GlStateManager.rotate(Math.abs(MathHelper.cos(f1 * (float) Math.PI - 0.2F) * f2) * 5.0F, 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotate(f3, 1.0F, 0.0F, 0.0F);
@@ -569,10 +560,8 @@ public class OverridenEntityRenderer extends EntityRenderer {
 				IBlockState iblockstate = this.mc.world.getBlockState(blockpos);
 				net.minecraftforge.client.ForgeHooksClient.orientBedCamera(this.mc.world, blockpos, iblockstate, entity);
 
-				GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F, 0.0F,
-						-1.0F, 0.0F);
-				GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F,
-						0.0F, 0.0F);
+				GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F, 0.0F, -1.0F, 0.0F);
+				GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
 			}
 		} else if (this.mc.gameSettings.thirdPersonView > 0) {
 			double d3 = (double) (this.thirdPersonDistancePrev + (this.thirdPersonDistance - this.thirdPersonDistancePrev) * partialTicks);
@@ -598,8 +587,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 					f3 = f3 * 0.1F;
 					f4 = f4 * 0.1F;
 					f5 = f5 * 0.1F;
-					RayTraceResult raytraceresult = this.mc.world.rayTraceBlocks(
-							new Vec3d(d0 + (double) f3, d1 + (double) f4, d2 + (double) f5),
+					RayTraceResult raytraceresult = this.mc.world.rayTraceBlocks(new Vec3d(d0 + (double) f3, d1 + (double) f4, d2 + (double) f5),
 							new Vec3d(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5));
 
 					if (raytraceresult != null) {
@@ -631,12 +619,10 @@ public class OverridenEntityRenderer extends EntityRenderer {
 			float roll = 0.0F;
 			if (entity instanceof EntityAnimal) {
 				EntityAnimal entityanimal = (EntityAnimal) entity;
-				yaw = entityanimal.prevRotationYawHead + (entityanimal.rotationYawHead - entityanimal.prevRotationYawHead) * partialTicks
-						+ 180.0F;
+				yaw = entityanimal.prevRotationYawHead + (entityanimal.rotationYawHead - entityanimal.prevRotationYawHead) * partialTicks + 180.0F;
 			}
 			IBlockState state = ActiveRenderInfo.getBlockStateAtEntityViewpoint(this.mc.world, entity, partialTicks);
-			net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup event = new net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup(
-					this, entity, state, partialTicks, yaw, pitch, roll);
+			net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup event = new net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup(this, entity, state, partialTicks, yaw, pitch, roll);
 			net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
 			GlStateManager.rotate(event.getRoll(), 0.0F, 0.0F, 1.0F);
 			GlStateManager.rotate(event.getPitch(), 1.0F, 0.0F, 0.0F);
@@ -668,8 +654,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 			GlStateManager.scale(this.cameraZoom, this.cameraZoom, 1.0D);
 		}
 
-		Project.gluPerspective(this.getFOVModifier(partialTicks, true), (float) this.mc.displayWidth / (float) this.mc.displayHeight, 0.05F,
-				this.farPlaneDistance * MathHelper.SQRT_2);
+		Project.gluPerspective(this.getFOVModifier(partialTicks, true), (float) this.mc.displayWidth / (float) this.mc.displayHeight, 0.05F, this.farPlaneDistance * MathHelper.SQRT_2);
 		GlStateManager.matrixMode(5888);
 		GlStateManager.loadIdentity();
 
@@ -734,8 +719,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 				GlStateManager.translate((float) (-(pass * 2 - 1)) * 0.07F, 0.0F, 0.0F);
 			}
 
-			Project.gluPerspective(this.getFOVModifier(partialTicks, false), (float) this.mc.displayWidth / (float) this.mc.displayHeight,
-					0.05F, this.farPlaneDistance * 2.0F);
+			Project.gluPerspective(this.getFOVModifier(partialTicks, false), (float) this.mc.displayWidth / (float) this.mc.displayHeight, 0.05F, this.farPlaneDistance * 2.0F);
 			GlStateManager.matrixMode(5888);
 			GlStateManager.loadIdentity();
 
@@ -750,12 +734,10 @@ public class OverridenEntityRenderer extends EntityRenderer {
 				this.applyBobbing(partialTicks);
 			}
 
-			boolean flag = this.mc.getRenderViewEntity() instanceof EntityLivingBase
-					&& ((EntityLivingBase) this.mc.getRenderViewEntity()).isPlayerSleeping();
+			boolean flag = this.mc.getRenderViewEntity() instanceof EntityLivingBase && ((EntityLivingBase) this.mc.getRenderViewEntity()).isPlayerSleeping();
 
 			if (!net.minecraftforge.client.ForgeHooksClient.renderFirstPersonHand(mc.renderGlobal, partialTicks, pass))
-				if (this.mc.gameSettings.thirdPersonView == 0 && !flag && !this.mc.gameSettings.hideGUI
-						&& !this.mc.playerController.isSpectator()) {
+				if (this.mc.gameSettings.thirdPersonView == 0 && !flag && !this.mc.gameSettings.hideGUI && !this.mc.playerController.isSpectator()) {
 					this.enableLightmap();
 					this.itemRenderer.renderItemInFirstPerson(partialTicks);
 					this.disableLightmap();
@@ -1080,10 +1062,8 @@ public class OverridenEntityRenderer extends EntityRenderer {
 					});
 					crashreportcategory.addDetail("Screen size", new ICrashReportDetail<String>() {
 						public String call() throws Exception {
-							return String.format("Scaled: (%d, %d). Absolute: (%d, %d). Scale factor of %d",
-									scaledresolution.getScaledWidth(), scaledresolution.getScaledHeight(),
-									OverridenEntityRenderer.this.mc.displayWidth, OverridenEntityRenderer.this.mc.displayHeight,
-									scaledresolution.getScaleFactor());
+							return String.format("Scaled: (%d, %d). Absolute: (%d, %d). Scale factor of %d", scaledresolution.getScaledWidth(), scaledresolution.getScaledHeight(),
+									OverridenEntityRenderer.this.mc.displayWidth, OverridenEntityRenderer.this.mc.displayHeight, scaledresolution.getScaleFactor());
 						}
 					});
 					throw new ReportedException(crashreport);
@@ -1099,13 +1079,11 @@ public class OverridenEntityRenderer extends EntityRenderer {
 			getRenderedChunks = RenderGlobal.class.getMethod("getRenderedChunks");
 			getRenderedChunks.setAccessible(true);
 			renderedChunks = (int) getRenderedChunks.invoke(this.mc.renderGlobal);
-		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException e) {
-			e.printStackTrace();
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			// e.printStackTrace();
 		}
 		if (renderedChunks > 10 && this.mc.renderGlobal.hasNoChunkUpdates() && !this.mc.getIntegratedServer().isWorldIconSet()) {
-			BufferedImage bufferedimage = ScreenShotHelper.createScreenshot(this.mc.displayWidth, this.mc.displayHeight,
-					this.mc.getFramebuffer());
+			BufferedImage bufferedimage = ScreenShotHelper.createScreenshot(this.mc.displayWidth, this.mc.displayHeight, this.mc.getFramebuffer());
 			int i = bufferedimage.getWidth();
 			int j = bufferedimage.getHeight();
 			int k = 0;
@@ -1149,8 +1127,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 					Block block = this.mc.world.getBlockState(blockpos).getBlock();
 
 					if (this.mc.playerController.getCurrentGameType() == GameType.SPECTATOR) {
-						flag = block.hasTileEntity(this.mc.world.getBlockState(blockpos))
-								&& this.mc.world.getTileEntity(blockpos) instanceof IInventory;
+						flag = block.hasTileEntity(this.mc.world.getBlockState(blockpos)) && this.mc.world.getTileEntity(blockpos) instanceof IInventory;
 					} else {
 						flag = !itemstack.isEmpty() && (itemstack.canDestroy(block) || itemstack.canPlaceOn(block));
 					}
@@ -1221,14 +1198,12 @@ public class OverridenEntityRenderer extends EntityRenderer {
 			this.mc.mcProfiler.endStartSection("sky");
 			GlStateManager.matrixMode(5889);
 			GlStateManager.loadIdentity();
-			Project.gluPerspective(this.getFOVModifier(partialTicks, true), (float) this.mc.displayWidth / (float) this.mc.displayHeight,
-					0.05F, this.farPlaneDistance * 2.0F);
+			Project.gluPerspective(this.getFOVModifier(partialTicks, true), (float) this.mc.displayWidth / (float) this.mc.displayHeight, 0.05F, this.farPlaneDistance * 2.0F);
 			GlStateManager.matrixMode(5888);
 			renderglobal.renderSky(partialTicks, pass);
 			GlStateManager.matrixMode(5889);
 			GlStateManager.loadIdentity();
-			Project.gluPerspective(this.getFOVModifier(partialTicks, true), (float) this.mc.displayWidth / (float) this.mc.displayHeight,
-					0.05F, this.farPlaneDistance * MathHelper.SQRT_2);
+			Project.gluPerspective(this.getFOVModifier(partialTicks, true), (float) this.mc.displayWidth / (float) this.mc.displayHeight, 0.05F, this.farPlaneDistance * MathHelper.SQRT_2);
 			GlStateManager.matrixMode(5888);
 		}
 
@@ -1284,8 +1259,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 			EntityPlayer entityplayer = (EntityPlayer) entity;
 			GlStateManager.disableAlpha();
 			this.mc.mcProfiler.endStartSection("outline");
-			if (!net.minecraftforge.client.ForgeHooksClient.onDrawBlockHighlight(renderglobal, entityplayer, mc.objectMouseOver, 0,
-					partialTicks))
+			if (!net.minecraftforge.client.ForgeHooksClient.onDrawBlockHighlight(renderglobal, entityplayer, mc.objectMouseOver, 0, partialTicks))
 				renderglobal.drawSelectionBox(entityplayer, this.mc.objectMouseOver, 0, partialTicks);
 			GlStateManager.enableAlpha();
 		}
@@ -1296,8 +1270,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 
 		this.mc.mcProfiler.endStartSection("destroyProgress");
 		GlStateManager.enableBlend();
-		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE,
-				GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 		this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
 		renderglobal.drawBlockDamageTexture(Tessellator.getInstance(), Tessellator.getInstance().getBuffer(), entity, partialTicks);
 		this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
@@ -1322,8 +1295,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 		renderglobal.renderWorldBorder(entity, partialTicks);
 		GlStateManager.disableBlend();
 		GlStateManager.enableCull();
-		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-				GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 		GlStateManager.alphaFunc(516, 0.1F);
 		this.setupFog(0, partialTicks);
 		GlStateManager.enableBlend();
@@ -1339,8 +1311,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 			net.minecraftforge.client.ForgeHooksClient.setRenderPass(1);
 			renderglobal.renderEntities(entity, icamera, partialTicks);
 			// restore blending function changed by RenderGlobal.preRenderDamagedBlocks
-			GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-					GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+			GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 			net.minecraftforge.client.ForgeHooksClient.setRenderPass(-1);
 			RenderHelper.disableStandardItemLighting();
 		}
@@ -1371,8 +1342,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 			this.mc.mcProfiler.endStartSection("clouds");
 			GlStateManager.matrixMode(5889);
 			GlStateManager.loadIdentity();
-			Project.gluPerspective(this.getFOVModifier(partialTicks, true), (float) this.mc.displayWidth / (float) this.mc.displayHeight,
-					0.05F, this.farPlaneDistance * 4.0F);
+			Project.gluPerspective(this.getFOVModifier(partialTicks, true), (float) this.mc.displayWidth / (float) this.mc.displayHeight, 0.05F, this.farPlaneDistance * 4.0F);
 			GlStateManager.matrixMode(5888);
 			GlStateManager.pushMatrix();
 			this.setupFog(0, partialTicks);
@@ -1381,8 +1351,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 			GlStateManager.popMatrix();
 			GlStateManager.matrixMode(5889);
 			GlStateManager.loadIdentity();
-			Project.gluPerspective(this.getFOVModifier(partialTicks, true), (float) this.mc.displayWidth / (float) this.mc.displayHeight,
-					0.05F, this.farPlaneDistance * MathHelper.SQRT_2);
+			Project.gluPerspective(this.getFOVModifier(partialTicks, true), (float) this.mc.displayWidth / (float) this.mc.displayHeight, 0.05F, this.farPlaneDistance * MathHelper.SQRT_2);
 			GlStateManager.matrixMode(5888);
 		}
 	}
@@ -1413,14 +1382,12 @@ public class OverridenEntityRenderer extends EntityRenderer {
 			}
 
 			for (int l = 0; l < k; ++l) {
-				BlockPos blockpos1 = world.getPrecipitationHeight(blockpos.add(this.random.nextInt(10) - this.random.nextInt(10), 0,
-						this.random.nextInt(10) - this.random.nextInt(10)));
+				BlockPos blockpos1 = world.getPrecipitationHeight(blockpos.add(this.random.nextInt(10) - this.random.nextInt(10), 0, this.random.nextInt(10) - this.random.nextInt(10)));
 				Biome biome = world.getBiome(blockpos1);
 				BlockPos blockpos2 = blockpos1.down();
 				IBlockState iblockstate = world.getBlockState(blockpos2);
 
-				if (blockpos1.getY() <= blockpos.getY() + 10 && blockpos1.getY() >= blockpos.getY() - 10 && biome.canRain()
-						&& biome.getTemperature(blockpos1) >= 0.15F) {
+				if (blockpos1.getY() <= blockpos.getY() + 10 && blockpos1.getY() >= blockpos.getY() - 10 && biome.canRain() && biome.getTemperature(blockpos1) >= 0.15F) {
 					double d3 = this.random.nextDouble();
 					double d4 = this.random.nextDouble();
 					AxisAlignedBB axisalignedbb = iblockstate.getBoundingBox(world, blockpos2);
@@ -1435,14 +1402,12 @@ public class OverridenEntityRenderer extends EntityRenderer {
 								d2 = (double) blockpos2.getZ() + d4;
 							}
 
-							this.mc.world.spawnParticle(EnumParticleTypes.WATER_DROP, (double) blockpos2.getX() + d3,
-									(double) ((float) blockpos2.getY() + 0.1F) + axisalignedbb.maxY, (double) blockpos2.getZ() + d4, 0.0D,
+							this.mc.world.spawnParticle(EnumParticleTypes.WATER_DROP, (double) blockpos2.getX() + d3, (double) ((float) blockpos2.getY() + 0.1F) + axisalignedbb.maxY, (double) blockpos2.getZ() + d4, 0.0D,
 									0.0D, 0.0D, new int[0]);
 						}
 					} else {
-						this.mc.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, (double) blockpos1.getX() + d3,
-								(double) ((float) blockpos1.getY() + 0.1F) - axisalignedbb.minY, (double) blockpos1.getZ() + d4, 0.0D, 0.0D,
-								0.0D, new int[0]);
+						this.mc.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, (double) blockpos1.getX() + d3, (double) ((float) blockpos1.getY() + 0.1F) - axisalignedbb.minY, (double) blockpos1.getZ() + d4, 0.0D,
+								0.0D, 0.0D, new int[0]);
 					}
 				}
 			}
@@ -1450,8 +1415,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 			if (j > 0 && this.random.nextInt(3) < this.rainSoundCounter++) {
 				this.rainSoundCounter = 0;
 
-				if (d1 > (double) (blockpos.getY() + 1)
-						&& world.getPrecipitationHeight(blockpos).getY() > MathHelper.floor((float) blockpos.getY())) {
+				if (d1 > (double) (blockpos.getY() + 1) && world.getPrecipitationHeight(blockpos).getY() > MathHelper.floor((float) blockpos.getY())) {
 					this.mc.world.playSound(d0, d1, d2, SoundEvents.WEATHER_RAIN_ABOVE, SoundCategory.WEATHER, 0.1F, 0.5F, false);
 				} else {
 					this.mc.world.playSound(d0, d1, d2, SoundEvents.WEATHER_RAIN, SoundCategory.WEATHER, 0.2F, 1.0F, false);
@@ -1484,8 +1448,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 			GlStateManager.disableCull();
 			GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
 			GlStateManager.enableBlend();
-			GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-					GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+			GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 			GlStateManager.alphaFunc(516, 0.1F);
 			double d0 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * (double) partialTicks;
 			double d1 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double) partialTicks;
@@ -1546,8 +1509,8 @@ public class OverridenEntityRenderer extends EntityRenderer {
 									bufferbuilder.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
 								}
 
-								double d5 = -((double) (this.rendererUpdateCount + l1 * l1 * 3121 + l1 * 45238971 + k1 * k1 * 418711
-										+ k1 * 13761 & 31) + (double) partialTicks) / 32.0D * (3.0D + this.random.nextDouble());
+								double d5 = -((double) (this.rendererUpdateCount + l1 * l1 * 3121 + l1 * 45238971 + k1 * k1 * 418711 + k1 * 13761 & 31) + (double) partialTicks) / 32.0D
+										* (3.0D + this.random.nextDouble());
 								double d6 = (double) ((float) l1 + 0.5F) - entity.posX;
 								double d7 = (double) ((float) k1 + 0.5F) - entity.posZ;
 								float f3 = MathHelper.sqrt(d6 * d6 + d7 * d7) / (float) i1;
@@ -1556,14 +1519,10 @@ public class OverridenEntityRenderer extends EntityRenderer {
 								int j3 = world.getCombinedLight(blockpos$mutableblockpos, 0);
 								int k3 = j3 >> 16 & 65535;
 								int l3 = j3 & 65535;
-								bufferbuilder.pos((double) l1 - d3 + 0.5D, (double) l2, (double) k1 - d4 + 0.5D)
-										.tex(0.0D, (double) k2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
-								bufferbuilder.pos((double) l1 + d3 + 0.5D, (double) l2, (double) k1 + d4 + 0.5D)
-										.tex(1.0D, (double) k2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
-								bufferbuilder.pos((double) l1 + d3 + 0.5D, (double) k2, (double) k1 + d4 + 0.5D)
-										.tex(1.0D, (double) l2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
-								bufferbuilder.pos((double) l1 - d3 + 0.5D, (double) k2, (double) k1 - d4 + 0.5D)
-										.tex(0.0D, (double) l2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
+								bufferbuilder.pos((double) l1 - d3 + 0.5D, (double) l2, (double) k1 - d4 + 0.5D).tex(0.0D, (double) k2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
+								bufferbuilder.pos((double) l1 + d3 + 0.5D, (double) l2, (double) k1 + d4 + 0.5D).tex(1.0D, (double) k2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
+								bufferbuilder.pos((double) l1 + d3 + 0.5D, (double) k2, (double) k1 + d4 + 0.5D).tex(1.0D, (double) l2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
+								bufferbuilder.pos((double) l1 - d3 + 0.5D, (double) k2, (double) k1 - d4 + 0.5D).tex(0.0D, (double) l2 * 0.25D + d5).color(1.0F, 1.0F, 1.0F, f4).lightmap(k3, l3).endVertex();
 							} else {
 								if (j1 != 1) {
 									if (j1 >= 0) {
@@ -1586,18 +1545,10 @@ public class OverridenEntityRenderer extends EntityRenderer {
 								int i4 = (world.getCombinedLight(blockpos$mutableblockpos, 0) * 3 + 15728880) / 4;
 								int j4 = i4 >> 16 & 65535;
 								int k4 = i4 & 65535;
-								bufferbuilder.pos((double) l1 - d3 + 0.5D, (double) l2, (double) k1 - d4 + 0.5D)
-										.tex(0.0D + d9, (double) k2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4)
-										.endVertex();
-								bufferbuilder.pos((double) l1 + d3 + 0.5D, (double) l2, (double) k1 + d4 + 0.5D)
-										.tex(1.0D + d9, (double) k2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4)
-										.endVertex();
-								bufferbuilder.pos((double) l1 + d3 + 0.5D, (double) k2, (double) k1 + d4 + 0.5D)
-										.tex(1.0D + d9, (double) l2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4)
-										.endVertex();
-								bufferbuilder.pos((double) l1 - d3 + 0.5D, (double) k2, (double) k1 - d4 + 0.5D)
-										.tex(0.0D + d9, (double) l2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4)
-										.endVertex();
+								bufferbuilder.pos((double) l1 - d3 + 0.5D, (double) l2, (double) k1 - d4 + 0.5D).tex(0.0D + d9, (double) k2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4).endVertex();
+								bufferbuilder.pos((double) l1 + d3 + 0.5D, (double) l2, (double) k1 + d4 + 0.5D).tex(1.0D + d9, (double) k2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4).endVertex();
+								bufferbuilder.pos((double) l1 + d3 + 0.5D, (double) k2, (double) k1 + d4 + 0.5D).tex(1.0D + d9, (double) l2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4).endVertex();
+								bufferbuilder.pos((double) l1 - d3 + 0.5D, (double) k2, (double) k1 - d4 + 0.5D).tex(0.0D + d9, (double) l2 * 0.25D + d8 + d10).color(1.0F, 1.0F, 1.0F, f5).lightmap(j4, k4).endVertex();
 							}
 						}
 					}
@@ -1624,8 +1575,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 		GlStateManager.clear(256);
 		GlStateManager.matrixMode(5889);
 		GlStateManager.loadIdentity();
-		GlStateManager.ortho(0.0D, scaledresolution.getScaledWidth_double(), scaledresolution.getScaledHeight_double(), 0.0D, 1000.0D,
-				3000.0D);
+		GlStateManager.ortho(0.0D, scaledresolution.getScaledWidth_double(), scaledresolution.getScaledHeight_double(), 0.0D, 1000.0D, 3000.0D);
 		GlStateManager.matrixMode(5888);
 		GlStateManager.loadIdentity();
 		GlStateManager.translate(0.0F, 0.0F, -2000.0F);
@@ -1703,8 +1653,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 			Vec3d viewport = ActiveRenderInfo.projectViewFromEntity(entity, partialTicks);
 			BlockPos viewportPos = new BlockPos(viewport);
 			IBlockState viewportState = this.mc.world.getBlockState(viewportPos);
-			Vec3d inMaterialColor = viewportState.getBlock().getFogColor(this.mc.world, viewportPos, viewportState, entity,
-					new Vec3d(fogColorRed, fogColorGreen, fogColorBlue), partialTicks);
+			Vec3d inMaterialColor = viewportState.getBlock().getFogColor(this.mc.world, viewportPos, viewportState, entity, new Vec3d(fogColorRed, fogColorGreen, fogColorBlue), partialTicks);
 			this.fogColorRed = (float) inMaterialColor.x;
 			this.fogColorGreen = (float) inMaterialColor.y;
 			this.fogColorBlue = (float) inMaterialColor.z;
@@ -1714,8 +1663,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 		this.fogColorRed *= f13;
 		this.fogColorGreen *= f13;
 		this.fogColorBlue *= f13;
-		double d1 = (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double) partialTicks)
-				* world.provider.getVoidFogYFactor();
+		double d1 = (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double) partialTicks) * world.provider.getVoidFogYFactor();
 
 		if (entity instanceof EntityLivingBase && ((EntityLivingBase) entity).isPotionActive(MobEffects.BLINDNESS)) {
 			int i = ((EntityLivingBase) entity).getActivePotionEffect(MobEffects.BLINDNESS).getDuration();
@@ -1775,8 +1723,8 @@ public class OverridenEntityRenderer extends EntityRenderer {
 			this.fogColorBlue = f7;
 		}
 
-		net.minecraftforge.client.event.EntityViewRenderEvent.FogColors event = new net.minecraftforge.client.event.EntityViewRenderEvent.FogColors(
-				this, entity, iblockstate, partialTicks, this.fogColorRed, this.fogColorGreen, this.fogColorBlue);
+		net.minecraftforge.client.event.EntityViewRenderEvent.FogColors event = new net.minecraftforge.client.event.EntityViewRenderEvent.FogColors(this, entity, iblockstate, partialTicks, this.fogColorRed,
+				this.fogColorGreen, this.fogColorBlue);
 		net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
 
 		this.fogColorRed = event.getRed();
@@ -1830,8 +1778,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 				if (((EntityLivingBase) entity).isPotionActive(MobEffects.WATER_BREATHING)) {
 					GlStateManager.setFogDensity(0.01F);
 				} else {
-					GlStateManager
-							.setFogDensity(0.1F - (float) EnchantmentHelper.getRespirationModifier((EntityLivingBase) entity) * 0.03F);
+					GlStateManager.setFogDensity(0.1F - (float) EnchantmentHelper.getRespirationModifier((EntityLivingBase) entity) * 0.03F);
 				}
 			} else {
 				GlStateManager.setFogDensity(0.1F);
@@ -1855,8 +1802,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 				GlStateManager.glFogi(34138, 34139);
 			}
 
-			if (this.mc.world.provider.doesXZShowFog((int) entity.posX, (int) entity.posZ)
-					|| this.mc.ingameGUI.getBossOverlay().shouldCreateFog()) {
+			if (this.mc.world.provider.doesXZShowFog((int) entity.posX, (int) entity.posZ) || this.mc.ingameGUI.getBossOverlay().shouldCreateFog()) {
 				GlStateManager.setFogStart(f * 0.05F);
 				GlStateManager.setFogEnd(Math.min(f, 192.0F) * 0.5F);
 			}
@@ -1895,8 +1841,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 		return this.mapItemRenderer;
 	}
 
-	public static void drawNameplate(FontRenderer fontRendererIn, String str, float x, float y, float z, int verticalShift, float viewerYaw,
-			float viewerPitch, boolean isThirdPersonFrontal, boolean isSneaking) {
+	public static void drawNameplate(FontRenderer fontRendererIn, String str, float x, float y, float z, int verticalShift, float viewerYaw, float viewerPitch, boolean isThirdPersonFrontal, boolean isSneaking) {
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(x, y, z);
 		GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
@@ -1911,8 +1856,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 		}
 
 		GlStateManager.enableBlend();
-		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-				GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 		int i = fontRendererIn.getStringWidth(str) / 2;
 		GlStateManager.disableTexture2D();
 		Tessellator tessellator = Tessellator.getInstance();
@@ -1961,8 +1905,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 			GlStateManager.enableDepth();
 			GlStateManager.disableCull();
 			RenderHelper.enableStandardItemLighting();
-			GlStateManager.translate((float) (p_190563_1_ / 2) + f5 * MathHelper.abs(MathHelper.sin(f4 * 2.0F)),
-					(float) (p_190563_2_ / 2) + f6 * MathHelper.abs(MathHelper.sin(f4 * 2.0F)), -50.0F);
+			GlStateManager.translate((float) (p_190563_1_ / 2) + f5 * MathHelper.abs(MathHelper.sin(f4 * 2.0F)), (float) (p_190563_2_ / 2) + f6 * MathHelper.abs(MathHelper.sin(f4 * 2.0F)), -50.0F);
 			float f7 = 50.0F + 175.0F * MathHelper.sin(f4);
 			GlStateManager.scale(f7, -f7, f7);
 			GlStateManager.rotate(900.0F * MathHelper.abs(MathHelper.sin(f4)), 0.0F, 1.0F, 0.0F);
@@ -1994,7 +1937,7 @@ public class OverridenEntityRenderer extends EntityRenderer {
 	public float getMinThirdPersonViewDistance() {
 		return this.minThirdPersonDistance;
 	}
-	
+
 	public float getMaxThirdPersonViewDistance() {
 		return this.maxThirdPersonDistance;
 	}

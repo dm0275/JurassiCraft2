@@ -113,8 +113,8 @@ public class HelicopterHUDRenderer {
 			GlStateManager.pushMatrix();
 			GlStateManager.enableAlpha();
 			mc.renderEngine.bindTexture(this.backgroundTexture);
-			drawModalRectWithCustomSizedTexture((int) (marginLeft + (this.index * 75) * hudScale), (int) (yPosition - 36 - 64 * hudScale),
-					0, 0, (int) (64 * hudScale), (int) (64 * hudScale), (int) (64 * hudScale), (int) (64 * hudScale));
+			drawModalRectWithCustomSizedTexture((int) (marginLeft + (this.index * 75) * hudScale), (int) (yPosition - 36 - 64 * hudScale), 0, 0, (int) (64 * hudScale), (int) (64 * hudScale), (int) (64 * hudScale),
+					(int) (64 * hudScale));
 			GlStateManager.disableAlpha();
 			GlStateManager.popMatrix();
 
@@ -126,8 +126,7 @@ public class HelicopterHUDRenderer {
 			String valueAsText = String.valueOf((int) (this.value));
 			for (int i = 1; i <= 5; i++) {
 				float offsetX = ((float) i - 1.0f) * -4.7f;
-				mc.fontRenderer.drawString("" + ((valueAsText.length() - i < 0) ? "0" : valueAsText.charAt(valueAsText.length() - i)),
-						(int) ((marginLeft + (this.index * 75 + 39.5f + offsetX) * hudScale) / textScale),
+				mc.fontRenderer.drawString("" + ((valueAsText.length() - i < 0) ? "0" : valueAsText.charAt(valueAsText.length() - i)), (int) ((marginLeft + (this.index * 75 + 39.5f + offsetX) * hudScale) / textScale),
 						(int) ((yPosition - 36 - (64 - 21.5f) * hudScale) / textScale), Color.WHITE.getRGB());
 			}
 			GL11.glScalef(1f, 1f, 1);
@@ -138,13 +137,11 @@ public class HelicopterHUDRenderer {
 			GlStateManager.pushMatrix();
 			GlStateManager.enableAlpha();
 			mc.renderEngine.bindTexture(this.needleTexture);
-			GlStateManager.translate((marginLeft + (this.index * 75) * hudScale + (64 * hudScale) / 2),
-					(yPosition - 36 - 64 * hudScale + (64 * hudScale) / 2), 0);
+			GlStateManager.translate((marginLeft + (this.index * 75) * hudScale + (64 * hudScale) / 2), (yPosition - 36 - 64 * hudScale + (64 * hudScale) / 2), 0);
 			GlStateManager.rotate(this.needleRotation, 0, 0, 1);
-			GlStateManager.translate(-(marginLeft + (this.index * 75) * hudScale + (64 * hudScale) / 2),
-					-(yPosition - 36 - 64 * hudScale + (64 * hudScale) / 2), 0);
-			drawModalRectWithCustomSizedTexture((int) (marginLeft + (this.index * 75) * hudScale), (int) (yPosition - 36 - 64 * hudScale),
-					0, 0, (int) (64 * hudScale), (int) (64 * hudScale), (int) (64 * hudScale), (int) (64 * hudScale));
+			GlStateManager.translate(-(marginLeft + (this.index * 75) * hudScale + (64 * hudScale) / 2), -(yPosition - 36 - 64 * hudScale + (64 * hudScale) / 2), 0);
+			drawModalRectWithCustomSizedTexture((int) (marginLeft + (this.index * 75) * hudScale), (int) (yPosition - 36 - 64 * hudScale), 0, 0, (int) (64 * hudScale), (int) (64 * hudScale), (int) (64 * hudScale),
+					(int) (64 * hudScale));
 			GlStateManager.disableAlpha();
 			GlStateManager.popMatrix();
 
@@ -152,13 +149,11 @@ public class HelicopterHUDRenderer {
 			GlStateManager.pushMatrix();
 			GlStateManager.enableAlpha();
 			mc.renderEngine.bindTexture(this.pointerTexture);
-			GlStateManager.translate((marginLeft + (this.index * 75) * hudScale + (64 * hudScale) / 2),
-					(yPosition - 36 - 64 * hudScale + (64 * hudScale) / 2), 0);
+			GlStateManager.translate((marginLeft + (this.index * 75) * hudScale + (64 * hudScale) / 2), (yPosition - 36 - 64 * hudScale + (64 * hudScale) / 2), 0);
 			GlStateManager.rotate(this.pointerRotation, 0, 0, 1);
-			GlStateManager.translate(-(marginLeft + (this.index * 75) * hudScale + (64 * hudScale) / 2),
-					-(yPosition - 36 - 64 * hudScale + (64 * hudScale) / 2), 0);
-			drawModalRectWithCustomSizedTexture((int) (marginLeft + (this.index * 75) * hudScale), (int) (yPosition - 36 - 64 * hudScale),
-					0, 0, (int) (64 * hudScale), (int) (64 * hudScale), (int) (64 * hudScale), (int) (64 * hudScale));
+			GlStateManager.translate(-(marginLeft + (this.index * 75) * hudScale + (64 * hudScale) / 2), -(yPosition - 36 - 64 * hudScale + (64 * hudScale) / 2), 0);
+			drawModalRectWithCustomSizedTexture((int) (marginLeft + (this.index * 75) * hudScale), (int) (yPosition - 36 - 64 * hudScale), 0, 0, (int) (64 * hudScale), (int) (64 * hudScale), (int) (64 * hudScale),
+					(int) (64 * hudScale));
 			GlStateManager.disableAlpha();
 			GlStateManager.popMatrix();
 		}
@@ -190,10 +185,8 @@ public class HelicopterHUDRenderer {
 		public HudElementArtificialHorizon() {
 			this.backgroundTexture = new ResourceLocation(JurassiCraft.MODID, "textures/entities/helicopter/hud/artificial_horizon.png");
 			this.needleTexture = new ResourceLocation(JurassiCraft.MODID, "textures/entities/helicopter/hud/artificial_horizon_needle.png");
-			this.pointerTexture = new ResourceLocation(JurassiCraft.MODID,
-					"textures/entities/helicopter/hud/artificial_horizon_pointer.png");
-			this.secondLayer = new ResourceLocation(JurassiCraft.MODID,
-					"textures/entities/helicopter/hud/artificial_horizon_second_layer.png");
+			this.pointerTexture = new ResourceLocation(JurassiCraft.MODID, "textures/entities/helicopter/hud/artificial_horizon_pointer.png");
+			this.secondLayer = new ResourceLocation(JurassiCraft.MODID, "textures/entities/helicopter/hud/artificial_horizon_second_layer.png");
 			this.alpha = new ResourceLocation(JurassiCraft.MODID, "textures/entities/helicopter/hud/artificial_horizon_alpha.png");
 			this.index = 1;
 		}
@@ -212,30 +205,29 @@ public class HelicopterHUDRenderer {
 			int xPosition = scaledResolution.getScaledWidth();
 			int yPosition = scaledResolution.getScaledHeight();
 			GlStateManager.enableAlpha();
-
+			GlStateManager.pushMatrix();
 			this.renderHorizon(xPosition, yPosition, scaledResolution.getScaleFactor(), partialTicks);
+			GlStateManager.popMatrix();
 
 			GlStateManager.pushMatrix();
 			mc.renderEngine.bindTexture(this.secondLayer);
-			drawModalRectWithCustomSizedTexture((int) (marginLeft + (this.index * 75) * hudScale), (int) (yPosition - 36 - 64 * hudScale),
-					0, 0, (int) (64 * hudScale), (int) (64 * hudScale), (int) (64 * hudScale), (int) (64 * hudScale));
+			drawModalRectWithCustomSizedTexture((int) (marginLeft + (this.index * 75) * hudScale), (int) (yPosition - 36 - 64 * hudScale), 0, 0, (int) (64 * hudScale), (int) (64 * hudScale), (int) (64 * hudScale),
+					(int) (64 * hudScale));
 			GlStateManager.popMatrix();
 
 			GlStateManager.pushMatrix();
 			mc.renderEngine.bindTexture(this.needleTexture);
-			GlStateManager.translate((marginLeft + (this.index * 75) * hudScale + (64 * hudScale) / 2),
-					(yPosition - 36 - 64 * hudScale + (64 * hudScale) / 2), 0);
+			GlStateManager.translate((marginLeft + (this.index * 75) * hudScale + (64 * hudScale) / 2), (yPosition - 36 - 64 * hudScale + (64 * hudScale) / 2), 0);
 			GlStateManager.rotate(this.needleRotation, 0, 0, 1);
-			GlStateManager.translate(-(marginLeft + (this.index * 75) * hudScale + (64 * hudScale) / 2),
-					-(yPosition - 36 - 64 * hudScale + (64 * hudScale) / 2), 0);
-			drawModalRectWithCustomSizedTexture((int) (marginLeft + (this.index * 75) * hudScale), (int) (yPosition - 36 - 64 * hudScale),
-					0, 0, (int) (64 * hudScale), (int) (64 * hudScale), (int) (64 * hudScale), (int) (64 * hudScale));
+			GlStateManager.translate(-(marginLeft + (this.index * 75) * hudScale + (64 * hudScale) / 2), -(yPosition - 36 - 64 * hudScale + (64 * hudScale) / 2), 0);
+			drawModalRectWithCustomSizedTexture((int) (marginLeft + (this.index * 75) * hudScale), (int) (yPosition - 36 - 64 * hudScale), 0, 0, (int) (64 * hudScale), (int) (64 * hudScale), (int) (64 * hudScale),
+					(int) (64 * hudScale));
 			GlStateManager.popMatrix();
 
 			GlStateManager.pushMatrix();
 			mc.renderEngine.bindTexture(this.pointerTexture);
-			drawModalRectWithCustomSizedTexture((int) (marginLeft + (this.index * 75) * hudScale), (int) (yPosition - 36 - 64 * hudScale),
-					0, 0, (int) (64 * hudScale), (int) (64 * hudScale), (int) (64 * hudScale), (int) (64 * hudScale));
+			drawModalRectWithCustomSizedTexture((int) (marginLeft + (this.index * 75) * hudScale), (int) (yPosition - 36 - 64 * hudScale), 0, 0, (int) (64 * hudScale), (int) (64 * hudScale), (int) (64 * hudScale),
+					(int) (64 * hudScale));
 			GlStateManager.popMatrix();
 
 			GlStateManager.disableAlpha();
@@ -246,39 +238,64 @@ public class HelicopterHUDRenderer {
 
 		private void renderHorizon(int xPosition, int yPosition, int scaleFactor, float partialTick) {
 			float partialPitch = (this.pitchLevel - this.prevPitchLevel) * partialTick;
-			// GL11.glEnable(GL11.GL_SCISSOR_TEST);
-			// GL11.glScissor((int) ((marginLeft + (this.index * 75) * hudScale) *
-			// scaleFactor), 36 * scaleFactor,
-			// (int) (64 * hudScale * scaleFactor), (int) (64 * hudScale * scaleFactor));
-			this.enableStencilBuffer(xPosition, yPosition, scaleFactor, partialPitch);
-			if (this.prevPitchLevel + partialPitch < 45) {
-				int bottom = (int) (((45f - (this.prevPitchLevel + partialPitch)) / 90f) * (58 * hudScale));
+			float currentDisplayPitch = this.prevPitchLevel + partialPitch;
+			GL11.glEnable(GL11.GL_SCISSOR_TEST);
+			GL11.glScissor((int) ((marginLeft + (this.index * 75) * hudScale) * scaleFactor), 36 * scaleFactor, (int) (64 * hudScale * scaleFactor), (int) (64 * hudScale * scaleFactor));
+			// this.enableStencilBuffer(xPosition, yPosition, scaleFactor, partialPitch);
+
+			// Normal rotation
+			if (currentDisplayPitch < 45 && currentDisplayPitch > -135) {
+				float bottom = ((45f - (currentDisplayPitch)) / 90f) * (58 * hudScale);
 				if (bottom > (58 * hudScale)) {
-					bottom = (int) (58 * hudScale);
+					bottom = 58 * hudScale;
 				}
-				drawRect((int) (marginLeft + (this.index * 75 + 3) * hudScale), (int) (yPosition - 36 - (64 - 3) * hudScale),
-						(int) (marginLeft + (this.index * 75 + 64 - 3) * hudScale), (int) (yPosition - 36 - (64 - 3) * hudScale + bottom),
-						new Color(73, 179, 255).getRGB());
+				drawRect((int) (marginLeft + (this.index * 75 + 3) * hudScale), (int) (yPosition - 36 - (64 - 3) * hudScale), (int) (marginLeft + (this.index * 75 + 64 - 3) * hudScale),
+						(int) (yPosition - 36 - (64 - 3) * hudScale + bottom), new Color(73, 179, 255).getRGB());
 			}
-			if (this.prevPitchLevel + partialPitch > -45) {
-				int top = (int) (((45f + this.prevPitchLevel + partialPitch) / 90f) * (58 * hudScale));
-				if (top > 58 * hudScale) {
-					top = (int) (58 * hudScale);
+			if (currentDisplayPitch > -45 && currentDisplayPitch < 135) {
+				float top = (int) (((45f + currentDisplayPitch) / 90f) * (58 * hudScale));
+				if (top > 57 * hudScale) {
+					top = 58 * hudScale;
 				}
-				drawRect((int) (marginLeft + (this.index * 75 + 3) * hudScale), (int) (yPosition - 36 - 3 * hudScale - top),
-						(int) (marginLeft + (this.index * 75 + 64 - 3) * hudScale), (int) (yPosition - 36 - 3 * hudScale),
-						new Color(107, 42, 0).getRGB());
+				drawRect((int) (marginLeft + (this.index * 75 + 3) * hudScale), (int) (yPosition - 36 - 3 * hudScale - top), (int) (marginLeft + (this.index * 75 + 64 - 3) * hudScale),
+						(int) (yPosition - 36 - 3 * hudScale), new Color(107, 42, 0).getRGB());
 			}
 
-			if (this.prevPitchLevel + partialPitch < 45 && this.prevPitchLevel + partialPitch > -45) {
-				int y = (int) (((45f - (this.prevPitchLevel + partialPitch)) / 90f) * 58 * hudScale);
-				drawHorizontalLine((int) (marginLeft + (this.index * 75 + 3) * hudScale),
-						(int) (marginLeft + (this.index * 75 + 60 - 3) * hudScale), (int) (yPosition - 36 - (64 - 3) * hudScale + y),
+			if (currentDisplayPitch < 45 && currentDisplayPitch > -45) {
+				float y = ((45f - (currentDisplayPitch)) / 90f) * 58 * hudScale;
+				drawHorizontalLine((int) (marginLeft + (this.index * 75 + 3) * hudScale), (int) (marginLeft + (this.index * 75 + 60 - 3) * hudScale), (int) (yPosition - 36 - (64 - 3) * hudScale + y),
 						Color.WHITE.getRGB());
 			}
 
-			GL11.glDisable(GL11.GL_STENCIL_TEST);
-			// GL11.glDisable(GL11.GL_SCISSOR_TEST);
+			// Upside down rotation
+			if (currentDisplayPitch > 135 || currentDisplayPitch < -135) {
+				float bottom = (1 - ((((currentDisplayPitch > 0) ? 180 : -180) - currentDisplayPitch) + 45) / 90f) * (58 * hudScale);
+				if (bottom > (58 * hudScale)) {
+					bottom = 58 * hudScale;
+				}
+				drawRect((int) (marginLeft + (this.index * 75 + 3) * hudScale), (int) (yPosition - 36 - 3 * hudScale - bottom), (int) (marginLeft + (this.index * 75 + 64 - 3) * hudScale),
+						(int) (yPosition - 36 - 3 * hudScale), new Color(73, 179, 255).getRGB());
+			}
+			if (currentDisplayPitch > 135 || currentDisplayPitch < -135) {
+				float top = (((((currentDisplayPitch > 0) ? 180 : -180) - currentDisplayPitch) + 45) / 90f) * (58 * hudScale);
+				if (top > 58 * hudScale) {
+					top = 58 * hudScale;
+				}
+				drawRect((int) (marginLeft + (this.index * 75 + 3) * hudScale), (int) (yPosition - 36 - (64 - 3) * hudScale), (int) (marginLeft + (this.index * 75 + 64 - 3) * hudScale),
+						(int) (yPosition - 36 - (64 - 3) * hudScale + top), new Color(107, 42, 0).getRGB());
+
+			}
+
+			if (currentDisplayPitch > 135 || currentDisplayPitch < -135) {
+				float y = (((((currentDisplayPitch > 0) ? 180 : -180) - currentDisplayPitch) + 45) / 90f) * (58 * hudScale);
+				drawHorizontalLine((int) (marginLeft + (this.index * 75 + 3) * hudScale), (int) (marginLeft + (this.index * 75 + 60 - 3) * hudScale), (int) (yPosition - 36 - (64 - 3) * hudScale + y),
+						Color.WHITE.getRGB());
+			}
+
+			GlStateManager.color(255, 255, 255);
+
+			// GL11.glDisable(GL11.GL_STENCIL_TEST);
+			GL11.glDisable(GL11.GL_SCISSOR_TEST);
 		}
 
 		private void enableStencilBuffer(int xPosition, int yPosition, int scaleFactor, float partialPitch) {
@@ -310,9 +327,8 @@ public class HelicopterHUDRenderer {
 				if (top > 58 * hudScale) {
 					top = (int) (58 * hudScale);
 				}
-				drawRect((int) (marginLeft + (this.index * 75 + 3) * hudScale), (int) (yPosition - 36 - 3 * hudScale - top),
-						(int) (marginLeft + (this.index * 75 + 64 - 3) * hudScale), (int) (yPosition - 36 - 3 * hudScale),
-						Color.WHITE.getRGB());
+				drawRect((int) (marginLeft + (this.index * 75 + 3) * hudScale), (int) (yPosition - 36 - 3 * hudScale - top), (int) (marginLeft + (this.index * 75 + 64 - 3) * hudScale),
+						(int) (yPosition - 36 - 3 * hudScale), Color.WHITE.getRGB());
 			}
 		}
 	}
@@ -357,8 +373,7 @@ public class HelicopterHUDRenderer {
 			if (!this.autopilotEnabled) {
 				mc.fontRenderer.drawStringWithShadow("Autopilot disabled!", marginLeft, yPosition - 140, Color.WHITE.getRGB());
 			}
-			mc.fontRenderer.drawStringWithShadow(this.lockOn ? "Rotation lock on" : "Rotation lock off", marginLeft, yPosition - 130,
-					Color.WHITE.getRGB());
+			mc.fontRenderer.drawStringWithShadow(this.lockOn ? "Rotation lock on" : "Rotation lock off", marginLeft, yPosition - 130, Color.WHITE.getRGB());
 			GlStateManager.enableDepth();
 		}
 
