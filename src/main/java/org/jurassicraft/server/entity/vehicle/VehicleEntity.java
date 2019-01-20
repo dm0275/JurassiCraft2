@@ -426,16 +426,7 @@ public abstract class VehicleEntity extends Entity implements MultiSeatedEntity 
 		this.rightValue.setTarget(this.calculateWheelHeight(vec.x, true));
 
 		if (!this.world.isRemote) {
-			if (this.healCooldown > 0) {
-				this.healCooldown--;
-			} else if (this.healAmount > 0) {
-				this.setHealth(this.getHealth() + 1);
-				this.healAmount--;
-				if (this.getHealth() > MAX_HEALTH) {
-					this.setHealth(MAX_HEALTH);
-					this.healAmount = 0;
-				}
-			}
+			this.updateHeal();
 		}
 
 		this.tickInterp();
@@ -448,6 +439,19 @@ public abstract class VehicleEntity extends Entity implements MultiSeatedEntity 
 		}
 		this.applyMovement();
 		this.move(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
+	}
+	
+	protected void updateHeal() {
+		if (this.healCooldown > 0) {
+			this.healCooldown--;
+		} else if (this.healAmount > 0) {
+			this.setHealth(this.getHealth() + 1);
+			this.healAmount--;
+			if (this.getHealth() > MAX_HEALTH) {
+				this.setHealth(MAX_HEALTH);
+				this.healAmount = 0;
+			}
+		}
 	}
 
 	protected boolean canRunoverEntity(Entity entity) {

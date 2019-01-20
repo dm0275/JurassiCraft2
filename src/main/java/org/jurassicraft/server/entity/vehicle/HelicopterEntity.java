@@ -24,6 +24,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+
+import org.jurassicraft.client.particle.HelicopterEngineExhaustParticle;
 import org.jurassicraft.client.particle.HelicopterGroundParticle;
 import org.jurassicraft.client.particle.WashingParticle;
 import org.jurassicraft.client.proxy.ClientProxy;
@@ -424,10 +426,10 @@ public abstract class HelicopterEntity extends VehicleEntity {
 					}
 				}
 				this.updateHelicopterTakeoffShaking(dist);
-				this.updateHelicopterCrash();
 			} else if (this.getCurrentEngineSpeed() > 0) {
 				this.changeCurrentEngineSpeed(-1);
 			}
+			this.updateHelicopterCrash(dist);
 
 			// if (!this.isFlying) {
 			// this.speedModifier = -0.75f;
@@ -536,12 +538,17 @@ public abstract class HelicopterEntity extends VehicleEntity {
 		this.motionZ += MathHelper.cos(rotYaw * 0.017453292F) * moveAmount;
 	}
 
-	private void updateHelicopterCrash() {
-
+	private void updateHelicopterCrash(float dist) {
+		if (this.getHealth() < 2 && this.isFlying && dist > 1) {
+			this.rotationYaw += Math.random() * 4;
+			this.motionX += Math.sin(Math.toRadians(this.rotationYaw)) * 0.1f;
+			this.motionZ += Math.cos(Math.toRadians(this.rotationYaw)) * 0.1f;
+		}
 	}
 
 	private void updateHelicopterTakeoffShaking(float dist) {
-
+		// this.motionX += Math.random() - 0.5;
+		// this.motionZ += Math.random() - 0.5;
 	}
 
 	@Override
@@ -639,6 +646,11 @@ public abstract class HelicopterEntity extends VehicleEntity {
 		return groundBlock;
 	}
 
+	@Override
+	protected void updateHeal() {
+		// super.updateHeal();
+	}
+
 	@SideOnly(Side.CLIENT)
 	private void increaseThirdPersonViewDistance(boolean shouldIncrease) {
 		if (shouldIncrease) {
@@ -728,8 +740,7 @@ public abstract class HelicopterEntity extends VehicleEntity {
 		IBlockState groundBlock = this.getGroundBlock();
 		if (dist <= blastHeight) {
 			for (int i = 0; i < 360; i++) {
-				if (Math.random() * 100 < ((1 - (dist / blastHeight)) * ((groundBlock.getBlock().equals(Blocks.WATER)) ? 80 : 20))
-						* (((1 / Math.pow(this.engineSpeed, 3)) * Math.pow(this.getCurrentEngineSpeed(), 3)) * 1.0)) {
+				if (Math.random() * 100 < ((1 - (dist / blastHeight)) * ((groundBlock.getBlock().equals(Blocks.WATER)) ? 80 : 20)) * (((1 / Math.pow(this.engineSpeed, 3)) * Math.pow(this.getCurrentEngineSpeed(), 3)) * 1.0)) {
 					float x = (float) ((Math.cos(Math.toRadians(i)) * (this.rotorLength / 1.8f)) * ((Math.random() * 0.2) + 1));
 					float y = (float) (this.posY - dist);
 					float z = (float) ((Math.sin(Math.toRadians(i)) * (this.rotorLength / 1.8f)) * ((Math.random() * 0.2) + 1));
@@ -737,8 +748,7 @@ public abstract class HelicopterEntity extends VehicleEntity {
 						Minecraft.getMinecraft().effectRenderer.addEffect(new WashingParticle(this.world, this.posX + x, y + 0.5f, this.posZ + z, x / 5, 0.001f, z / 5, 0));
 					} else if (!groundBlock.getMaterial().equals(Material.LAVA)) {
 						if (this.isBlockDusty(groundBlock.getBlock()) && Math.random() < (this.world.isRaining() ? 0.1 : 0.4)) {
-							this.world.spawnParticle(EnumParticleTypes.BLOCK_DUST, this.posX + x, y + 0.1, this.posZ + z, x / 5, 0.001f + Math.random() * (this.world.isRaining() ? 0 : 0.5), z / 5,
-									Block.getStateId(groundBlock));
+							this.world.spawnParticle(EnumParticleTypes.BLOCK_DUST, this.posX + x, y + 0.1, this.posZ + z, x / 5, 0.001f + Math.random() * (this.world.isRaining() ? 0 : 0.5), z / 5, Block.getStateId(groundBlock));
 						}
 						Minecraft.getMinecraft().effectRenderer.addEffect(new HelicopterGroundParticle(this.world, this.posX + x, y, this.posZ + z, x / 5, 0.001f, z / 5));
 					}
@@ -749,16 +759,86 @@ public abstract class HelicopterEntity extends VehicleEntity {
 
 	@SideOnly(Side.CLIENT)
 	protected void spawnEngineRunningParticle() {
-
+		float[] offsetBack = this.computeEngineOutletPosition(0.675f, -0.675f, 2.1f, 3.0625f);
+		float[] directionBack1 = this.computeEngineExhaustParticleDirection(15);
+		float[] directionBack2 = this.computeEngineExhaustParticleDirection(-15);
+		for (int i = 0; i < 5; i++) {
+			Minecraft.getMinecraft().effectRenderer
+					.addEffect(new HelicopterEngineExhaustParticle(this.world, this.posX + offsetBack[0] + Math.random() * 0.3, this.posY + offsetBack[2] + Math.random() * 0.3, this.posZ - offsetBack[3] + Math.random() * 0.3,
+							directionBack1[0] * (this.getCurrentEngineSpeed() * 3 / this.engineSpeed), 0.001f, directionBack1[2] * (this.getCurrentEngineSpeed() * 3 / this.engineSpeed), 1));
+			Minecraft.getMinecraft().effectRenderer
+					.addEffect(new HelicopterEngineExhaustParticle(this.world, this.posX + offsetBack[1] + Math.random() * 0.3, this.posY + offsetBack[2] + Math.random() * 0.3, this.posZ - offsetBack[4] + Math.random() * 0.3,
+							directionBack2[0] * (this.getCurrentEngineSpeed() * 3 / this.engineSpeed), 0.001f, directionBack2[2] * (this.getCurrentEngineSpeed() * 3 / this.engineSpeed), 1));
+		}
 	}
 
 	@SideOnly(Side.CLIENT)
 	protected void spawnCrashingParticle() {
+		if (Math.random() < (-(this.getHealth() * 1.6f - MAX_HEALTH) / MAX_HEALTH)) {
+			float[] offsetFront = this.computeEngineOutletPosition(0.675f, -0.675f, 2.1f, 0.9375f);
+			float[] offsetBack = this.computeEngineOutletPosition(0.675f, -0.675f, 2.1f, 3.0625f);
+			float[] directionFront1 = this.computeEngineFrontSmokeParticleDirection(-20);
+			float[] directionFront2 = this.computeEngineFrontSmokeParticleDirection(20);
+			float[] directionBack = this.computeEngineExhaustParticleDirection(0);
+			this.world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX + offsetBack[0], this.posY + offsetBack[2], this.posZ - offsetBack[3], directionBack[0], directionBack[1], directionBack[2]);
+			this.world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX + offsetBack[1], this.posY + offsetBack[2], this.posZ - offsetBack[4], directionBack[0], directionBack[1], directionBack[2]);
+			if (Math.random() < (1 - (this.getHealth() * 2 - MAX_HEALTH) / MAX_HEALTH)) {
+				this.world.spawnParticle(EnumParticleTypes.FLAME, this.posX + offsetBack[0], this.posY + offsetBack[2], this.posZ - offsetBack[3], directionBack[0], directionBack[1], directionBack[2]);
+				this.world.spawnParticle(EnumParticleTypes.FLAME, this.posX + offsetBack[1], this.posY + offsetBack[2], this.posZ - offsetBack[4], directionBack[0], directionBack[1], directionBack[2]);
+			}
 
+			if (Math.random() < (1.0f - (this.getCurrentEngineSpeed() * 1.6f / (float) (this.engineSpeed)))) {
+				this.world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX + offsetFront[0], this.posY + offsetFront[2], this.posZ - offsetFront[3], directionFront1[0], directionFront1[1], directionFront1[2]);
+				this.world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX + offsetFront[1], this.posY + offsetFront[2], this.posZ - offsetFront[4], directionFront2[0], directionFront2[1], directionFront2[2]);
+			}
+		}
 	}
 
-	protected float[] computeEngineOutletPosition() {
-		return new float[2];
+	protected float[] computeEngineOutletPosition(float xPos1, float xPos2, float yPos, float zPos) {
+		final float radiantRotationYaw = (float) Math.toRadians(this.rotationYaw);
+		final float radiantPitch = (float) Math.toRadians(this.pitch);
+		final float radiantRoll = (float) Math.toRadians(this.roll);
+		float[] offsets = new float[5];
+		// 0: Right; 1: Left;
+		// Need of second yCoordinate(if roll)
+
+		// x-Achsis
+		offsets[0] = xPos1;
+		offsets[1] = xPos2;
+		offsets[2] = (float) (Math.cos(radiantPitch) * yPos - Math.sin(radiantPitch) * zPos);
+		offsets[3] = (float) (Math.sin(radiantPitch) * yPos + Math.cos(radiantPitch) * zPos);
+		offsets[4] = (float) (Math.sin(radiantPitch) * yPos + Math.cos(radiantPitch) * zPos);
+
+		// z-Achsis
+		offsets[0] = (float) (Math.cos(radiantRoll) * offsets[0] - Math.sin(radiantRoll) * offsets[2]);
+		offsets[1] = (float) (Math.cos(radiantRoll) * offsets[1] - Math.sin(radiantRoll) * offsets[2]);
+		// offsets[2] = Math.sin(radiantRoll) *offsets[]
+
+		// y-Achsis
+		offsets[0] = (float) (Math.cos(radiantRotationYaw) * xPos1 + Math.sin(radiantRotationYaw) * zPos);
+		offsets[1] = (float) (Math.cos(radiantRotationYaw) * xPos2 + Math.sin(radiantRotationYaw) * zPos);
+		offsets[2] = yPos;
+		offsets[3] = (float) (-Math.sin(radiantRotationYaw) * xPos1 + Math.cos(radiantRotationYaw) * zPos);
+		offsets[4] = (float) (-Math.sin(radiantRotationYaw) * xPos2 + Math.cos(radiantRotationYaw) * zPos);
+		return offsets;
+	}
+
+	protected float[] computeEngineExhaustParticleDirection(float rotOffset) {
+		float[] directions = new float[3];
+		float engineBlast = (this.getCurrentEngineSpeed() / this.engineSpeed) * 0.2f;
+		directions[0] = (float) (Math.sin(-Math.toRadians(this.rotationYaw + rotOffset)) * (-0.05f - engineBlast) + ((Math.random() - 0.5) * 0.1));
+		directions[1] = 0.01f;
+		directions[2] = (float) (Math.cos(Math.toRadians(this.rotationYaw + rotOffset)) * (-0.05f - engineBlast) + ((Math.random() - 0.5) * 0.1));
+		return directions;
+	}
+
+	protected float[] computeEngineFrontSmokeParticleDirection(float rotOffset) {
+		float[] directions = new float[3];
+		float engineBlast = (this.getCurrentEngineSpeed() / this.engineSpeed) * 0.2f;
+		directions[0] = (float) (Math.sin(-Math.toRadians(this.rotationYaw + rotOffset)) * (0.05f + engineBlast) + ((Math.random() - 0.5) * 0.1));
+		directions[1] = 0.000f;
+		directions[2] = (float) (Math.cos(Math.toRadians(this.rotationYaw + rotOffset)) * (0.05f + engineBlast) + ((Math.random() - 0.5) * 0.1));
+		return directions;
 	}
 
 	@SideOnly(Side.CLIENT)
