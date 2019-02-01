@@ -31,10 +31,10 @@ public class SoftTissueItem extends Item implements SequencableItem {
 
     @Override
     public String getItemStackDisplayName(ItemStack stack) {
-        return LangUtils.translate(this.getUnlocalizedName() + ".name").replace("{dino}", LangUtils.getDinoName(this.getDinosaur(stack)));
+        return LangUtils.translate(this.getUnlocalizedName() + ".name").replace("{dino}", LangUtils.getDinoName(getDinosaur(stack)));
     }
 
-    public Dinosaur getDinosaur(ItemStack stack) {
+    public static Dinosaur getDinosaur(ItemStack stack) {
         Dinosaur dinosaur = EntityHandler.getDinosaurById(stack.getItemDamage());
 
         if (dinosaur == null) {

@@ -27,20 +27,20 @@ public class HatchedEggItem extends DNAContainerItem {
 
     @Override
     public String getItemStackDisplayName(ItemStack stack) {
-        DinosaurMetadata metadata = this.getDinosaur(stack).getMetadata();
-        return LangUtils.translate(metadata.givesDirectBirth() ? "item.gestated.name" : "item.hatched_egg.name").replace("{dino}", LangUtils.getDinoName(this.getDinosaur(stack)));
+        DinosaurMetadata metadata = getDinosaur(stack).getMetadata();
+        return LangUtils.translate(metadata.givesDirectBirth() ? "item.gestated.name" : "item.hatched_egg.name").replace("{dino}", LangUtils.getDinoName(getDinosaur(stack)));
     }
     
     @Override
     public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-    	tooltip.add(TextFormatting.GOLD +LangUtils.translate("gender.name") +": "+ this.getItemGender(stack));
+    	tooltip.add(TextFormatting.GOLD +LangUtils.translate("gender.name") +": "+ getItemGender(stack));
     }
 
-    public Dinosaur getDinosaur(ItemStack stack) {
+    public static Dinosaur getDinosaur(ItemStack stack) {
         return EntityHandler.getDinosaurById(stack.getMetadata());
     }
 
-    public String getItemGender(ItemStack stack) {
+    public static String getItemGender(ItemStack stack) {
     	Boolean gender = null;
         NBTTagCompound nbt = stack.getTagCompound();
   
@@ -53,7 +53,7 @@ public class HatchedEggItem extends DNAContainerItem {
         return LangUtils.getGenderMode(gender != null ? (gender == true ? 1 : 2) : 0);
     }
     
-    public boolean getGender(EntityPlayer player, ItemStack stack) {
+    public static boolean getGender(EntityPlayer player, ItemStack stack) {
         NBTTagCompound nbt = stack.getTagCompound();
 
         boolean gender = player.world.rand.nextBoolean();
@@ -75,7 +75,7 @@ public class HatchedEggItem extends DNAContainerItem {
 
     @Override
     public int getContainerId(ItemStack stack) {
-        return EntityHandler.getDinosaurId(this.getDinosaur(stack));
+        return EntityHandler.getDinosaurId(getDinosaur(stack));
     }
 
     @Override
@@ -91,14 +91,14 @@ public class HatchedEggItem extends DNAContainerItem {
 
         if (player.canPlayerEdit(pos, side, stack)) {
             if (!world.isRemote) {
-                Dinosaur dinosaur = this.getDinosaur(stack);
+                Dinosaur dinosaur = getDinosaur(stack);
                 DinosaurEntity entity = dinosaur.construct(world);
                 
                 entity.setPosition(pos.getX() + hitX, pos.getY(), pos.getZ() + hitZ);
                 entity.setAge(0);
                 entity.setGenetics(getGeneticCode(player, stack));
                 entity.setDNAQuality(getDNAQuality(player, stack));
-                entity.setMale(this.getGender(player, stack));
+                entity.setMale(getGender(player, stack));
                 
                 if (!player.isSneaking()) {
                     entity.setOwner(player);

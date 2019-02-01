@@ -21,7 +21,7 @@ public class DisplayBlockRenderer extends TileEntitySpecialRenderer<DisplayBlock
         final double scale = tileEntity.getEntity().isSkeleton() ? 1.0 : 0.15;
         GlStateManager.scale(scale, scale, scale);
 
-        DinosaurEntity entity = tileEntity.getEntity();
+        final DinosaurEntity entity = tileEntity.getEntity();
         if (entity != null) {
         	ClientEventHandler.MC.getRenderManager().renderEntity(entity, 0, 0, 0, 0, 0, false);
         }
