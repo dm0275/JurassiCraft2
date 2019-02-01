@@ -1,3 +1,6 @@
+*improved loading up and rendering performance
+*fixed z-fighting for every entity model
+*improved the overall look of all models
 *Removed the ability to combine storage discs of different species
 *Fixed sounds of the different glass types
 *Improved the JEI integration for the incubator
