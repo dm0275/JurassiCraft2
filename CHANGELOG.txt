@@ -1,3 +1,4 @@
++Added placable tyrannosaurus skulls with 3 different variants
 *improved loading up and rendering performance
 *fixed z-fighting for every entity model
 *improved the overall look of all models
