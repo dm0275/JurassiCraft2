@@ -1,3 +1,9 @@
+*Fixed sounds of the different glass types
+*Improved the JEI integration for the incubator
++Feeding dinosaurs will now indicate success by green particles
+*Fixed an incompatibility with the Statues and EvilNotchLib mod
+*Nerfed Coelacanth infant speed
+*Fixed helicopter crashing worlds in the end
 *Experimental fix for the growth serum
 *Fixed an incompatiblity with the MorePlayerModels mod
 *Fixed not properly compressed textures
