@@ -1,3 +1,4 @@
+*Experimental fix for the growth serum
 *Fixed an incompatiblity with the MorePlayerModels mod
 *Fixed not properly compressed textures
 *Fixed feeder trying to feed dinosaur when empty
