@@ -74,7 +74,7 @@ public class ClientEventHandler {
     }
     
     @SubscribeEvent
-    public void hightlightEvent(final DrawBlockHighlightEvent e) {
+    public static void hightlightEvent(final DrawBlockHighlightEvent e) {
     	if (e.getTarget().typeOfHit == RayTraceResult.Type.BLOCK)
         {
     		final BlockPos blockpos = e.getTarget().getBlockPos();

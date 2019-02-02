@@ -8,8 +8,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import com.google.common.collect.Lists;
-import com.sun.javafx.geom.Vec2d;
-
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -46,6 +44,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Rotations;
+import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.TextComponentString;
@@ -214,7 +213,7 @@ public class FossilItem extends Item implements GrindableItem {
                 	tile.setModel(stack.getItemDamage(), !this.isFresh(), getHasStand(stack));
                 	EnumFacing.Axis axis = side.getAxis();
                 	if (axis == EnumFacing.Axis.Y) {
-                		tile.setAngle(angleToPlayer(pos, new Vec2d(player.posX, player.posZ)));
+                		tile.setAngle(angleToPlayer(pos, new Vec2f((float) player.posX, (float) player.posZ)));
                 	}else if(axis == EnumFacing.Axis.X) {
                 		tile.setAngle((short) side.getHorizontalAngle());
                 	}else if(axis == EnumFacing.Axis.Z) {
@@ -232,7 +231,7 @@ public class FossilItem extends Item implements GrindableItem {
         return EnumActionResult.SUCCESS;
     }
     
-    private static short angleToPlayer(BlockPos block, Vec2d player) {
+    private static short angleToPlayer(BlockPos block, Vec2f player) {
     	return (short) (90 - Math.toDegrees(Math.atan2(((double) block.getZ() + 0.5 - player.y), ((double) block.getX() + 0.5 - player.x))));
     }
     
