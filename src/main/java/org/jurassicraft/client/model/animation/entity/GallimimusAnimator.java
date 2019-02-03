@@ -1,11 +1,11 @@
 package org.jurassicraft.client.model.animation.entity;
 
 import net.ilexiconn.llibrary.client.model.tools.AdvancedModelRenderer;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jurassicraft.client.model.AnimatableModel;
 import org.jurassicraft.client.model.animation.EntityAnimator;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.entity.dinosaur.GallimimusEntity;
 
 @SideOnly(Side.CLIENT)
@@ -55,7 +55,7 @@ public class GallimimusAnimator extends EntityAnimator<GallimimusEntity> {
         final AdvancedModelRenderer[] armLeft = new AdvancedModelRenderer[] { handLeft, lowerArmLeft, upperArmLeft };
         final AdvancedModelRenderer[] armRight = new AdvancedModelRenderer[] { handRight, lowerArmRight, upperArmRight };
 
-        final float delta = Minecraft.getMinecraft().getRenderPartialTicks();
+        final float delta = ClientProxy.MC.getRenderPartialTicks();
         LegArticulator.articulateBiped(entity, entity.legSolver, body1, leftThigh, leftCalf, rightThigh, rightCalf, 1.0F, 1.4F, delta);
 
         final float globalSpeed = 1.5F;

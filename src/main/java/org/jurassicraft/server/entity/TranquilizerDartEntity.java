@@ -1,10 +1,10 @@
 package org.jurassicraft.server.entity;
 
 import org.jurassicraft.JurassiCraft;
+import org.jurassicraft.client.event.ClientEventHandler;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.item.Dart;
-
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityThrowable;
@@ -41,11 +41,7 @@ public class TranquilizerDartEntity extends EntityThrowable implements IEntityAd
     
     @SideOnly(Side.CLIENT)
     private void spawnParticles() {
-	Minecraft.getMinecraft().effectRenderer.spawnEffectParticle(
-    	    EnumParticleTypes.CLOUD.getParticleID(), 
-    	    this.posX + this.motionX / 4.0D, 
-    	    this.posY + this.motionY / 4.0D, 
-    	    this.posZ + this.motionZ / 4.0D, 
+    	ClientProxy.MC.effectRenderer.spawnEffectParticle(EnumParticleTypes.CLOUD.getParticleID(), this.posX + this.motionX / 4.0D, this.posY + this.motionY / 4.0D, this.posZ + this.motionZ / 4.0D, 
     	    -this.motionX / 20.0D, 
     	    -this.motionY / 20.0D + 0.2D, 
     	    -this.motionZ / 20.0D);

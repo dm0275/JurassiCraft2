@@ -2,7 +2,6 @@ package org.jurassicraft.server.entity.dinosaur;
 
 import net.ilexiconn.llibrary.server.animation.Animation;
 import net.ilexiconn.llibrary.server.animation.AnimationHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.entity.Render;
@@ -17,10 +16,8 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import scala.reflect.internal.Trees.This;
-
 import java.util.HashMap;
 import java.util.Map.Entry;
-
 import org.jurassicraft.client.model.animation.EntityAnimation;
 import org.jurassicraft.client.sound.SoundHandler;
 import org.jurassicraft.server.entity.DinosaurEntity;
@@ -44,9 +41,7 @@ public class TyrannosaurusEntity extends DinosaurEntity {
 
     @Override
     public SoundEvent getSoundForAnimation(Animation animation) {
-    	
-    	//System.out.println("VAR: " + (this.variants.containsKey(animation) ? this.variants.get(animation).toString() : "0"));
-    	
+
         switch (EntityAnimation.getAnimation(animation)) {
             case SPEAK:
                 return SoundHandler.TYRANNOSAURUS_LIVING;

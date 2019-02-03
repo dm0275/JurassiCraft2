@@ -2,14 +2,13 @@ package org.jurassicraft.client.render.block;
 
 import net.ilexiconn.llibrary.LLibrary;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import org.jurassicraft.JurassiCraft;
-import org.jurassicraft.client.event.ClientEventHandler;
 import org.jurassicraft.client.model.ResetControlTabulaModel;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.block.BlockHandler;
 import org.jurassicraft.server.block.entity.FeederBlockEntity;
 import org.jurassicraft.server.block.machine.FeederBlock;
@@ -65,7 +64,7 @@ public class FeederRenderer extends TileEntitySpecialRenderer<FeederBlockEntity>
             final double scale = 1.0;
             GlStateManager.scale(scale, -scale, scale);
 
-            ClientEventHandler.MC.getTextureManager().bindTexture(this.texture);
+            ClientProxy.MC.getTextureManager().bindTexture(this.texture);
 
             final float openAnimation = Math.max(0.0F, Math.min(20.0F, tile.openAnimation + LLibrary.PROXY.getPartialTicks() * (tile.openAnimation - tile.prevOpenAnimation)));
 

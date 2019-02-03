@@ -1,6 +1,5 @@
 package org.jurassicraft.client.render.entity;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelChest;
 import net.minecraft.client.model.ModelCreeper;
 import net.minecraft.client.renderer.GlStateManager;
@@ -18,13 +17,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jurassicraft.client.event.ClientEventHandler;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.client.render.entity.dinosaur.DinosaurRenderInfo;
 import org.jurassicraft.server.dinosaur.Dinosaur;
 import org.jurassicraft.server.dinosaur.DinosaurMetadata;
 import org.jurassicraft.server.entity.DinosaurEntity;
 import org.jurassicraft.server.entity.GrowthStage;
 import org.jurassicraft.server.entity.OverlayType;
-
 import java.awt.Color;
 import java.util.Random;
 
@@ -133,7 +133,7 @@ public class DinosaurRenderer extends RenderLiving<DinosaurEntity> {
         private void renderOverlay(final OverlayType type, final DinosaurEntity entity, final float limbSwing, final float limbSwingAmount, final float partialTicks, final float age, final float yaw, final float pitch, final float scale) {
         	final ResourceLocation texture = this.renderer.dinosaur.getOverlayTextures(type, entity);
             if (texture != null) {
-            	final ITextureObject textureObject = Minecraft.getMinecraft().getTextureManager().getTexture(texture);
+            	final ITextureObject textureObject = ClientProxy.MC.getTextureManager().getTexture(texture);
                 if (textureObject != TextureUtil.MISSING_TEXTURE) {
                     this.renderer.bindTexture(texture);
                     this.renderer.getMainModel().render(entity, limbSwing, limbSwingAmount, age, yaw, pitch, scale);

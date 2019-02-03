@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import net.minecraft.item.ItemBlock;
 import org.jurassicraft.JurassiCraft;
+import org.jurassicraft.client.event.ClientEventHandler;
 import org.jurassicraft.client.model.MultipartStateMap;
 import org.jurassicraft.client.model.animation.EntityAnimator;
 import org.jurassicraft.client.model.animation.entity.BrachiosaurusAnimator;
@@ -19,6 +20,7 @@ import org.jurassicraft.client.model.animation.entity.ParasaurolophusAnimator;
 import org.jurassicraft.client.model.animation.entity.TriceratopsAnimator;
 import org.jurassicraft.client.model.animation.entity.TyrannosaurusAnimator;
 import org.jurassicraft.client.model.animation.entity.VelociraptorAnimator;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.client.render.block.*;
 import org.jurassicraft.client.render.entity.*;
 import org.jurassicraft.client.render.entity.dinosaur.DinosaurRenderInfo;
@@ -51,7 +53,6 @@ import net.ilexiconn.llibrary.client.model.tabula.TabulaModelHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockFenceGate;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.client.renderer.color.BlockColors;
@@ -76,8 +77,6 @@ import static org.jurassicraft.server.block.BlockHandler.*;
 @Mod.EventBusSubscriber(modid=JurassiCraft.MODID, value = Side.CLIENT)
 public enum RenderingHandler {
     INSTANCE;
-
-    private static final Minecraft mc = Minecraft.getMinecraft();
     private static Map<Dinosaur, DinosaurRenderInfo> renderInfos = Maps.newHashMap();
 
     //TODO: CLEAN THIS UP OMG PLZ
@@ -469,7 +468,7 @@ public enum RenderingHandler {
     }
 
     public void init() {
-        BlockColors blockColors = mc.getBlockColors();
+        BlockColors blockColors = ClientProxy.MC.getBlockColors();
         blockColors.registerBlockColorHandler((state, access, pos, tintIndex) -> pos != null ? BiomeColorHelper.getGrassColorAtPos(access, pos) : 0xFFFFFF, MOSS);
 
         for (AncientLeavesBlock block : ANCIENT_LEAVES.values()) {
@@ -480,7 +479,7 @@ public enum RenderingHandler {
         if(JurassiCraftConfig.VEHICLES.tourRailBlockEnabled)
             blockColors.registerBlockColorHandler((state, access, pos, tintIndex) -> tintIndex == 1 ? ((TourRailBlock)state.getBlock()).getSpeedType().getColor() : -1, BlockHandler.TOUR_RAIL_SLOW, BlockHandler.TOUR_RAIL_MEDIUM, BlockHandler.TOUR_RAIL_FAST);
 
-        ItemColors itemColors = mc.getItemColors();
+        ItemColors itemColors = ClientProxy.MC.getItemColors();
         if(JurassiCraftConfig.VEHICLES.tourRailBlockEnabled)
             itemColors.registerItemColorHandler((stack, tintIndex) -> tintIndex == 1 ? ((TourRailBlock)((ItemBlock)stack.getItem()).getBlock()).getSpeedType().getColor() : -1, BlockHandler.TOUR_RAIL_SLOW, BlockHandler.TOUR_RAIL_MEDIUM, BlockHandler.TOUR_RAIL_FAST);
 

@@ -1,12 +1,10 @@
 package org.jurassicraft.client.render.block;
 
-import org.jurassicraft.client.event.ClientEventHandler;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.block.BlockHandler;
 import org.jurassicraft.server.block.OrientedBlock;
 import org.jurassicraft.server.block.entity.AncientItemHoldingBlockEntity;
-
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
@@ -39,7 +37,7 @@ public class AncientItemHoldingBlockRenderer extends TileEntitySpecialRenderer<A
 			GlStateManager.pushAttrib();
 
 			RenderHelper.enableStandardItemLighting();
-			ClientEventHandler.MC.getRenderItem().renderItem(te.getDisplayItemStack(), ItemCameraTransforms.TransformType.FIXED);
+			ClientProxy.MC.getRenderItem().renderItem(te.getDisplayItemStack(), ItemCameraTransforms.TransformType.FIXED);
 			RenderHelper.disableStandardItemLighting();
 
 			GlStateManager.popAttrib();

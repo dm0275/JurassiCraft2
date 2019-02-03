@@ -1,10 +1,8 @@
 package org.jurassicraft.client.render.block;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-
-import org.jurassicraft.client.event.ClientEventHandler;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.block.entity.DisplayBlockEntity;
 import org.jurassicraft.server.entity.DinosaurEntity;
 
@@ -23,7 +21,7 @@ public class DisplayBlockRenderer extends TileEntitySpecialRenderer<DisplayBlock
 
         final DinosaurEntity entity = tileEntity.getEntity();
         if (entity != null) {
-        	ClientEventHandler.MC.getRenderManager().renderEntity(entity, 0, 0, 0, 0, 0, false);
+        	ClientProxy.MC.getRenderManager().renderEntity(entity, 0, 0, 0, 0, 0, false);
         }
 
         GlStateManager.popMatrix();

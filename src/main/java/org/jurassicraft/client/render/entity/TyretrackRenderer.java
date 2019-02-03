@@ -2,21 +2,20 @@ package org.jurassicraft.client.render.entity;
 
 import java.util.Comparator;
 import java.util.List;
-
 import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jurassicraft.JurassiCraft;
+import org.jurassicraft.client.event.ClientEventHandler;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.entity.vehicle.VehicleEntity;
 import org.jurassicraft.server.entity.vehicle.util.WheelParticleData;
 import org.lwjgl.opengl.GL11;
-
 import com.google.common.collect.Lists;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
@@ -44,7 +43,7 @@ public class TyretrackRenderer {
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public static void onRenderWorldLast(RenderWorldLastEvent event) {
-        Minecraft mc = Minecraft.getMinecraft();
+    	final Minecraft mc = ClientProxy.MC;
         World world = mc.world;
         EntityPlayer player = mc.player;
         Vec3d playerPos = player.getPositionVector();
@@ -92,7 +91,7 @@ public class TyretrackRenderer {
     
     @SideOnly(Side.CLIENT)
     private static void renderList(List<WheelParticleData> dataList, BufferBuilder buffer, float partialTicks, List<Pair<Long, Runnable>> list) {
-        World world = Minecraft.getMinecraft().world;
+        World world = ClientProxy.MC.world;
 	for(int i = 0; i < dataList.size() - 1; i++) {
             WheelParticleData start = dataList.get(i);
             if(!start.shouldRender()) {

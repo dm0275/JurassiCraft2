@@ -1,12 +1,10 @@
 package org.jurassicraft.client.render.item;
 
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jurassicraft.JurassiCraft;
 import org.jurassicraft.client.render.item.models.GuiItemModelWrapper;
 import org.jurassicraft.server.item.ItemHandler;
-
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureMap;

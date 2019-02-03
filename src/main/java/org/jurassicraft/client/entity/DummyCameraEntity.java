@@ -2,8 +2,6 @@
 
 
 /*package org.jurassicraft.client.entity;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.stats.RecipeBook;
@@ -15,16 +13,16 @@ public class DummyCameraEntity extends EntityPlayerSP {
 	public static DummyCameraEntity instance;
 
 	public DummyCameraEntity(Minecraft mc, World world) {
-		super(mc, world, Minecraft.getMinecraft().player.connection,
-				Minecraft.getMinecraft().player.getStatFileWriter(), Minecraft.getMinecraft().player.getRecipeBook());
-		this.movementInput = Minecraft.getMinecraft().player.movementInput;
+		super(mc, world, ClientProxy.MC.player.connection,
+				ClientProxy.MC.player.getStatFileWriter(), ClientProxy.MC.player.getRecipeBook());
+		this.movementInput = ClientProxy.MC.player.movementInput;
 		if (instance == null) {
 			instance = this;
 		}
 	}
 
 	public DummyCameraEntity(World world) {
-		this(Minecraft.getMinecraft(), world);
+		this(ClientProxy.MC, world);
 	}
 
 	@Override

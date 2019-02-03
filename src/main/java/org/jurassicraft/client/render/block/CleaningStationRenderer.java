@@ -1,7 +1,6 @@
 package org.jurassicraft.client.render.block;
 
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -9,8 +8,7 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
-
-import org.jurassicraft.client.event.ClientEventHandler;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.block.BlockHandler;
 import org.jurassicraft.server.block.OrientedBlock;
 import org.jurassicraft.server.block.entity.CleaningStationBlockEntity;
@@ -43,9 +41,9 @@ public class CleaningStationRenderer extends TileEntitySpecialRenderer<CleaningS
 
 			GlStateManager.rotate((float) tileEntity.getRenderCleaningRotation(particialTicks), 1.0F, 0.0F, 0.0F);
 
-			ClientEventHandler.MC.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+			ClientProxy.MC.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
-			final RenderItem renderItem = ClientEventHandler.MC.getRenderItem();
+			final RenderItem renderItem = ClientProxy.MC.getRenderItem();
 
 			final ItemStack cleanable = tileEntity.getStackInSlot(0);
 

@@ -8,7 +8,6 @@ import net.ilexiconn.llibrary.server.animation.Animation;
 import net.ilexiconn.llibrary.server.animation.AnimationHandler;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityBodyHelper;
@@ -61,8 +60,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jurassicraft.JurassiCraft;
+import org.jurassicraft.client.event.ClientEventHandler;
 import org.jurassicraft.client.model.animation.EntityAnimation;
 import org.jurassicraft.client.model.animation.PoseHandler;
+import org.jurassicraft.client.model.animation.entity.FixedChainBuffer;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.api.Animatable;
 import org.jurassicraft.server.block.entity.FeederBlockEntity;
 import org.jurassicraft.server.block.machine.FeederBlock;
@@ -173,7 +175,7 @@ public abstract class DinosaurEntity extends EntityCreature implements IEntityAd
     private int attackCooldown;
 
     @SideOnly(Side.CLIENT)
-    public ChainBuffer tailBuffer;
+    public FixedChainBuffer tailBuffer;
 
     public Herd herd;
     public Family family;
@@ -325,7 +327,7 @@ public abstract class DinosaurEntity extends EntityCreature implements IEntityAd
     }
 
     private void initClient() {
-        this.tailBuffer = new ChainBuffer();
+        this.tailBuffer = new FixedChainBuffer();
     }
 
     public boolean shouldSleep() {
@@ -1297,14 +1299,14 @@ public abstract class DinosaurEntity extends EntityCreature implements IEntityAd
                     if (this.world.isRemote) {
                     	TextComponentString denied = new TextComponentString(LangUtils.translate("message.too_young.name"));
                     	denied.getStyle().setColor(TextFormatting.RED);
-        				Minecraft.getMinecraft().ingameGUI.addChatMessage(ChatType.GAME_INFO, denied);
+                    	ClientProxy.MC.ingameGUI.addChatMessage(ChatType.GAME_INFO, denied);
                     }
                 }
             } else {
                 if (this.world.isRemote) {
                 	TextComponentString denied = new TextComponentString(LangUtils.translate("message.not_owned.name"));
                 	denied.getStyle().setColor(TextFormatting.RED);
-    				Minecraft.getMinecraft().ingameGUI.addChatMessage(ChatType.GAME_INFO, denied);
+                	ClientProxy.MC.ingameGUI.addChatMessage(ChatType.GAME_INFO, denied);
                 }
             }
         } else {
@@ -1314,7 +1316,7 @@ public abstract class DinosaurEntity extends EntityCreature implements IEntityAd
                 } else {
                 	TextComponentString denied = new TextComponentString(LangUtils.translate("message.not_owned.name"));
                 	denied.getStyle().setColor(TextFormatting.RED);
-    				Minecraft.getMinecraft().ingameGUI.addChatMessage(ChatType.GAME_INFO, denied);
+                	ClientProxy.MC.ingameGUI.addChatMessage(ChatType.GAME_INFO, denied);
                 }
             } else if (!stack.isEmpty()&& (this.metabolism.isThirsty() || this.metabolism.isHungry())) {
                 if (!this.world.isRemote) {
@@ -1590,7 +1592,7 @@ public abstract class DinosaurEntity extends EntityCreature implements IEntityAd
     
     @Override
     public byte getAnimationVariant(Animation animation) {
-    	return this.variants.containsKey(animation) ? this.variants.get(animation) : 0;
+    	return this.variants.getOrDefault(animation, (byte) 0);
     }
     
     @Override
@@ -1886,7 +1888,7 @@ public abstract class DinosaurEntity extends EntityCreature implements IEntityAd
                 if (player != null) {
                 	TextComponentString change = new TextComponentString(LangUtils.translate(LangUtils.SET_ORDER).replace("{order}", LangUtils.translate(LangUtils.ORDER_VALUE.get(order.name().toLowerCase(Locale.ENGLISH)))));
     				change.getStyle().setColor(TextFormatting.GOLD);
-    				Minecraft.getMinecraft().ingameGUI.addChatMessage(ChatType.GAME_INFO, change);
+    				ClientProxy.MC.ingameGUI.addChatMessage(ChatType.GAME_INFO, change);
                 }
             }
 

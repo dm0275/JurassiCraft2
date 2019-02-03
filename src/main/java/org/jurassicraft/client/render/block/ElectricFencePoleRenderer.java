@@ -2,14 +2,13 @@ package org.jurassicraft.client.render.block;
 
 import net.ilexiconn.llibrary.client.model.tabula.TabulaModel;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import org.jurassicraft.JurassiCraft;
-import org.jurassicraft.client.event.ClientEventHandler;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.block.BlockHandler;
 import org.jurassicraft.server.block.entity.ElectricFencePoleBlockEntity;
 import org.jurassicraft.server.block.fence.ElectricFencePoleBlock;
@@ -48,7 +47,7 @@ public class ElectricFencePoleRenderer extends TileEntitySpecialRenderer<Electri
                 final double scale = 1.0;
                 GlStateManager.scale(-scale, -scale, scale);
 
-                ClientEventHandler.MC.getTextureManager().bindTexture(this.texture);
+                ClientProxy.MC.getTextureManager().bindTexture(this.texture);
 
                 OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
 

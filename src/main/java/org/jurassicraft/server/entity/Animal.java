@@ -41,12 +41,9 @@ import org.jurassicraft.server.entity.ai.util.MovementType;
 import org.jurassicraft.server.period.TimePeriod;
 import org.jurassicraft.server.tabula.TabulaModelHelper;
 import org.jurassicraft.server.util.LangUtils;
-
 import com.google.common.io.Files;
-
 import net.ilexiconn.llibrary.client.model.tabula.container.TabulaCubeContainer;
 import net.ilexiconn.llibrary.client.model.tabula.container.TabulaModelContainer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
