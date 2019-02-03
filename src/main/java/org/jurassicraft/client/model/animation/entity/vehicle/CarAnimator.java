@@ -4,9 +4,9 @@ import com.google.common.collect.Lists;
 import net.ilexiconn.llibrary.client.model.tabula.ITabulaModelAnimator;
 import net.ilexiconn.llibrary.client.model.tabula.TabulaModel;
 import net.ilexiconn.llibrary.client.model.tools.AdvancedModelRenderer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.entity.ai.util.InterpValue;
 import org.jurassicraft.server.entity.vehicle.VehicleEntity;
 import org.jurassicraft.server.entity.vehicle.HelicopterEntity;
@@ -25,20 +25,24 @@ public class CarAnimator implements ITabulaModelAnimator<VehicleEntity> {
     @Override
     public void setRotationAngles(TabulaModel model, VehicleEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float rotationYaw, float rotationPitch, float scale) {
         if(!(entity instanceof HelicopterEntity)) {
-            doorList.forEach(door -> {
-                InterpValue value = door.getInterpValue(entity);
-                VehicleEntity.Seat seat = door.getSeat(entity);
-                VehicleEntity.Seat closestSeat = seat;
-                EntityPlayer player = Minecraft.getMinecraft().player;
-                Vec3d playerPos = player.getPositionVector();
-                for (Door door1 : this.doorList) {
-                    if (door1.getSeat(entity).getPos().distanceTo(playerPos) <= closestSeat.getPos().distanceTo(playerPos)) {
-                        closestSeat = door1.getSeat(entity);
-                    }
-                }
-                value.setTarget(Math.toRadians(entity.getPassengers().contains(player) || entity.getEntityInSeat(door.getSeatIndex()) != null || closestSeat != seat || closestSeat.getPos().distanceTo(playerPos) > 4D ? 0F : door.isLeft() ? 60F : -60F));
-                model.getCube(door.getName()).rotateAngleY = (float) value.getValueForRendering(partialTicks);
-            });
+			doorList.forEach(door -> {
+				InterpValue value = door.getInterpValue(entity);
+				VehicleEntity.Seat seat = door.getSeat(entity);
+				VehicleEntity.Seat closestSeat = seat;
+				EntityPlayer player = ClientProxy.MC.player;
+				Vec3d playerPos = player.getPositionVector();
+				for (Door door1 : this.doorList) {
+					if (door1.getSeat(entity).getPos().distanceTo(playerPos) <= closestSeat.getPos().distanceTo(playerPos)) {
+						closestSeat = door1.getSeat(entity);
+					}
+				}
+				value.setTarget(Math.toRadians(
+						player.isSpectator() || entity.getPassengers().contains(player) || entity.getEntityInSeat(door.getSeatIndex()) != null
+								|| closestSeat != seat || closestSeat.getPos().distanceTo(playerPos) > 4D ? 0F
+										: door.isLeft() ? 60F : -60F));
+				model.getCube(door.getName()).rotateAngleY = (float) value.getValueForRendering(partialTicks);
+
+			});
 
             AdvancedModelRenderer wheelHolderFront = model.getCube("wheel holder front");
             AdvancedModelRenderer wheelHolderBack = model.getCube("wheel holder back");

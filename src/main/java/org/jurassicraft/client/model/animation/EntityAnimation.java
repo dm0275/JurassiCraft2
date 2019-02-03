@@ -126,7 +126,7 @@ public enum EntityAnimation {
     }
     
     public int getVariants(Class name) {
-    	return this.variants.containsKey(name) ? this.variants.get(name) : 0;
+    	return this.variants.getOrDefault(name, 0);
     }
 
     public boolean doesBlockMovement() {

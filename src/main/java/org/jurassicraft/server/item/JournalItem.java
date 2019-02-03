@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-
 import net.minecraft.client.util.ITooltipFlag;
 import org.jurassicraft.JurassiCraft;
+import org.jurassicraft.client.event.ClientEventHandler;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.tab.TabHandler;
-
 import com.google.gson.Gson;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -98,7 +96,7 @@ public class JournalItem extends Item {
         @SideOnly(Side.CLIENT)
         public Content getContent() {
             if (this.content == null) {
-                try (final InputStream input = Minecraft.getMinecraft().getResourceManager().getResource(this.location).getInputStream()) {
+                try (final InputStream input = ClientProxy.MC.getResourceManager().getResource(this.location).getInputStream()) {
                     this.content = new Gson().fromJson(new InputStreamReader(input), Content.class);
                 } catch (IOException e) {
                     String[][] entries = new String[][] { new String[] { "Failed to load journal entries" } };

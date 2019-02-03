@@ -3,7 +3,6 @@ package org.jurassicraft.client.model.animation.entity;
 import org.jurassicraft.client.model.AnimatableModel;
 import org.jurassicraft.client.model.animation.EntityAnimator;
 import org.jurassicraft.server.entity.dinosaur.AlligatorGarEntity;
-
 import net.ilexiconn.llibrary.client.model.tools.AdvancedModelRenderer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;

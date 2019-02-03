@@ -1,11 +1,11 @@
 package org.jurassicraft.client.model.animation.entity;
 
 import net.ilexiconn.llibrary.client.model.tools.AdvancedModelRenderer;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jurassicraft.client.model.AnimatableModel;
 import org.jurassicraft.client.model.animation.EntityAnimator;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.entity.dinosaur.ParasaurolophusEntity;
 
 @SideOnly(Side.CLIENT)
@@ -69,7 +69,7 @@ public class ParasaurolophusAnimator extends EntityAnimator<ParasaurolophusEntit
         model.walk(rightHand, 0.1F, 0.1F, false, -2F, 0F, ticks, 0.25F);
         model.walk(leftHand, 0.1F, 0.1F, false, -2F, 0F, ticks, 0.25F);
 
-        final float delta = Minecraft.getMinecraft().getRenderPartialTicks();
+        final float delta = ClientProxy.MC.getRenderPartialTicks();
         LegArticulator.articulateQuadruped(entity, entity.legSolver, waist, neck1,
                 leftThigh, leftCalf, rightThigh, rightCalf, upperArmLeft, lowerArmLeft, upperArmRight, lowerArmRight,
                 0.5F, 0.5F, -1.4F, -1.4F,

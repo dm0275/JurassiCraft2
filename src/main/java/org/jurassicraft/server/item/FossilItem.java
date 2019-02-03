@@ -12,11 +12,12 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jurassicraft.client.event.ClientEventHandler;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.api.GrindableItem;
 import org.jurassicraft.server.api.Hybrid;
 import org.jurassicraft.server.block.BlockHandler;
@@ -270,7 +271,7 @@ public class FossilItem extends Item implements GrindableItem {
 				if (type != oldType && world.isRemote) {
 					TextComponentString change = new TextComponentString(LangUtils.translate(LangUtils.STAND_CHANGE.get("type")).replace("{mode}", LangUtils.getStandType(type)));
 					change.getStyle().setColor(TextFormatting.YELLOW);
-					Minecraft.getMinecraft().ingameGUI.addChatMessage(ChatType.GAME_INFO, change);
+					ClientProxy.MC.ingameGUI.addChatMessage(ChatType.GAME_INFO, change);
 				}
 			}
 		

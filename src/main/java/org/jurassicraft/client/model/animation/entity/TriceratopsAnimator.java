@@ -1,11 +1,11 @@
 package org.jurassicraft.client.model.animation.entity;
 
 import net.ilexiconn.llibrary.client.model.tools.AdvancedModelRenderer;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jurassicraft.client.model.AnimatableModel;
 import org.jurassicraft.client.model.animation.EntityAnimator;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.entity.dinosaur.TriceratopsEntity;
 
 @SideOnly(Side.CLIENT)
@@ -67,7 +67,7 @@ public class TriceratopsAnimator extends EntityAnimator<TriceratopsEntity> {
         frontRightThigh.rotationPointZ -= 0.5 * Math.cos(ticks * 0.025F);
         frontLeftThigh.rotationPointZ -= 0.5 * Math.cos(ticks * 0.025F);
 
-        final float delta = Minecraft.getMinecraft().getRenderPartialTicks();
+        final float delta = ClientProxy.MC.getRenderPartialTicks();
         LegArticulator.articulateQuadruped(entity, entity.legSolver, waist, neck1,
                 backLeftThigh, backLeftCalf, backRightThigh, backRightCalf, frontLeftThigh, frontLeftCalf, frontRightThigh, frontRightCalf,
                 0.5F, 0.8F, -0.6F, -1.1F,

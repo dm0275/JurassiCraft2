@@ -3,7 +3,6 @@ package org.jurassicraft.server.item;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
@@ -28,6 +27,9 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import org.jurassicraft.client.event.ClientEventHandler;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.client.render.RenderingHandler;
 import org.jurassicraft.server.block.BlockHandler;
 import org.jurassicraft.server.block.entity.DisplayBlockEntity;
@@ -81,7 +83,7 @@ public class DisplayBlockItem extends Item {
 			if (world.isRemote) {
 				TextComponentString change = new TextComponentString(LangUtils.translate(LangUtils.GENDER_CHANGE.get("actionfigure")).replace("{mode}", LangUtils.getGenderMode(mode)));
 				change.getStyle().setColor(TextFormatting.GOLD);
-				Minecraft.getMinecraft().ingameGUI.addChatMessage(ChatType.GAME_INFO, change);
+				ClientProxy.MC.ingameGUI.addChatMessage(ChatType.GAME_INFO, change);
 			}
         }
 
@@ -224,7 +226,7 @@ public class DisplayBlockItem extends Item {
 				if (variant != oldVariant && world.isRemote) {
 					TextComponentString change = new TextComponentString(LangUtils.translate(LangUtils.SKELETON_CHANGE.get("variant")).replace("{mode}", LangUtils.getSkeletonMode(EntityHandler.getDinosaurById(getDinosaurID(stack)), variant)));
 					change.getStyle().setColor(TextFormatting.YELLOW);
-					Minecraft.getMinecraft().ingameGUI.addChatMessage(ChatType.GAME_INFO, change);
+					ClientProxy.MC.ingameGUI.addChatMessage(ChatType.GAME_INFO, change);
 				}
 			}
 		}

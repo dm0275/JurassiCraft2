@@ -10,7 +10,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import org.jurassicraft.JurassiCraft;
+import org.jurassicraft.client.event.ClientEventHandler;
 import org.jurassicraft.client.gui.DNACombinatorHybridizerGui;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.block.entity.DNACombinatorHybridizerBlockEntity;
 import org.jurassicraft.server.container.DNACombinatorHybridizerContainer;
 
@@ -31,7 +33,7 @@ public class SwitchHybridizerCombinatorMode extends AbstractMessage<SwitchHybrid
         DNACombinatorHybridizerBlockEntity tile = (DNACombinatorHybridizerBlockEntity) player.world.getTileEntity(message.pos);
         tile.setMode(message.hybridizer);
 
-        GuiScreen screen = Minecraft.getMinecraft().currentScreen;
+        GuiScreen screen = ClientProxy.MC.currentScreen;
 
         if (screen instanceof DNACombinatorHybridizerGui) {
             ((DNACombinatorHybridizerContainer) ((DNACombinatorHybridizerGui) screen).inventorySlots).updateSlots(message.hybridizer);

@@ -10,16 +10,10 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class Diet {
-    public static final Supplier<Diet> CARNIVORE = () -> new Diet()
-            .withModule(new DietModule(FoodType.MEAT))
-            .withModule(new DietModule(FoodType.INSECT)
-                    .withCondition(entity -> entity.getAgePercentage() < 25));
-    public static final Supplier<Diet> HERBIVORE = () -> new Diet()
-            .withModule(new DietModule(FoodType.PLANT));
-    public static final Supplier<Diet> INSECTIVORE = () -> new Diet()
-            .withModule(new DietModule(FoodType.INSECT));
-    public static final Supplier<Diet> PISCIVORE = () -> new Diet()
-            .withModule(new DietModule(FoodType.FISH));
+    public static final Supplier<Diet> CARNIVORE = () -> new Diet().withModule(new DietModule(FoodType.MEAT)).withModule(new DietModule(FoodType.INSECT).withCondition(entity -> entity.getAgePercentage() < 25));
+    public static final Supplier<Diet> HERBIVORE = () -> new Diet().withModule(new DietModule(FoodType.PLANT));
+    public static final Supplier<Diet> INSECTIVORE = () -> new Diet().withModule(new DietModule(FoodType.INSECT));
+    public static final Supplier<Diet> PISCIVORE = () -> new Diet().withModule(new DietModule(FoodType.FISH));
 
     private List<DietModule> modules = new ArrayList<>();
 

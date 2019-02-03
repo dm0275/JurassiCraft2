@@ -1,7 +1,6 @@
 package org.jurassicraft.server.entity.vehicle;
 
 import net.minecraft.block.BlockAir;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.Sound;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -36,6 +35,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import org.jurassicraft.JurassiCraft;
+import org.jurassicraft.client.event.ClientEventHandler;
 import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.client.sound.EntitySound;
 import org.jurassicraft.server.entity.ai.util.InterpValue;
@@ -60,7 +60,6 @@ public class HelicopterEntity extends VehicleEntity {
 	public float gearLift;
 	public boolean shouldGearLift = true;
 	private final InterpValue rotationYawInterp = new InterpValue(this, 4f);
-	//private static final float SPEEDMODIFIER = 2.5f;
 	public boolean isFlying;
 	public float rotorRotationAmount;
 	public final InterpValue interpRotationPitch = new InterpValue(this, 0.25D);
@@ -74,15 +73,11 @@ public class HelicopterEntity extends VehicleEntity {
 	private Vec3d prevInAirPos;
 	private float damageAmount;
 	private MutableBlockPos mb = new MutableBlockPos();
-
 	private float acceleration = 0.0f;
 	private static float airResistance = 0.4f;
 	private static int maxSpeed = 20;
 	private float speed = 0;
-	/*
-	 * =================================== CAR START
-	 * ===========================================
-	 */
+
 
 	public HelicopterEntity(World worldIn) {
 		super(worldIn);
@@ -172,7 +167,7 @@ public class HelicopterEntity extends VehicleEntity {
 	@Override
 	protected void handleControl() {
 
-		if (isController(Minecraft.getMinecraft().player)) {
+		if (isController(ClientProxy.MC.player)) {
 			if (this.isInWater()) {
 				this.upward(false);
 				this.downward(false);
@@ -225,11 +220,11 @@ public class HelicopterEntity extends VehicleEntity {
 		// !!!DO NOT DELETE!!!
 		/*
 		 * if (this.world.isRemote) { System.out.println("REMOVED"); EntityPlayerSP
-		 * player = Minecraft.getMinecraft().player; DummyCameraEntity dummyCamera = new
-		 * DummyCameraEntity(Minecraft.getMinecraft(), this.world);
+		 * player = ClientEventHandler.MC.player; DummyCameraEntity dummyCamera = new
+		 * DummyCameraEntity(ClientEventHandler.MC, this.world);
 		 * dummyCamera.setPosition(player.posX, player.posY, player.posZ);
 		 * this.world.spawnEntity(dummyCamera);
-		 * Minecraft.getMinecraft().setRenderViewEntity(dummyCamera); }
+		 * ClientEventHandler.MC.setRenderViewEntity(dummyCamera); }
 		 */
 		//
 	}
@@ -527,8 +522,7 @@ public class HelicopterEntity extends VehicleEntity {
 
 	private int computeMaxMovementRotation(Float dist) {
 		// max dist: 1.4
-		return dist != null ? ((dist <= 3) ? ((dist > 1) ? (int) ((float) (MAXMOVEMENTROTATION) / (2.0f - ((dist - 1) * 0.5f))) : 0)
-				: MAXMOVEMENTROTATION) : MAXMOVEMENTROTATION;
+		return dist != null ? ((dist <= 3) ? ((dist > 1) ? (int) ((float) (MAXMOVEMENTROTATION) / (2.0f - ((dist - 1) * 0.5f))) : 0) : MAXMOVEMENTROTATION) : MAXMOVEMENTROTATION;
 	}
 
 	@Nullable

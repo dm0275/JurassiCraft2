@@ -51,23 +51,22 @@ import org.lwjgl.opengl.GL11;
 
 public class ClientEventHandler {
 	
-    public static final Minecraft MC = Minecraft.getMinecraft();
     private static final ResourceLocation PATREON_BADGE = new ResourceLocation(JurassiCraft.MODID, "textures/items/patreon_badge.png");
 
     private static boolean isGUI;
 
     @SubscribeEvent
-    public static void tick(TickEvent.ClientTickEvent event) {
+    public static void tick(final TickEvent.ClientTickEvent event) {
         JurassiCraft.timerTicks++;
     }
 
     @SubscribeEvent
-    public static void onGUIRender(GuiScreenEvent.DrawScreenEvent.Pre event) {
+    public static void onGUIRender(final GuiScreenEvent.DrawScreenEvent.Pre event) {
         isGUI = true;
     }
 
     @SubscribeEvent
-    public static void onRenderTick(TickEvent.RenderTickEvent event) {
+    public static void onRenderTick(final TickEvent.RenderTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
             isGUI = false;
         }
@@ -103,7 +102,6 @@ public class ClientEventHandler {
                 	GlStateManager.rotate(((SkullDisplayEntity) tile).getAngle(), 0.0F, 1.0F, 0.0F);
                 }
 
-                
                 RenderGlobal.drawSelectionBoundingBox(iblockstate.getCollisionBoundingBox(e.getPlayer().world, blockpos).offset(-0.5, 0, -0.5).grow(0.0020000000949949026D), 0.0f, 0.0f, 0.0f, 0.4f);
                 GL11.glPopMatrix();
                 
@@ -119,26 +117,26 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void onGameOverlay(RenderGameOverlayEvent.Post event) {
-    	final Minecraft mc = Minecraft.getMinecraft();
-    	final EntityPlayer player = mc.player;
+    public static void onGameOverlay(final RenderGameOverlayEvent.Post event) {
+    	final Minecraft MC = ClientProxy.MC;
+    	final EntityPlayer player = MC.player;
 
         for(final EnumHand hand : EnumHand.values()) {
         	final ItemStack stack = player.getHeldItem(hand);
             if(stack.getItem() == ItemHandler.DART_GUN) {
-                ItemStack dartItem = DartGun.getDartItem(stack);
+            	final ItemStack dartItem = DartGun.getDartItem(stack);
                 if(!dartItem.isEmpty()) {
-                    RenderItem renderItem = mc.getRenderItem();
-                    FontRenderer fontRenderer = mc.fontRenderer;
-                    ScaledResolution scaledResolution = new ScaledResolution(mc);
+                	RenderItem renderItem = MC.getRenderItem();
+                	final FontRenderer fontRenderer = MC.fontRenderer;
+                	final ScaledResolution scaledResolution = new ScaledResolution(MC);
 
-                    int xPosition = scaledResolution.getScaledWidth() - 18;
-                    int yPosition = scaledResolution.getScaledHeight() - 18;
+                    final int xPosition = scaledResolution.getScaledWidth() - 18;
+                    final int yPosition = scaledResolution.getScaledHeight() - 18;
 
                     renderItem.renderItemAndEffectIntoGUI(dartItem, xPosition, yPosition);
-                    String s = String.valueOf(dartItem.getCount());
+                    final String count = String.valueOf(dartItem.getCount());
                     GlStateManager.disableDepth();
-                    fontRenderer.drawStringWithShadow(s, xPosition + 17 - fontRenderer.getStringWidth(s), yPosition + 9, 0xFFFFFFFF);
+                    fontRenderer.drawStringWithShadow(count, xPosition + 17 - fontRenderer.getStringWidth(count), yPosition + 9, 0xFFFFFFFF);
                     GlStateManager.enableDepth();
                 }
                 break;
@@ -147,12 +145,12 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void keyInputEvent(InputEvent.KeyInputEvent event) {
+    public static void keyInputEvent(final InputEvent.KeyInputEvent event) {
         int i = 0;
-        for(KeyBinding binding : ClientProxy.getKeyHandler().VEHICLE_KEY_BINDINGS) {
+        for(final KeyBinding binding : ClientProxy.getKeyHandler().VEHICLE_KEY_BINDINGS) {
             if(binding.isPressed()) {
-                EntityPlayer player = Minecraft.getMinecraft().player;
-                Entity entity = player.getRidingEntity();
+            	final EntityPlayer player = ClientProxy.MC.player;
+                final Entity entity = player.getRidingEntity();
                 if(entity instanceof MultiSeatedEntity) {
                     int fromSeat = ((MultiSeatedEntity)entity).getSeatForEntity(player);
                     if(fromSeat != -1) {
@@ -167,10 +165,10 @@ public class ClientEventHandler {
 
 
     @SubscribeEvent
-    public static void onPlayerRender(RenderPlayerEvent.Post event) {
+    public static void onPlayerRender(final RenderPlayerEvent.Post event) {
     	final EntityPlayer player = event.getEntityPlayer();
 
-        if (ClientProxy.PATRONS.contains(player.getUniqueID()) && !player.isPlayerSleeping() && player.deathTime <= 0 && !player.isInvisible() && !player.isInvisibleToPlayer(MC.player)) {
+        if (ClientProxy.PATRONS.contains(player.getUniqueID()) && !player.isPlayerSleeping() && player.deathTime <= 0 && !player.isInvisible() && !player.isInvisibleToPlayer(ClientProxy.MC.player)) {
             GlStateManager.pushMatrix();
 
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -203,7 +201,7 @@ public class ClientEventHandler {
 
             GlStateManager.disableCull();
 
-            MC.getTextureManager().bindTexture(PATREON_BADGE);
+            ClientProxy.MC.getTextureManager().bindTexture(PATREON_BADGE);
 
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder buffer = tessellator.getBuffer();
@@ -224,20 +222,19 @@ public class ClientEventHandler {
     }
     
 	@SubscribeEvent
-	public static void onRenderWorldLast(RenderWorldLastEvent event) {
+	public static void onRenderWorldLast(final RenderWorldLastEvent event) {
 
-		final Minecraft mc = Minecraft.getMinecraft();
-		if (!Minecraft.isGuiEnabled())
+		if (!ClientProxy.MC.isGuiEnabled())
 			return;
 		
-		final Entity cameraEntity = mc.getRenderViewEntity();
+		final Entity cameraEntity = ClientProxy.MC.getRenderViewEntity();
 		Frustum frustrum = new Frustum();
 		final double viewX = cameraEntity.lastTickPosX + (cameraEntity.posX - cameraEntity.lastTickPosX) * event.getPartialTicks();
 		final double viewY = cameraEntity.lastTickPosY + (cameraEntity.posY - cameraEntity.lastTickPosY) * event.getPartialTicks();
 		final double viewZ = cameraEntity.lastTickPosZ + (cameraEntity.posZ - cameraEntity.lastTickPosZ) * event.getPartialTicks();
 		frustrum.setPosition(viewX, viewY, viewZ);
 
-		final List<Entity> loadedEntities = mc.world.getLoadedEntityList();
+		final List<Entity> loadedEntities = ClientProxy.MC.world.getLoadedEntityList();
 		for (final Entity entity : loadedEntities) {
 			if (entity != null && entity instanceof DinosaurEntity) {
 				if (entity.isInRangeToRender3d(cameraEntity.getPosition().getX(), cameraEntity.getPosition().getY(), cameraEntity.getPosition().getZ()) && (frustrum.isBoundingBoxInFrustum(entity.getRenderBoundingBox().grow(0.5D))) && entity.isEntityAlive()) {

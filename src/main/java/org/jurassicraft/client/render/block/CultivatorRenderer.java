@@ -1,6 +1,5 @@
 package org.jurassicraft.client.render.block;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
@@ -8,8 +7,7 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
-
-import org.jurassicraft.client.event.ClientEventHandler;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.block.entity.CultivatorBlockEntity;
 import org.jurassicraft.server.entity.DinosaurEntity;
 
@@ -42,7 +40,7 @@ public class CultivatorRenderer extends TileEntitySpecialRenderer<CultivatorBloc
         	final ItemStack stack = tileEntity.getStackInSlot(0);
             GlStateManager.rotate((timer * 4F) % 360, 0 , 1, 0);
             GlStateManager.translate(0, Math.sin(timer / 7D) * 0.5f, 0);
-            ClientEventHandler.MC.getRenderItem().renderItem(stack, ItemCameraTransforms.TransformType.GROUND);
+            ClientProxy.MC.getRenderItem().renderItem(stack, ItemCameraTransforms.TransformType.GROUND);
         }
 
         GlStateManager.popMatrix();

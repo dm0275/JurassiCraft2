@@ -132,7 +132,7 @@ public class FoodHelper {
     }
 
     public static List<FoodKey> getFoodType(FoodType type) {
-        return FOOD_TYPES.get(type);
+        return FOOD_TYPES.getOrDefault(type, new ArrayList<FoodKey>());
     }
 
     public static List<Item> getFoodItems(FoodType type) {

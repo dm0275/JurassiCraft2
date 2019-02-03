@@ -1,7 +1,6 @@
 package org.jurassicraft.server.entity.dinosaur;
 
 import net.ilexiconn.llibrary.server.animation.Animation;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -25,6 +24,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jurassicraft.JurassiCraft;
+import org.jurassicraft.client.event.ClientEventHandler;
 import org.jurassicraft.client.model.animation.EntityAnimation;
 import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.client.sound.SoundHandler;
@@ -260,8 +260,7 @@ public class MicroraptorEntity extends DinosaurEntity {
 
     @SideOnly(Side.CLIENT)
     protected void updateClientControls() {
-        Minecraft mc = Minecraft.getMinecraft();
-        if (this.getRidingEntity() != null && this.getRidingEntity() == mc.player) {
+        if (this.getRidingEntity() != null && this.getRidingEntity() == ClientProxy.MC.player) {
             if (ClientProxy.getKeyHandler().MICRORAPTOR_DISMOUNT.isKeyDown()) {
                 JurassiCraft.NETWORK_WRAPPER.sendToServer(new MicroraptorDismountMessage(this.getEntityId()));
             }
@@ -273,17 +272,19 @@ public class MicroraptorEntity extends DinosaurEntity {
         return false;
     }
     
-    @Override
-    public boolean shouldEscapeWaterFast() {
-	int radiusXZ = 4;
-	
-	for(BlockPos pos : BlockPos.getAllInBox(MathHelper.floor(this.posX - radiusXZ), MathHelper.floor(this.posY), MathHelper.floor(this.posZ - radiusXZ), MathHelper.ceil(this.posX + radiusXZ), MathHelper.ceil(this.posY), MathHelper.ceil(this.posZ + radiusXZ))) {
-	    if(!world.getBlockState(pos).getMaterial().isLiquid()) {
+	@Override
+	public boolean shouldEscapeWaterFast() {
+		int radiusXZ = 4;
+
+		for (BlockPos pos : BlockPos.getAllInBox(MathHelper.floor(this.posX - radiusXZ), MathHelper.floor(this.posY),
+				MathHelper.floor(this.posZ - radiusXZ), MathHelper.ceil(this.posX + radiusXZ),
+				MathHelper.ceil(this.posY), MathHelper.ceil(this.posZ + radiusXZ))) {
+			if (!world.getBlockState(pos).getMaterial().isLiquid()) {
+				return false;
+			}
+		}
 		return false;
-	    }
 	}
-        return false;
-    }
     
     public void setGlidingTo(Vec3d glidingPos) {
 	this.glidingPos = glidingPos;

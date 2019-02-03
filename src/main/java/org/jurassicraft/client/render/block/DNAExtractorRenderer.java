@@ -1,15 +1,13 @@
 package org.jurassicraft.client.render.block;
 
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-
-import org.jurassicraft.client.event.ClientEventHandler;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.block.BlockHandler;
 import org.jurassicraft.server.block.OrientedBlock;
 import org.jurassicraft.server.block.entity.DNAExtractorBlockEntity;
@@ -44,9 +42,9 @@ public class DNAExtractorRenderer extends TileEntitySpecialRenderer<DNAExtractor
             final double scale = 1.0;
             GlStateManager.scale(-scale, -scale, scale);
 
-            ClientEventHandler.MC.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+            ClientProxy.MC.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
-            final RenderItem renderItem = ClientEventHandler.MC.getRenderItem();
+            final RenderItem renderItem = ClientProxy.MC.getRenderItem();
 
             GlStateManager.translate(0.225, 1.25, -0.125);
             GlStateManager.rotate(-90, 1, 0, 0);

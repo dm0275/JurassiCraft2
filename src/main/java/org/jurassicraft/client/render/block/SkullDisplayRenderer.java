@@ -1,18 +1,15 @@
 package org.jurassicraft.client.render.block;
 
-import net.ilexiconn.llibrary.LLibrary;
 import net.ilexiconn.llibrary.client.model.tabula.TabulaModel;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.RayTraceResult;
-
 import java.util.Random;
-
 import org.jurassicraft.JurassiCraft;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.block.BlockHandler;
 import org.jurassicraft.server.block.SkullDisplay;
 import org.jurassicraft.server.block.entity.SkullDisplayEntity;
@@ -21,8 +18,6 @@ import org.lwjgl.opengl.GL11;
 
 public class SkullDisplayRenderer extends TileEntitySpecialRenderer<SkullDisplayEntity> {
 	
-    private final Minecraft mc = Minecraft.getMinecraft();
-
     @Override
     public void render(SkullDisplayEntity tile, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
     	final IBlockState blockState = tile.getWorld().getBlockState(tile.getPos());
@@ -69,7 +64,7 @@ public class SkullDisplayRenderer extends TileEntitySpecialRenderer<SkullDisplay
 			
 			GlStateManager.translate(0.0F, -1.26F, 0.0F);
 			if(tile.model != null) {
-				this.mc.getTextureManager().bindTexture(tile.texture);
+				ClientProxy.MC.getTextureManager().bindTexture(tile.texture);
 				if(!tile.hasStand() && horizontal) {
 					tile.model.getCube("Standard part1").isHidden = true;
 					tile.model.getCube("Standard part2").isHidden = true;

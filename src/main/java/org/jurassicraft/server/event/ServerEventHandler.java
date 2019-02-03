@@ -2,7 +2,6 @@ package org.jurassicraft.server.event;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -64,17 +63,17 @@ public class ServerEventHandler {
 	}
 
     @SubscribeEvent
-    public static void onWorldLoad(WorldEvent.Load event) {
+    public static void onWorldLoad(final WorldEvent.Load event) {
         GameRuleHandler.register(event.getWorld());
     }
     
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void blockRegistry(RegistryEvent.Register<Block> e) {
+    public static void blockRegistry(final RegistryEvent.Register<Block> e) {
     	e.getRegistry().register(BlockHandler.VINES.setRegistryName("minecraft", "vine"));
     }
 
     @SubscribeEvent(priority = EventPriority.NORMAL)
-    public static void decorate(DecorateBiomeEvent.Pre event) {
+    public static void decorate(final DecorateBiomeEvent.Pre event) {
         World world = event.getWorld();
         BlockPos pos = event.getPos();
         Random rand = event.getRand();
@@ -187,19 +186,17 @@ public class ServerEventHandler {
 
 
     @SubscribeEvent
-    public static void onLootTableLoad(LootTableLoadEvent event) {
+    public static void onLootTableLoad(final LootTableLoadEvent event) {
         ResourceLocation name = event.getName();
-
         LootTable table = event.getTable();
-
         Loot.handleTable(table, name);
     }
     @SubscribeEvent
-    public static void fall(LivingFallEvent e){
+    public static void fall(final LivingFallEvent e){
         e.setCanceled(e.getEntity().getRidingEntity() instanceof HelicopterEntity);
     }
     @SubscribeEvent
-    public static void onHarvest(BlockEvent.HarvestDropsEvent event) {
+    public static void onHarvest(final BlockEvent.HarvestDropsEvent event) {
         IBlockState state = event.getState();
         Random rand = event.getWorld().rand;
         if (rand.nextInt(2) == 0) {
@@ -229,7 +226,7 @@ public class ServerEventHandler {
     }
     
     @SubscribeEvent
-	public static void onEntitySpawn(EntityJoinWorldEvent event) {
+	public static void onEntitySpawn(final EntityJoinWorldEvent event) {
 		Entity entity = event.getEntity();
 		if (entity instanceof EntityVillager) {
 			EntityVillager villager = (EntityVillager) entity;

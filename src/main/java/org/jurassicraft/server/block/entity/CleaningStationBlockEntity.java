@@ -31,10 +31,11 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.SidedInvWrapper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.jurassicraft.JurassiCraft;
+import org.jurassicraft.client.event.ClientEventHandler;
 import org.jurassicraft.client.particle.WashingParticle;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.api.CleanableItem;
 import org.jurassicraft.server.api.GrindableItem;
 import org.jurassicraft.server.block.OrientedBlock;
@@ -308,13 +309,13 @@ public class CleaningStationBlockEntity extends TileEntityLockable implements IT
 		}
 
 		for (int i = 0; i < 3; i++) {
-			Minecraft.getMinecraft().effectRenderer.addEffect(new WashingParticle(this.world, this.pos.getX() + firstAchsis, this.pos.getY() + 0.64, this.pos.getZ() + secondAchsis, velX, 0.0, velZ, rot));
-
-			Minecraft.getMinecraft().effectRenderer.addEffect(new WashingParticle(this.world, this.pos.getX() + ((isInvertedRotated) ? firstAchsis : secondAchsis2), this.pos.getY() + 0.64, this.pos.getZ() + ((isInvertedRotated) ? secondAchsis2 : secondAchsis), -velX, 0.0, -velZ, rot));
-
-			Minecraft.getMinecraft().effectRenderer.addEffect(new WashingParticle(this.world, this.pos.getX() + firstAchsis, this.pos.getY() + 0.6, this.pos.getZ() + secondAchsis, velX, -0.07, velZ, rot));
-
-			Minecraft.getMinecraft().effectRenderer.addEffect(new WashingParticle(this.world, this.pos.getX() + ((isInvertedRotated) ? firstAchsis : secondAchsis2), this.pos.getY() + 0.6, this.pos.getZ() + ((isInvertedRotated) ? secondAchsis2 : secondAchsis), -velX, -0.07, -velZ, rot));
+			
+			final Minecraft mc = ClientProxy.MC;
+			
+			mc.effectRenderer.addEffect(new WashingParticle(this.world, this.pos.getX() + firstAchsis, this.pos.getY() + 0.64, this.pos.getZ() + secondAchsis, velX, 0.0, velZ, rot));
+			mc.effectRenderer.addEffect(new WashingParticle(this.world, this.pos.getX() + ((isInvertedRotated) ? firstAchsis : secondAchsis2), this.pos.getY() + 0.64, this.pos.getZ() + ((isInvertedRotated) ? secondAchsis2 : secondAchsis), -velX, 0.0, -velZ, rot));
+			mc.effectRenderer.addEffect(new WashingParticle(this.world, this.pos.getX() + firstAchsis, this.pos.getY() + 0.6, this.pos.getZ() + secondAchsis, velX, -0.07, velZ, rot));
+			mc.effectRenderer.addEffect(new WashingParticle(this.world, this.pos.getX() + ((isInvertedRotated) ? firstAchsis : secondAchsis2), this.pos.getY() + 0.6, this.pos.getZ() + ((isInvertedRotated) ? secondAchsis2 : secondAchsis), -velX, -0.07, -velZ, rot));
 		}
 	}
 
@@ -537,7 +538,7 @@ public class CleaningStationBlockEntity extends TileEntityLockable implements IT
 	@SideOnly(Side.CLIENT)
 	public void updateRotation() {
 		this.prevCleaningRotation = this.cleaningRotation;
-		if(!Minecraft.getMinecraft().isGamePaused()) {
+		if(!ClientProxy.MC.isGamePaused()) {
 
 			if(this.isCleaning) {
 				this.rotationAmount += 0.008f;

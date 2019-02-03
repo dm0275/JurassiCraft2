@@ -2,7 +2,6 @@ package org.jurassicraft.client.model.animation;
 
 import net.ilexiconn.llibrary.client.model.tools.AdvancedModelRenderer;
 import net.ilexiconn.llibrary.server.animation.Animation;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -22,7 +21,6 @@ import java.util.Map.Entry;
  */
 @SideOnly(Side.CLIENT)
 public class JabelarAnimationHandler<ENTITY extends EntityLivingBase & Animatable> {
-    private static final Minecraft MC = Minecraft.getMinecraft();
 
     private final AnimationPass DEFAULT_PASS;
     private final AnimationPass MOVEMENT_PASS;

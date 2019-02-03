@@ -1,11 +1,11 @@
 package org.jurassicraft.client.model.animation.entity;
 
 import net.ilexiconn.llibrary.client.model.tools.AdvancedModelRenderer;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jurassicraft.client.model.AnimatableModel;
 import org.jurassicraft.client.model.animation.EntityAnimator;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.entity.dinosaur.BrachiosaurusEntity;
 
 @SideOnly(Side.CLIENT)
@@ -33,7 +33,7 @@ public class BrachiosaurusAnimator extends EntityAnimator<BrachiosaurusEntity> {
     	final AdvancedModelRenderer[] tailParts = new AdvancedModelRenderer[] { tail5, tail4, tail3 };
     	final AdvancedModelRenderer[] tailParts2 = new AdvancedModelRenderer[] { tail5, tail4, tail3, tail2, tail1 };
 
-        float delta = Minecraft.getMinecraft().getRenderPartialTicks();
+        float delta = ClientProxy.MC.getRenderPartialTicks();
         final AdvancedModelRenderer root = model.getCube("hips");
         final AdvancedModelRenderer backLeftThigh = model.getCube("top leg left");
         final AdvancedModelRenderer backLeftCalf = model.getCube("bottom leg left");

@@ -18,17 +18,17 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.jurassicraft.JurassiCraft;
+import org.jurassicraft.client.event.ClientEventHandler;
 import org.jurassicraft.client.model.AnimatableModel;
 import org.jurassicraft.client.model.animation.PoseHandler;
+import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.server.api.GrowthStageGenderContainer;
 import org.jurassicraft.server.api.Hybrid;
 import org.jurassicraft.server.api.SkeletonOverlayContainer;
@@ -41,12 +41,9 @@ import org.jurassicraft.server.entity.ai.util.MovementType;
 import org.jurassicraft.server.period.TimePeriod;
 import org.jurassicraft.server.tabula.TabulaModelHelper;
 import org.jurassicraft.server.util.LangUtils;
-
 import com.google.common.io.Files;
-
 import net.ilexiconn.llibrary.client.model.tabula.container.TabulaCubeContainer;
 import net.ilexiconn.llibrary.client.model.tabula.container.TabulaModelContainer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
@@ -188,8 +185,8 @@ public abstract class Dinosaur implements Comparable<Dinosaur> {
 						final ResourceLocation male = new ResourceLocation(domain, textureRoot + name + "_male_" + growthStageName + "_" + type.toString() + ".png");
 
 						try {
-							Minecraft.getMinecraft().getResourceManager().getResource(female).getInputStream();
-							Minecraft.getMinecraft().getResourceManager().getResource(male).getInputStream();
+							ClientProxy.MC.getResourceManager().getResource(female).getInputStream();
+							ClientProxy.MC.getResourceManager().getResource(male).getInputStream();
 
 							overlay.put(new GrowthStageGenderContainer(growthStage, false), female);
 							overlay.put(new GrowthStageGenderContainer(growthStage, true), male);
@@ -203,8 +200,8 @@ public abstract class Dinosaur implements Comparable<Dinosaur> {
 						final ResourceLocation fossilized = new ResourceLocation(domain, textureRoot + name + "_fossilized_skeleton_" + type.toString() + ".png");
 
 						try {
-							Minecraft.getMinecraft().getResourceManager().getResource(fresh).getInputStream();
-							Minecraft.getMinecraft().getResourceManager().getResource(fossilized).getInputStream();
+							ClientProxy.MC.getResourceManager().getResource(fresh).getInputStream();
+							ClientProxy.MC.getResourceManager().getResource(fossilized).getInputStream();
 							if (!type.isGenderSpecific()) {
 
 								overlay.put(new SkeletonOverlayContainer(false, false), fresh);

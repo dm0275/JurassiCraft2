@@ -3,8 +3,6 @@ package org.jurassicraft.server.item;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -21,7 +19,6 @@ import org.jurassicraft.server.entity.EntityHandler;
 import org.jurassicraft.server.item.block.AncientDoorItem;
 import org.jurassicraft.server.tab.TabHandler;
 import org.jurassicraft.server.util.RegistryHandler;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
