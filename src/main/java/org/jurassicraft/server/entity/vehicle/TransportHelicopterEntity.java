@@ -10,6 +10,7 @@ import org.jurassicraft.server.entity.vehicle.VehicleEntity.WheelData;
 import org.jurassicraft.server.item.ItemHandler;
 import org.jurassicraft.server.util.MutableVec3;
 
+import net.minecraft.init.Items;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
@@ -35,15 +36,18 @@ public class TransportHelicopterEntity extends HelicopterEntity {
 		Seat backReft = new Seat(-0.4F, 0.25F, -1F, 0.5F, 0.25F);
 		return new Seat[] { middle, frontLeft, frontRight, backLeft, backReft };
 	}
-	
+
 	@Override
 	protected WheelData createWheels() {
 		return new WheelData(1, 2, -1, -2.2);
 	}
-	
+
 	@Override
 	public void dropItems() {
-		this.dropItem(ItemHandler.HELICOPTER, 1);
+		super.dropItems();
+//		this.dropItem(ItemHandler.FORD_EXPLORER, 1);
+//		this.dropItem(Items.GOLDEN_PICKAXE, 10);
+		System.out.println(this.world.isRemote);
 	}
 
 }

@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
@@ -340,11 +341,11 @@ public abstract class HelicopterEntity extends VehicleEntity {
 			} else if (this.roll <= -this.computeMaxMovementRotation(dist)) {
 				this.roll = -this.computeMaxMovementRotation(dist);
 			}
-			if (this.yawRoationAcceleration > this.computeThrottleUpDown() && !this.isLowHealth()) {
-				this.yawRoationAcceleration = this.computeThrottleUpDown();
-			} else if (this.yawRoationAcceleration < -this.computeThrottleUpDown() && !this.isLowHealth()) {
-				this.yawRoationAcceleration = -this.computeThrottleUpDown();
-			} else if (dist <= 0.1 && this.yawRoationAcceleration > 0) {
+			if (this.yawRoationAcceleration > this.computeThrottleUpDown() * 2 && !this.isLowHealth()) {
+				this.yawRoationAcceleration = this.computeThrottleUpDown() * 2;
+			} else if (this.yawRoationAcceleration < -this.computeThrottleUpDown() * 2 && !this.isLowHealth()) {
+				this.yawRoationAcceleration = -this.computeThrottleUpDown() * 2;
+			} else if (dist <= 0.1 && this.yawRoationAcceleration != 0) {
 				this.yawRoationAcceleration = 0;
 			}
 			this.updateHelicopterCrash(dist);
@@ -405,7 +406,7 @@ public abstract class HelicopterEntity extends VehicleEntity {
 
 			if (this.onGround == true) {
 				this.isFlying = false;
-				if ((this.pitch > 30 || this.pitch < -30) || (this.roll > 30 || this.roll < -30)) {
+				if ((this.pitch > 30 || this.pitch < -30) || (this.roll > 30 || this.roll < -30) || (this.yawRoationAcceleration > 0.2 || this.yawRoationAcceleration < -0.2)) {
 					this.setHealth(-3);
 					this.setDead();
 					if (this.world.isRemote) {
@@ -465,6 +466,7 @@ public abstract class HelicopterEntity extends VehicleEntity {
 			this.spawnEngineRunningParticle();
 			this.spawnCrashingParticle();
 		}
+		this.dropItemWithOffset(Items.ARROW, 2, 9);
 		this.blastItems();
 	}
 
@@ -548,7 +550,6 @@ public abstract class HelicopterEntity extends VehicleEntity {
 
 	protected void updateShakingRotation() {
 		this.roll += this.shakingDirection;
-		System.out.println(this.roll);
 	}
 
 	@Override
@@ -923,6 +924,11 @@ public abstract class HelicopterEntity extends VehicleEntity {
 
 	protected boolean isBlockDusty(Block block) {
 		return block.equals(Blocks.SAND) || block.equals(Blocks.SOUL_SAND) || block.equals(Blocks.GRAVEL);
+	}
+
+	@Override
+	public void dropItems() {
+		this.dropItem(Items.APPLE, 10);
 	}
 
 	// Physics
