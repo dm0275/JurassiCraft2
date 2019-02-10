@@ -32,12 +32,9 @@ public class SkullDisplayEntity extends TileEntity {
 	private int dinosaur = -1;
     private boolean isFossilized;
     private boolean hasStand;
-    public AxisAlignedBB TESTBOUNDING = null;
-	
-	@SideOnly(Side.CLIENT)
+
 	public ResourceLocation texture = null;
-	
-	@SideOnly(Side.CLIENT)
+
 	public TabulaModel model = null;
 	
 	public void setModel(int dinosaurID, boolean isFossilized, boolean hasStand) {
