@@ -1,5 +1,6 @@
 package org.jurassicraft.server.entity.vehicle;
 
+import net.ilexiconn.llibrary.LLibrary;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.material.Material;
@@ -109,7 +110,7 @@ public abstract class HelicopterEntity extends VehicleEntity {
 		this.physicalHeight = heightIn;
 		this.physicalDepth = depthIn;
 		this.setEntityBoundingBox(new AxisAlignedBB(0, 0, 0, this.physicalWidth, this.physicalHeight, this.physicalDepth));
-		this.setSize((float) this.physicalWidth, (float) this.physicalHeight);
+		this.setSize((float) this.physicalDepth, (float) this.physicalHeight);
 
 		this.enginePower = (int) ((float) enginePowerIn * 735.5f);
 		this.engineSpeed = engineSpeedIn;
@@ -215,21 +216,23 @@ public abstract class HelicopterEntity extends VehicleEntity {
 	@SideOnly(Side.CLIENT)
 	@Override
 	protected void handleControl() {
-		if (isController(Minecraft.getMinecraft().player)) {
+		if (this.isController(Minecraft.getMinecraft().player)) {
 			if (this.isInWater()) {
 				this.upward(false);
 				this.downward(false);
 			} else {
 				this.upward(KeyBindingHandler.HELICOPTER_UP.isKeyDown());
 				this.downward(KeyBindingHandler.HELICOPTER_DOWN.isKeyDown());
-				this.increaseThirdPersonViewDistance(KeyBindingHandler.HELICOPTER_THIRD_PERSON_VIEW_ZOOM_OUT.isKeyDown());
-				this.decreaseThirdPersonViewDistance(KeyBindingHandler.HELICOPTER_THIRD_PERSON_VIEW_ZOOM_IN.isKeyDown());
 				this.handleKeyEnableAutoPilot(KeyBindingHandler.HELICOPTER_AUTOPILOT.isPressed());
 				this.handleKeyLock(KeyBindingHandler.HELICOPTER_LOCK.isPressed());
 				this.rotateLeft(KeyBindingHandler.HELICOPTER_ROTATE_LEFT.isKeyDown());
 				this.rotateRight(KeyBindingHandler.HELICOPTER_ROTATE_RIGHT.isKeyDown());
 			}
 			super.handleControl();
+		}
+		if (this.isPassenger(Minecraft.getMinecraft().player)) {
+			this.increaseThirdPersonViewDistance(KeyBindingHandler.HELICOPTER_THIRD_PERSON_VIEW_ZOOM_OUT.isKeyDown());
+			this.decreaseThirdPersonViewDistance(KeyBindingHandler.HELICOPTER_THIRD_PERSON_VIEW_ZOOM_IN.isKeyDown());
 		}
 	}
 
@@ -466,7 +469,7 @@ public abstract class HelicopterEntity extends VehicleEntity {
 			this.spawnEngineRunningParticle();
 			this.spawnCrashingParticle();
 		}
-		this.dropItemWithOffset(Items.ARROW, 2, 9);
+		// this.dropItemWithOffset(Items.ARROW, 1, 0.1f);
 		this.blastItems();
 	}
 
@@ -928,7 +931,7 @@ public abstract class HelicopterEntity extends VehicleEntity {
 
 	@Override
 	public void dropItems() {
-		this.dropItem(Items.APPLE, 10);
+		this.dropItemWithOffset(Items.APPLE, 2, 0.1f);
 	}
 
 	// Physics

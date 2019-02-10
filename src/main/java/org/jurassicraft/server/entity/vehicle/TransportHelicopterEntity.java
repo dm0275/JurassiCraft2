@@ -17,7 +17,8 @@ import net.minecraft.world.World;
 public class TransportHelicopterEntity extends HelicopterEntity {
 
 	public TransportHelicopterEntity(World worldIn) {
-		super(worldIn, 5, 3.5f, 8, 3992, 300, 6838, 5);
+//		super(worldIn, 5, 3.5f, 8, 3992, 300, 6838, 5);
+		super(worldIn, 2, 3.5f, 5, 3992, 300, 6838, 5);
 
 		if (this.world.isRemote) {
 			this.addHudOverlayElement(HudElementAltimeter.class);
