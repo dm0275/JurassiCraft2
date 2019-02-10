@@ -18,3 +18,4 @@
 +Added config option to control whether vehicles can destroy blocks or not
 *Fixed dinosaur tail glitches when the game is paused
 *Vehicle doors no longer open if you are in the spectator mode
+*Upped the required LLibrary version to 1.7.15
