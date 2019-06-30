@@ -4,16 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-
 import org.jurassicraft.server.entity.EntityHandler;
 import org.jurassicraft.server.genetics.DinoDNA;
 import org.jurassicraft.server.genetics.GeneticsHelper;
 import org.jurassicraft.server.item.ItemHandler;
-import org.jurassicraft.server.plugin.jei.category.calcification.CalcificationInput;
-
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -37,6 +35,9 @@ public class CalcificationRecipeWrapper implements IRecipeWrapper {
         inputStack.setTagCompound(tag);
 
         inputs.add(inputStack);
+        
+        inputs.add(new ItemStack(Items.EGG));
+        
         ingredients.setInputs(ItemStack.class, inputs);
 
         ItemStack outputStack = new ItemStack(ItemHandler.EGG, 1, metadata);
