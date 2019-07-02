@@ -2,6 +2,7 @@ package org.jurassicraft.server.entity.vehicle;
 
 import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer.HudElementAltimeter;
 import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer.HudElementArtificialHorizon;
+import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer.HudElementCompass;
 import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer.HudElementStatsDisplay;
 import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer.HudElementTachometer;
 import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer.HudOverlay;
@@ -17,13 +18,14 @@ import net.minecraft.world.World;
 public class TransportHelicopterEntity extends HelicopterEntity {
 
 	public TransportHelicopterEntity(World worldIn) {
-//		super(worldIn, 5, 3.5f, 8, 3992, 300, 6838, 5);
+		// super(worldIn, 5, 3.5f, 8, 3992, 300, 6838, 5);
 		super(worldIn, 2, 3.5f, 5, 3992, 300, 6838, 5);
 
 		if (this.world.isRemote) {
 			this.addHudOverlayElement(HudElementAltimeter.class);
 			this.addHudOverlayElement(HudElementArtificialHorizon.class);
 			this.addHudOverlayElement(HudElementTachometer.class);
+			this.addHudOverlayElement(HudElementCompass.class);
 			this.addHudOverlayElement(HudElementStatsDisplay.class);
 		}
 	}
@@ -45,10 +47,8 @@ public class TransportHelicopterEntity extends HelicopterEntity {
 
 	@Override
 	public void dropItems() {
-		super.dropItems();
-//		this.dropItem(ItemHandler.FORD_EXPLORER, 1);
-//		this.dropItem(Items.GOLDEN_PICKAXE, 10);
-		System.out.println(this.world.isRemote);
+		// super.dropItems();
+		this.dropItemWithOffset(ItemHandler.HELICOPTER, 1, 0.1f);
 	}
 
 }

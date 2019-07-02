@@ -574,6 +574,10 @@ key.vehicle_helicopter.up=Ascender
 key.vehicle_helicopter.down=Descender
 key.vehicle_helicopter.third_person_view_zoom_in=Vista en tercera persona acercar
 key.vehicle_helicopter.third_person_view_zoom_out=Vista en tercera persona alejar
+key.vehicle_helicopter.autopilot=Piloto automático encendido / apagado
+key.vehicle_helicopter.lock=Bloqueo de rotación activado / desactivado
+key.vehicle_helicopter.rotate_left=Girar a la izquierda
+key.vehicle_helicopter.rotate_right=Girar a la derecha
 
 //Other =============
 message.tame.name=Has domado un {dinosaur}

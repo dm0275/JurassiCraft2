@@ -49,147 +49,146 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLSync;
 
 public class ClientEventHandler {
-    private static final Minecraft MC = Minecraft.getMinecraft();
-    private static final ResourceLocation PATREON_BADGE = new ResourceLocation(JurassiCraft.MODID, "textures/items/patreon_badge.png");
+	private static final Minecraft MC = Minecraft.getMinecraft();
+	private static final ResourceLocation PATREON_BADGE = new ResourceLocation(JurassiCraft.MODID, "textures/items/patreon_badge.png");
 
-    private boolean isGUI;
+	private boolean isGUI;
 
-    @SubscribeEvent
-    public void tick(TickEvent.ClientTickEvent event) {
-        JurassiCraft.timerTicks++;
-    }
+	@SubscribeEvent
+	public void tick(TickEvent.ClientTickEvent event) {
+		JurassiCraft.timerTicks++;
+	}
 
-    @SubscribeEvent
-    public void onGUIRender(GuiScreenEvent.DrawScreenEvent.Pre event) {
-        this.isGUI = true;
-    }
+	@SubscribeEvent
+	public void onGUIRender(GuiScreenEvent.DrawScreenEvent.Pre event) {
+		this.isGUI = true;
+	}
 
-    @SubscribeEvent
-    public void onRenderTick(TickEvent.RenderTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
-            this.isGUI = false;
-        }
-    }
+	@SubscribeEvent
+	public void onRenderTick(TickEvent.RenderTickEvent event) {
+		if (event.phase == TickEvent.Phase.START) {
+			this.isGUI = false;
+		}
+	}
 
-    @SubscribeEvent
-    public void onGameOverlay(RenderGameOverlayEvent.Text event) {
-        Minecraft mc = Minecraft.getMinecraft();
-        EntityPlayer player = mc.player;
-        
-        if(player.getRidingEntity() != null && player.getRidingEntity() instanceof HelicopterEntity && player.getRidingEntity().isEntityAlive()) {
-        	HelicopterEntity heli = (HelicopterEntity) player.getRidingEntity();
-        	if(heli.isController(player)) {
-        		HelicopterHUDRenderer.render(heli, event.getPartialTicks());
-        	}
-        }
+	@SubscribeEvent
+	public void onGameOverlay(RenderGameOverlayEvent.Text event) {
+		Minecraft mc = Minecraft.getMinecraft();
+		EntityPlayer player = mc.player;
 
-        for(EnumHand hand : EnumHand.values()) {
-            ItemStack stack = player.getHeldItem(hand);
-            if(stack.getItem() == ItemHandler.DART_GUN) {
-                ItemStack dartItem = DartGun.getDartItem(stack);
-                if(!dartItem.isEmpty()) {
-                    RenderItem renderItem = mc.getRenderItem();
-                    FontRenderer fontRenderer = mc.fontRenderer;
-                    ScaledResolution scaledResolution = new ScaledResolution(mc);
+		if (player.getRidingEntity() != null && player.getRidingEntity() instanceof HelicopterEntity && player.getRidingEntity().isEntityAlive()) {
+			HelicopterEntity heli = (HelicopterEntity) player.getRidingEntity();
+			if (heli.isController(player)) {
+				HelicopterHUDRenderer.render(heli, event.getPartialTicks());
+			}
+		}
 
-                    int xPosition = scaledResolution.getScaledWidth() - 18;
-                    int yPosition = scaledResolution.getScaledHeight() - 18;
+		for (EnumHand hand : EnumHand.values()) {
+			ItemStack stack = player.getHeldItem(hand);
+			if (stack.getItem() == ItemHandler.DART_GUN) {
+				ItemStack dartItem = DartGun.getDartItem(stack);
+				if (!dartItem.isEmpty()) {
+					RenderItem renderItem = mc.getRenderItem();
+					FontRenderer fontRenderer = mc.fontRenderer;
+					ScaledResolution scaledResolution = new ScaledResolution(mc);
 
-                    renderItem.renderItemAndEffectIntoGUI(dartItem, xPosition, yPosition);
-                    String s = String.valueOf(dartItem.getCount());
-                    GlStateManager.disableDepth();
-                    fontRenderer.drawStringWithShadow(s, xPosition + 17 - fontRenderer.getStringWidth(s), yPosition + 9, 0xFFFFFFFF);
-                    GlStateManager.enableDepth();
-                }
-                break;
-            }
-        }
-    }
+					int xPosition = scaledResolution.getScaledWidth() - 18;
+					int yPosition = scaledResolution.getScaledHeight() - 18;
 
-    @SubscribeEvent
-    public void keyInputEvent(InputEvent.KeyInputEvent event) {
-        int i = 0;
-        for(KeyBinding binding : ClientProxy.getKeyHandler().VEHICLE_KEY_BINDINGS) {
-            if(binding.isPressed()) {
-                EntityPlayer player = Minecraft.getMinecraft().player;
-                Entity entity = player.getRidingEntity();
-                if(entity instanceof MultiSeatedEntity) {
-                    int fromSeat = ((MultiSeatedEntity)entity).getSeatForEntity(player);
-                    if(fromSeat != -1) {
-                        JurassiCraft.NETWORK_WRAPPER.sendToServer(new AttemptMoveToSeatMessage(entity, fromSeat, i));
-                    }
-                }
-                break;
-            }
-            ++i;
-        }
-    }
+					renderItem.renderItemAndEffectIntoGUI(dartItem, xPosition, yPosition);
+					String s = String.valueOf(dartItem.getCount());
+					GlStateManager.disableDepth();
+					fontRenderer.drawStringWithShadow(s, xPosition + 17 - fontRenderer.getStringWidth(s), yPosition + 9, 0xFFFFFFFF);
+					GlStateManager.enableDepth();
+				}
+				break;
+			}
+		}
+	}
 
+	@SubscribeEvent
+	public void keyInputEvent(InputEvent.KeyInputEvent event) {
+		int i = 0;
+		for (KeyBinding binding : ClientProxy.getKeyHandler().VEHICLE_KEY_BINDINGS) {
+			if (binding.isPressed()) {
+				EntityPlayer player = Minecraft.getMinecraft().player;
+				Entity entity = player.getRidingEntity();
+				if (entity instanceof MultiSeatedEntity) {
+					int fromSeat = ((MultiSeatedEntity) entity).getSeatForEntity(player);
+					if (fromSeat != -1) {
+						JurassiCraft.NETWORK_WRAPPER.sendToServer(new AttemptMoveToSeatMessage(entity, fromSeat, i));
+					}
+				}
+				break;
+			}
+			++i;
+		}
+	}
 
-    @SubscribeEvent
-    public void onPlayerRender(RenderPlayerEvent.Post event) {
-        EntityPlayer player = event.getEntityPlayer();
+	@SubscribeEvent
+	public void onPlayerRender(RenderPlayerEvent.Post event) {
+		EntityPlayer player = event.getEntityPlayer();
 
-        if (!player.isPlayerSleeping() && player.deathTime <= 0 && !player.isInvisible() && !player.isInvisibleToPlayer(MC.player) && ClientProxy.PATRONS.contains(player.getUniqueID())) {
-            GlStateManager.pushMatrix();
+		if (!player.isPlayerSleeping() && player.deathTime <= 0 && !player.isInvisible() && !player.isInvisibleToPlayer(MC.player) && ClientProxy.PATRONS.contains(player.getUniqueID())) {
+			GlStateManager.pushMatrix();
 
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-            if (this.isGUI) {
-                OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
-            }
+			if (this.isGUI) {
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
+			}
 
-            RenderPlayer renderer = event.getRenderer();
+			RenderPlayer renderer = event.getRenderer();
 
-            GlStateManager.translate(event.getX(), event.getY(), event.getZ());
+			GlStateManager.translate(event.getX(), event.getY(), event.getZ());
 
-            GlStateManager.rotate(-ClientUtils.interpolate(this.isGUI ? player.renderYawOffset : player.prevRenderYawOffset, player.renderYawOffset, LLibrary.PROXY.getPartialTicks()), 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotate(-ClientUtils.interpolate(this.isGUI ? player.renderYawOffset : player.prevRenderYawOffset, player.renderYawOffset, LLibrary.PROXY.getPartialTicks()), 0.0F, 1.0F, 0.0F);
 
-            if (player.isSneaking()) {
-                GlStateManager.translate(0.0F, -0.2F, 0.0F);
-                GlStateManager.rotate((float) Math.toDegrees(-renderer.getMainModel().bipedBody.rotateAngleY), 0.0F, 1.0F, 0.0F);
-                GlStateManager.rotate((float) Math.toDegrees(0.5F), 1.0F, 0.0F, 0.0F);
-                GlStateManager.translate(0.0F, -0.15F, -0.68F);
-            } else {
-                renderer.getMainModel().bipedBody.postRender(0.0625F);
-                GlStateManager.rotate((float) Math.toDegrees(-renderer.getMainModel().bipedBody.rotateAngleY) * 2.0F, 0.0F, 1.0F, 0.0F);
-            }
+			if (player.isSneaking()) {
+				GlStateManager.translate(0.0F, -0.2F, 0.0F);
+				GlStateManager.rotate((float) Math.toDegrees(-renderer.getMainModel().bipedBody.rotateAngleY), 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotate((float) Math.toDegrees(0.5F), 1.0F, 0.0F, 0.0F);
+				GlStateManager.translate(0.0F, -0.15F, -0.68F);
+			} else {
+				renderer.getMainModel().bipedBody.postRender(0.0625F);
+				GlStateManager.rotate((float) Math.toDegrees(-renderer.getMainModel().bipedBody.rotateAngleY) * 2.0F, 0.0F, 1.0F, 0.0F);
+			}
 
-            GlStateManager.translate(-0.1F, 1.4F, 0.14F);
+			GlStateManager.translate(-0.1F, 1.4F, 0.14F);
 
-            float scale = 0.35F;
+			float scale = 0.35F;
 
-            GlStateManager.scale(scale, -scale, scale);
+			GlStateManager.scale(scale, -scale, scale);
 
-            GlStateManager.disableCull();
+			GlStateManager.disableCull();
 
-            MC.getTextureManager().bindTexture(PATREON_BADGE);
+			MC.getTextureManager().bindTexture(PATREON_BADGE);
 
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder buffer = tessellator.getBuffer();
+			Tessellator tessellator = Tessellator.getInstance();
+			BufferBuilder buffer = tessellator.getBuffer();
 
-            buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-            buffer.pos(0.0, 0.0, 0.0).tex(0.0, 0.0).endVertex();
-            buffer.pos(1.0, 0.0, 0.0).tex(1.0, 0.0).endVertex();
-            buffer.pos(1.0, 1.0, 0.0).tex(1.0, 1.0).endVertex();
-            buffer.pos(0.0, 1.0, 0.0).tex(0.0, 1.0).endVertex();
-            tessellator.draw();
+			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+			buffer.pos(0.0, 0.0, 0.0).tex(0.0, 0.0).endVertex();
+			buffer.pos(1.0, 0.0, 0.0).tex(1.0, 0.0).endVertex();
+			buffer.pos(1.0, 1.0, 0.0).tex(1.0, 1.0).endVertex();
+			buffer.pos(0.0, 1.0, 0.0).tex(0.0, 1.0).endVertex();
+			tessellator.draw();
 
-            GlStateManager.popMatrix();
+			GlStateManager.popMatrix();
 
-            if (this.isGUI) {
-                OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, OpenGlHelper.lastBrightnessX, OpenGlHelper.lastBrightnessY);
-            }
-        }
-    }
-    
+			if (this.isGUI) {
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, OpenGlHelper.lastBrightnessX, OpenGlHelper.lastBrightnessY);
+			}
+		}
+	}
+
 	@SubscribeEvent
 	public void onRenderWorldLast(RenderWorldLastEvent event) {
 
 		Minecraft mc = Minecraft.getMinecraft();
 		if (!Minecraft.isGuiEnabled())
 			return;
-		
+
 		Entity cameraEntity = mc.getRenderViewEntity();
 		Frustum frustrum = new Frustum();
 		double viewX = cameraEntity.lastTickPosX + (cameraEntity.posX - cameraEntity.lastTickPosX) * event.getPartialTicks();
@@ -200,7 +199,8 @@ public class ClientEventHandler {
 		List<Entity> loadedEntities = mc.world.getLoadedEntityList();
 		for (Entity entity : loadedEntities) {
 			if (entity != null && entity instanceof DinosaurEntity) {
-				if (entity.isInRangeToRender3d(cameraEntity.getPosition().getX(), cameraEntity.getPosition().getY(), cameraEntity.getPosition().getZ()) && (frustrum.isBoundingBoxInFrustum(entity.getRenderBoundingBox().grow(0.5D))) && entity.isEntityAlive()) {
+				if (entity.isInRangeToRender3d(cameraEntity.getPosition().getX(), cameraEntity.getPosition().getY(), cameraEntity.getPosition().getZ()) && (frustrum.isBoundingBoxInFrustum(entity.getRenderBoundingBox().grow(0.5D)))
+						&& entity.isEntityAlive()) {
 					((DinosaurEntity) entity).isRendered = true;
 				} else {
 					((DinosaurEntity) entity).isRendered = false;
@@ -208,23 +208,21 @@ public class ClientEventHandler {
 			}
 		}
 	}
-	
+
 	@SubscribeEvent
 	public void onSetupAngles(RenderPlayerEvent.Pre event) {
 		EntityPlayer player = event.getEntityPlayer();
 		if (player.getRidingEntity() instanceof HelicopterEntity) {
-			// GlStateManager.pushMatrix();
-			HelicopterEntity heli = (HelicopterEntity) player.getRidingEntity();
-			GlStateManager.translate(Math.cos(Math.toRadians(heli.rotationYaw - 90)) * 1.0f, 1.5f, Math.sin(Math.toRadians(heli.rotationYaw - 90)) * 1.0f);
-			GlStateManager.rotate((float) (Math.cos(Math.toRadians(heli.rotationYaw)) * heli.pitch), 1, 0, 0);
-			GlStateManager.rotate((float) (Math.sin(Math.toRadians(heli.rotationYaw)) * heli.pitch), 0, 0, 1);
-			// GlStateManager.rotate((float) (Math.cos(Math.toRadians(heli.rotationYaw -
-			// 90)) * heli.roll), 1, 0, 0);
-			// GlStateManager.rotate((float) (Math.sin(Math.toRadians(heli.rotationYaw -
-			// 90)) * heli.roll), 0, 0, 1);
-//			System.out.println(Math.sin(Math.toRadians(heli.rotationYaw)) * heli.pitch);
-			GlStateManager.translate(-Math.cos(Math.toRadians(heli.rotationYaw - 90)) * 1.0f, -1.5f, -Math.sin(Math.toRadians(heli.rotationYaw - 90)) * 1.0f);
-			// GlStateManager.popMatrix();
+//			HelicopterEntity heli = (HelicopterEntity) player.getRidingEntity();
+//			GlStateManager.translate(Math.cos(Math.toRadians(heli.rotationYaw - 90)) * 1.0f, 1.5f, Math.sin(Math.toRadians(heli.rotationYaw - 90)) * 1.0f);
+//			GlStateManager.rotate((float) (Math.cos(Math.toRadians(heli.rotationYaw)) * heli.pitch), 1, 0, 0);
+//			GlStateManager.rotate((float) (Math.sin(Math.toRadians(heli.rotationYaw)) * heli.pitch), 0, 0, 1);
+//			GlStateManager.translate(-Math.cos(Math.toRadians(heli.rotationYaw - 90)) * 1.0f, -1.5f, -Math.sin(Math.toRadians(heli.rotationYaw - 90)) * 1.0f);
+
+//			event.getRenderer().getMainModel().bipedBody.rotateAngleX = 90;
+//			event.getRenderer().getMainModel().bipedBody.renderWithRotation(0.0625f);
+//
+//			event.getRenderer().getMainModel().bipedBody.isHidden = true;
 		}
 	}
 
@@ -232,16 +230,15 @@ public class ClientEventHandler {
 	public void onSetupAngles(RenderPlayerEvent.Post event) {
 		EntityPlayer player = event.getEntityPlayer();
 		if (player.getRidingEntity() instanceof HelicopterEntity) {
-			HelicopterEntity heli = (HelicopterEntity) player.getRidingEntity();
-			GlStateManager.translate(Math.cos(Math.toRadians(heli.rotationYaw - 90)) * 1.0f, 1.5f, Math.sin(Math.toRadians(heli.rotationYaw - 90)) * 1.0f);
-			GlStateManager.rotate(-(float) (Math.cos(Math.toRadians(heli.rotationYaw)) * heli.pitch), 1, 0, 0);
-			GlStateManager.rotate(-(float) (Math.sin(Math.toRadians(heli.rotationYaw)) * heli.pitch), 0, 0, 1);
-			// GlStateManager.rotate(-(float) (Math.cos(Math.toRadians(heli.rotationYaw -
-			// 90)) * heli.roll), 1, 0, 0);
-			// GlStateManager.rotate(-(float) (Math.sin(Math.toRadians(heli.rotationYaw -
-			// 90)) * heli.roll), 0, 0, 1);
-			GlStateManager.translate(-Math.cos(Math.toRadians(heli.rotationYaw - 90)) * 1.0f, -1.5f, -Math.sin(Math.toRadians(heli.rotationYaw - 90)) * 1.0f);
-			// GlStateManager.popMatrix();
+//			HelicopterEntity heli = (HelicopterEntity) player.getRidingEntity();
+//			GlStateManager.translate(Math.cos(Math.toRadians(heli.rotationYaw - 90)) * 1.0f, 1.5f, Math.sin(Math.toRadians(heli.rotationYaw - 90)) * 1.0f);
+//			GlStateManager.rotate(-(float) (Math.cos(Math.toRadians(heli.rotationYaw)) * heli.pitch), 1, 0, 0);
+//			GlStateManager.rotate(-(float) (Math.sin(Math.toRadians(heli.rotationYaw)) * heli.pitch), 0, 0, 1);
+//			GlStateManager.translate(-Math.cos(Math.toRadians(heli.rotationYaw - 90)) * 1.0f, -1.5f, -Math.sin(Math.toRadians(heli.rotationYaw - 90)) * 1.0f);
+			
+			
+//			event.getRenderer().getMainModel().bipedBody.isHidden = false;
+
 		}
 	}
 }

@@ -20,8 +20,8 @@ public class KeyBindingHandler {
     public static KeyBinding MICRORAPTOR_DISMOUNT = new KeyBinding("key.microraptor_dismount", Keyboard.KEY_C, "JurassiCraft");
     public static KeyBinding HELICOPTER_UP = new KeyBinding("key.vehicle_helicopter.up", Keyboard.KEY_SPACE, "JurassiCraft");
     public static KeyBinding HELICOPTER_DOWN = new KeyBinding("key.vehicle_helicopter.down", Keyboard.KEY_LCONTROL, "JurassiCraft");
-    public static KeyBinding HELICOPTER_ROTATE_LEFT = new KeyBinding("key.vehicle_helicopter.rotateleft", Keyboard.KEY_LEFT, "JurassiCraft");
-    public static KeyBinding HELICOPTER_ROTATE_RIGHT = new KeyBinding("key.vehicle_helicopter.rotateright", Keyboard.KEY_RIGHT, "JurassiCraft");
+    public static KeyBinding HELICOPTER_ROTATE_LEFT = new KeyBinding("key.vehicle_helicopter.rotate_left", Keyboard.KEY_LEFT, "JurassiCraft");
+    public static KeyBinding HELICOPTER_ROTATE_RIGHT = new KeyBinding("key.vehicle_helicopter.rotate_right", Keyboard.KEY_RIGHT, "JurassiCraft");
     public static KeyBinding HELICOPTER_THIRD_PERSON_VIEW_ZOOM_IN = new KeyBinding("key.vehicle_helicopter.third_person_view_zoom_in", Keyboard.KEY_NEXT, "JurassiCraft");
     public static KeyBinding HELICOPTER_THIRD_PERSON_VIEW_ZOOM_OUT = new KeyBinding("key.vehicle_helicopter.third_person_view_zoom_out", Keyboard.KEY_PRIOR, "JurassiCraft");
 
