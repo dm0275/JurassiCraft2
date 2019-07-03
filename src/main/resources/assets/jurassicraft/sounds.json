@@ -321,6 +321,12 @@
       "jurassicraft:car_move"
     ]
   },
+  "helicopter_warning": {
+    "category": "blocks",
+    "sounds": [
+      "jurassicraft:helicopter_warning"
+    ]
+  },
   "microraptor_hurt": {
     "category": "hostile",
     "sounds": [

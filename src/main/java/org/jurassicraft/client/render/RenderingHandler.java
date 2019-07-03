@@ -41,8 +41,8 @@ import org.jurassicraft.server.entity.item.DinosaurEggEntity;
 import org.jurassicraft.server.entity.item.MuralEntity;
 import org.jurassicraft.server.entity.item.PaddockSignEntity;
 import org.jurassicraft.server.entity.vehicle.FordExplorerEntity;
-import org.jurassicraft.server.entity.vehicle.HelicopterEntity;
 import org.jurassicraft.server.entity.vehicle.JeepWranglerEntity;
+import org.jurassicraft.server.entity.vehicle.TransportHelicopterEntity;
 import org.jurassicraft.server.item.*;
 import org.jurassicraft.server.plant.Plant;
 import org.jurassicraft.server.plant.PlantHandler;
@@ -53,6 +53,8 @@ import net.ilexiconn.llibrary.client.model.tabula.TabulaModelHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockFenceGate;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.client.renderer.color.BlockColors;
@@ -77,7 +79,9 @@ import static org.jurassicraft.server.block.BlockHandler.*;
 @Mod.EventBusSubscriber(modid=JurassiCraft.MODID, value = Side.CLIENT)
 public enum RenderingHandler {
     INSTANCE;
-    private static Map<Dinosaur, DinosaurRenderInfo> renderInfos = Maps.newHashMap();
+	private final Minecraft mc = Minecraft.getMinecraft();
+	private static Map<Dinosaur, DinosaurRenderInfo> renderInfos = Maps.newHashMap();
+    public static OverridenEntityRenderer entityRenderer;
 
     //TODO: CLEAN THIS UP OMG PLZ
     @SubscribeEvent
@@ -460,7 +464,7 @@ public enum RenderingHandler {
         RenderingRegistry.registerEntityRenderingHandler(VenomEntity.class, new VenomRenderer());
         RenderingRegistry.registerEntityRenderingHandler(JeepWranglerEntity.class, JeepWranglerRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(FordExplorerEntity.class, FordExplorerRenderer::new);
-        RenderingRegistry.registerEntityRenderingHandler(HelicopterEntity.class, HeliRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(TransportHelicopterEntity.class, HeliRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(MuralEntity.class, MuralRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(GoatEntity.class, GoatRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(TranquilizerDartEntity.class, NullRenderer::new);
@@ -506,6 +510,10 @@ public enum RenderingHandler {
         }, SPAWN_EGG);
 
         itemColors.registerItemColorHandler(((stack, tintIndex) -> tintIndex == 1 ? ((Dart)stack.getItem()).getDartColor(stack) : -1), DART_POISON_CYCASIN, DART_POISON_EXECUTIONER_CONCOCTION, DART_TIPPED_POTION, DART_TRANQUILIZER);
+        if(mc.entityRenderer.getClass() == EntityRenderer.class) {
+        	entityRenderer = new OverridenEntityRenderer(Minecraft.getMinecraft(), Minecraft.getMinecraft().getResourceManager());
+        	Minecraft.getMinecraft().entityRenderer = entityRenderer;
+        }
     }
 
     public void postInit() {
@@ -558,4 +566,26 @@ public enum RenderingHandler {
     public static DinosaurRenderInfo getRenderInfo(Dinosaur dino) {
         return renderInfos.get(dino);
     }
-}
+
+    public void setThirdPersonViewDistance(float distance) {
+    	if(entityRenderer != null) {
+    		entityRenderer.setThirdPersonViewDistance(distance);
+    	}
+    }
+    public float getThirdPersonViewDistance() {
+    	if(entityRenderer != null) {
+    		return entityRenderer.getThirdPersonViewDistance();
+    	}
+    	return getDefaultThirdPersonViewDistance();
+    }
+    public void resetThirdPersonViewDistance() {
+    	this.setThirdPersonViewDistance(this.getDefaultThirdPersonViewDistance());
+    }
+
+    public float getDefaultThirdPersonViewDistance() {
+    	if(entityRenderer != null) {
+    		return entityRenderer.getMinThirdPersonViewDistance();
+    	}
+    	return 4.0F;
+    }
+ }

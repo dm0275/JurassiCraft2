@@ -37,9 +37,11 @@ import java.awt.geom.Point2D;
 import java.util.List;
 import org.jurassicraft.JurassiCraft;
 import org.jurassicraft.client.proxy.ClientProxy;
+import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer;
 import org.jurassicraft.server.block.SkullDisplay;
 import org.jurassicraft.server.block.entity.SkullDisplayEntity;
 import org.jurassicraft.server.entity.DinosaurEntity;
+import org.jurassicraft.server.entity.vehicle.HelicopterEntity;
 import org.jurassicraft.server.entity.vehicle.MultiSeatedEntity;
 import org.jurassicraft.server.item.DartGun;
 import org.jurassicraft.server.item.ItemHandler;
@@ -115,6 +117,12 @@ public class ClientEventHandler {
     public static void onGameOverlay(final RenderGameOverlayEvent.Post event) {
     	final Minecraft MC = ClientProxy.MC;
     	final EntityPlayer player = MC.player;
+    	if (player.getRidingEntity() != null && player.getRidingEntity() instanceof HelicopterEntity && player.getRidingEntity().isEntityAlive()) {
+			HelicopterEntity heli = (HelicopterEntity) player.getRidingEntity();
+			if (heli.isController(player)) {
+				HelicopterHUDRenderer.render(heli, event.getPartialTicks());
+			}
+		}
 
         for(final EnumHand hand : EnumHand.values()) {
         	final ItemStack stack = player.getHeldItem(hand);
