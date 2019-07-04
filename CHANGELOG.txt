@@ -28,3 +28,9 @@
 *Fixed hitbox issues with small dinosaurs
 +Added config option for dungeon loot
 *Coelacanths now successfully spawn in water biomes when autospawn is on
+*Reworked helicopter physics
++Added position light to helicopter
++Added particles to helicopter
++Added a warning sound on low health to the helicopter
++Made helicopter crashing when health is too low
++Added HUD gauges to helicopter
