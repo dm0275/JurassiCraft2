@@ -12,6 +12,7 @@ import org.jurassicraft.server.item.ItemHandler;
 import org.jurassicraft.server.util.MutableVec3;
 
 import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
@@ -48,7 +49,7 @@ public class TransportHelicopterEntity extends HelicopterEntity {
 	@Override
 	public void dropItems() {
 		// super.dropItems();
-		this.dropItemWithOffset(ItemHandler.VEHICLE_ITEM, 1, 0.1f).getItem().setItemDamage(2);
+		this.entityDropItem(new ItemStack(ItemHandler.VEHICLE_ITEM, 1, 2), 0.1f);
 	}
 
 }
