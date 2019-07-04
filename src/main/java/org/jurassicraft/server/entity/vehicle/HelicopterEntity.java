@@ -11,6 +11,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -921,7 +922,7 @@ public abstract class HelicopterEntity extends VehicleEntity {
 
 	@Override
 	public void dropItems() {
-		this.dropItemWithOffset(ItemHandler.VEHICLE_ITEM, 1, 0.1f).getItem().setItemDamage(2);
+		this.entityDropItem(new ItemStack(ItemHandler.VEHICLE_ITEM, 1, 2), 0.1f);
 	}
 
 	// Physics
