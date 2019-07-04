@@ -6,7 +6,6 @@ import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jurassicraft.server.entity.vehicle.VehicleEntity;
-import org.jurassicraft.server.entity.vehicle.HelicopterEntity;
 
 @SideOnly(Side.CLIENT)
 public class VehicleSound extends EntitySound<VehicleEntity> {

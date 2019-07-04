@@ -28,6 +28,7 @@ import org.jurassicraft.client.event.ClientEventHandler;
 import org.jurassicraft.client.gui.*;
 import org.jurassicraft.client.model.JurassicraftTabulaModelHandler;
 import org.jurassicraft.client.render.RenderingHandler;
+import org.jurassicraft.client.render.entity.OverridenEntityRenderer;
 import org.jurassicraft.client.sound.SoundHandler;
 import org.jurassicraft.client.sound.VehicleSound;
 import org.jurassicraft.server.block.entity.*;
@@ -55,7 +56,6 @@ public class ClientProxy extends ServerProxy {
 	public void onPreInit(FMLPreInitializationEvent event) {
 		super.onPreInit(event);
 
-//		registerEntity(DummyCameraEntity.class, "DummyCameraEntity");
 		KeyBindingHandler.init();
 		try {
 			LanguageHandler.INSTANCE.loadRemoteLocalization(JurassiCraft.MODID);

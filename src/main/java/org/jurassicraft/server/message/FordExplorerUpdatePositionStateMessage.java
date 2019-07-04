@@ -10,7 +10,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import org.jurassicraft.server.entity.vehicle.HelicopterEntity;
 
 public class FordExplorerUpdatePositionStateMessage extends AbstractMessage<FordExplorerUpdatePositionStateMessage>
 {
