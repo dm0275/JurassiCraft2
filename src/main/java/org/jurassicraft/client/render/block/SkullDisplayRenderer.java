@@ -69,7 +69,6 @@ public class SkullDisplayRenderer extends TileEntitySpecialRenderer<SkullDisplay
 					tile.model.getCube("Standard part1").isHidden = true;
 					tile.model.getCube("Standard part2").isHidden = true;
 					tile.model.getCube("head").defaultRotationX = -0.07f;
-					tile.model.getCube("head").defaultRotationZ = 0.1f;
 					tile.model.getCube("head").defaultPositionY = 14.1f;
 					tile.model.getCube("jawLower1").defaultRotationX = 0.155f;
 				}
