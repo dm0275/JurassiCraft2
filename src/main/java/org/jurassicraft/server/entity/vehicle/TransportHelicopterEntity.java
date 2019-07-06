@@ -43,9 +43,10 @@ public class TransportHelicopterEntity extends HelicopterEntity {
 	
     @Override
     public void doPlayerRotations(EntityPlayer player, float partialTicks) {
-    	double offsetY = this.getMountedYOffset() + player.getYOffset();
+
+    	float offsetY = 0.9F;
         GlStateManager.translate(0, offsetY, 0);
-        GlStateManager.rotate(this.pitch, 1, 0, 0);
+        GlStateManager.rotate(this.pitch, 0, 0, 1);
         GlStateManager.translate(0, -offsetY, 0);
     }
 
