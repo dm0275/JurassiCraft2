@@ -763,14 +763,27 @@ public abstract class HelicopterEntity extends VehicleEntity {
 			float[] directionBack = this.computeEngineExhaustParticleDirection(0);
 			this.world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX + offsetBack[0], this.posY + offsetBack[2], this.posZ - offsetBack[4], directionBack[0], directionBack[1], directionBack[2]);
 			this.world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX + offsetBack[1], this.posY + offsetBack[3], this.posZ - offsetBack[5], directionBack[0], directionBack[1], directionBack[2]);
-			if (Math.random() < (1 - (this.getHealth() * 2 - MAX_HEALTH) / MAX_HEALTH)) {
-				this.world.spawnParticle(EnumParticleTypes.FLAME, this.posX + offsetBack[0], this.posY + offsetBack[2], this.posZ - offsetBack[4], directionBack[0], directionBack[1], directionBack[2]);
-				this.world.spawnParticle(EnumParticleTypes.FLAME, this.posX + offsetBack[1], this.posY + offsetBack[3], this.posZ - offsetBack[5], directionBack[0], directionBack[1], directionBack[2]);
-			}
+			
+			if(this.inWater && ((int)this.world.getChunkFromBlockCoords(this.getPosition()).getHeight(this.getPosition()) - this.posY) > 2){
+				if (Math.random() < (1 - (this.getHealth() * 2 - MAX_HEALTH) / MAX_HEALTH)) {
+					this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX + offsetBack[0], this.posY + offsetBack[2], this.posZ - offsetBack[4], 0, 0, 0);
+					this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX + offsetBack[1], this.posY + offsetBack[3], this.posZ - offsetBack[5], 0, 0, 0);
+				}
 
-			if (Math.random() < (1.0f - (this.getCurrentEngineSpeed() * 1.6f / (float) (this.engineSpeed)))) {
-				this.world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX + offsetFront[0], this.posY + offsetFront[2], this.posZ - offsetFront[4], directionFront1[0], directionFront1[1], directionFront1[2]);
-				this.world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX + offsetFront[1], this.posY + offsetFront[3], this.posZ - offsetFront[5], directionFront2[0], directionFront2[1], directionFront2[2]);
+				if (Math.random() < (1.0f - (this.getCurrentEngineSpeed() * 1.6f / (float) (this.engineSpeed)))) {
+					this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, this.posX + offsetFront[0], this.posY + offsetFront[2], this.posZ - offsetFront[4], directionFront1[0] * 0.5, directionFront1[1] * 0.5, directionFront1[2] * 0.5);
+					this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, this.posX + offsetFront[1], this.posY + offsetFront[3], this.posZ - offsetFront[5], directionFront2[0] * 0.5, directionFront2[1] * 0.5, directionFront2[2] * 0.5);
+				}
+			}else {
+				if (Math.random() < (1 - (this.getHealth() * 2 - MAX_HEALTH) / MAX_HEALTH)) {
+					this.world.spawnParticle(EnumParticleTypes.FLAME, this.posX + offsetBack[0], this.posY + offsetBack[2], this.posZ - offsetBack[4], directionBack[0], directionBack[1], directionBack[2]);
+					this.world.spawnParticle(EnumParticleTypes.FLAME, this.posX + offsetBack[1], this.posY + offsetBack[3], this.posZ - offsetBack[5], directionBack[0], directionBack[1], directionBack[2]);
+				}
+
+				if (Math.random() < (1.0f - (this.getCurrentEngineSpeed() * 1.6f / (float) (this.engineSpeed)))) {
+					this.world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX + offsetFront[0], this.posY + offsetFront[2], this.posZ - offsetFront[4], directionFront1[0], directionFront1[1], directionFront1[2]);
+					this.world.spawnParticle(EnumParticleTypes.SMOKE_LARGE, this.posX + offsetFront[1], this.posY + offsetFront[3], this.posZ - offsetFront[5], directionFront2[0], directionFront2[1], directionFront2[2]);
+				}
 			}
 		}
 	}
