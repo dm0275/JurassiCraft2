@@ -48,6 +48,7 @@ import org.jurassicraft.server.block.entity.SkullDisplayEntity;
 import org.jurassicraft.server.entity.DinosaurEntity;
 import org.jurassicraft.server.entity.vehicle.HelicopterEntity;
 import org.jurassicraft.server.entity.vehicle.MultiSeatedEntity;
+import org.jurassicraft.server.entity.vehicle.VehicleEntity;
 import org.jurassicraft.server.event.KeyBindingHandler;
 import org.jurassicraft.server.item.DartGun;
 import org.jurassicraft.server.item.ItemHandler;
@@ -75,8 +76,8 @@ public class ClientEventHandler {
         {
             Render render = Minecraft.getMinecraft().getRenderManager().getEntityClassRenderObject(AbstractClientPlayer.class);
             Map<String, RenderPlayer> skinMap = render.getRenderManager().getSkinMap();
-            patchPlayerRender(skinMap.get("default"), false);
-            patchPlayerRender(skinMap.get("slim"), true);
+            fixPlayerRenderers(skinMap.get("default"), false);
+            fixPlayerRenderers(skinMap.get("slim"), true);
             //skinMap.forEach((key, value) -> patchPlayerRender(key, value.));
             replacedPlayerModel = true;
         }
@@ -87,18 +88,14 @@ public class ClientEventHandler {
     {
         EntityPlayer player = event.getEntityPlayer();
         Entity entity = player.getRidingEntity();
-        if(entity instanceof HelicopterEntity)
+        if(entity instanceof VehicleEntity)
         {
-        	HelicopterEntity vehicle = (HelicopterEntity) entity;
-        	double offsetY = vehicle.getMountedYOffset() + player.getYOffset();
-            GlStateManager.translate(0, offsetY, 0);
-            float bodyPitch = vehicle.pitch;
-            GlStateManager.rotate(bodyPitch, 1, 0, 0);
-            GlStateManager.translate(0, -offsetY, 0);
+        	VehicleEntity vehicle = (VehicleEntity) entity;
+        	vehicle.doPlayerRotations(player, event.getPartialTicks());
         }
     }
     
-    private static void patchPlayerRender(RenderPlayer player, boolean slimArms)
+    private static void fixPlayerRenderers(RenderPlayer player, boolean slimArms)
     {
         ModelBiped model = new CustomModelPlayer(0.0F, slimArms);
         List<LayerRenderer<EntityLivingBase>> layers = ObfuscationReflectionHelper.getPrivateValue(RenderLivingBase.class, player, (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment") ? "layerRenderers" : "field_177097_h");

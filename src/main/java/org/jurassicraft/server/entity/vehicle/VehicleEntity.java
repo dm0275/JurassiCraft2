@@ -10,10 +10,8 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemRecord;
 import net.minecraft.item.ItemStack;
-import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetHandlerPlayServer;
@@ -39,23 +37,17 @@ import org.jurassicraft.client.sound.EntitySound;
 import org.jurassicraft.server.conf.JurassiCraftConfig;
 import org.jurassicraft.server.damage.DamageSources;
 import org.jurassicraft.server.entity.ai.util.InterpValue;
-import org.jurassicraft.server.entity.vehicle.VehicleEntity.Seat;
 import org.jurassicraft.server.entity.vehicle.util.CarWheel;
 import org.jurassicraft.server.entity.vehicle.util.WheelParticleData;
 import org.jurassicraft.server.message.CarEntityPlayRecord;
 import org.jurassicraft.server.message.UpdateVehicleControlMessage;
-import org.lwjgl.input.Keyboard;
 import org.omg.CORBA.DoubleHolder;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.vecmath.Vector2d;
 import javax.vecmath.Vector4d;
-
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.function.Predicate;
 
 public abstract class VehicleEntity extends Entity implements MultiSeatedEntity {
 	public static final DataParameter<Byte> WATCHER_STATE = EntityDataManager.createKey(VehicleEntity.class, DataSerializers.BYTE);
@@ -735,7 +727,6 @@ public abstract class VehicleEntity extends Entity implements MultiSeatedEntity 
 	@Override
 	public boolean tryPutInSeat(Entity passenger, int seatID, boolean isPacket) {
 		if (seatID < this.seats.length && seatID >= 0) {
-			Seat seat = this.seats[seatID];
 			int seatNumber = getSeatForEntity(passenger);
 			if ((seatNumber == 0 && seatID == 0 && !isPacket) || getIfExists(seatID, false).equals("")) {
 				if (seatNumber != -1) {
@@ -960,5 +951,9 @@ public abstract class VehicleEntity extends Entity implements MultiSeatedEntity 
 	public float getSoundVolume() {
 		return (Math.abs(this.wheelRotateAmount) + 0.001F)
 				/ (this.sound == null || this.sound.isDonePlaying() ? 2f : 4f);
+	}
+
+	public void doPlayerRotations(EntityPlayer player, float partialTicks) {
+		
 	}
 }
