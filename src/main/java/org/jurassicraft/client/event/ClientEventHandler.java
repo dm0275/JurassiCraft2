@@ -2,25 +2,30 @@ package org.jurassicraft.client.event;
 
 import net.ilexiconn.llibrary.LLibrary;
 import net.ilexiconn.llibrary.client.util.ClientUtils;
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.model.ModelChest;
+import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.renderer.entity.RenderPlayer;
+import net.minecraft.client.renderer.entity.layers.LayerCustomHead;
+import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -29,12 +34,12 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.util.List;
+import java.util.Map;
 import org.jurassicraft.JurassiCraft;
 import org.jurassicraft.client.proxy.ClientProxy;
 import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer;
@@ -43,10 +48,10 @@ import org.jurassicraft.server.block.entity.SkullDisplayEntity;
 import org.jurassicraft.server.entity.DinosaurEntity;
 import org.jurassicraft.server.entity.vehicle.HelicopterEntity;
 import org.jurassicraft.server.entity.vehicle.MultiSeatedEntity;
+import org.jurassicraft.server.event.KeyBindingHandler;
 import org.jurassicraft.server.item.DartGun;
 import org.jurassicraft.server.item.ItemHandler;
 import org.jurassicraft.server.message.AttemptMoveToSeatMessage;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 public class ClientEventHandler {
@@ -54,10 +59,60 @@ public class ClientEventHandler {
     private static final ResourceLocation PATREON_BADGE = new ResourceLocation(JurassiCraft.MODID, "textures/items/patreon_badge.png");
 
     private static boolean isGUI;
+    
+    public static boolean replacedPlayerModel;
 
     @SubscribeEvent
     public static void tick(final TickEvent.ClientTickEvent event) {
         JurassiCraft.timerTicks++;
+    }
+    
+    @SuppressWarnings("rawtypes")
+	@SubscribeEvent
+    public static void onRenderPlayer(RenderPlayerEvent.Pre event)
+    {
+        if(!replacedPlayerModel)
+        {
+            Render render = Minecraft.getMinecraft().getRenderManager().getEntityClassRenderObject(AbstractClientPlayer.class);
+            Map<String, RenderPlayer> skinMap = render.getRenderManager().getSkinMap();
+            patchPlayerRender(skinMap.get("default"), false);
+            patchPlayerRender(skinMap.get("slim"), true);
+            //skinMap.forEach((key, value) -> patchPlayerRender(key, value.));
+            replacedPlayerModel = true;
+        }
+    }
+    
+    @SubscribeEvent
+    public static void onPlayerModelRender(ModelPlayerRenderEvent.Render.Pre event)
+    {
+        EntityPlayer player = event.getEntityPlayer();
+        Entity entity = player.getRidingEntity();
+        if(entity instanceof HelicopterEntity)
+        {
+        	HelicopterEntity vehicle = (HelicopterEntity) entity;
+        	double offsetY = vehicle.getMountedYOffset() + player.getYOffset();
+            GlStateManager.translate(0, offsetY, 0);
+            float bodyPitch = vehicle.pitch;
+            GlStateManager.rotate(bodyPitch, 1, 0, 0);
+            GlStateManager.translate(0, -offsetY, 0);
+        }
+    }
+    
+    private static void patchPlayerRender(RenderPlayer player, boolean slimArms)
+    {
+        ModelBiped model = new CustomModelPlayer(0.0F, slimArms);
+        List<LayerRenderer<EntityLivingBase>> layers = ObfuscationReflectionHelper.getPrivateValue(RenderLivingBase.class, player, (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment") ? "layerRenderers" : "field_177097_h");
+        if(layers != null)
+        {
+        	for(int i = 0; i < layers.size(); i++) {
+        		LayerRenderer<EntityLivingBase> layer = layers.get(i);
+        		if(layer instanceof LayerCustomHead)
+        			layers.remove(layer);
+        	}
+            layers.add(new LayerCustomHead(model.bipedHead));
+        }
+        
+        ObfuscationReflectionHelper.setPrivateValue(RenderLivingBase.class, player, model, (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment") ? "mainModel" : "field_77045_g");
     }
 
     @SubscribeEvent
@@ -150,7 +205,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void keyInputEvent(final InputEvent.KeyInputEvent event) {
         int i = 0;
-        for(final KeyBinding binding : ClientProxy.getKeyHandler().VEHICLE_KEY_BINDINGS) {
+        for(final KeyBinding binding : KeyBindingHandler.VEHICLE_KEY_BINDINGS) {
             if(binding.isPressed()) {
             	final EntityPlayer player = ClientProxy.MC.player;
                 final Entity entity = player.getRidingEntity();
@@ -227,7 +282,7 @@ public class ClientEventHandler {
 	@SubscribeEvent
 	public static void onRenderWorldLast(final RenderWorldLastEvent event) {
 
-		if (!ClientProxy.MC.isGuiEnabled())
+		if (!Minecraft.isGuiEnabled())
 			return;
 		
 		final Entity cameraEntity = ClientProxy.MC.getRenderViewEntity();
