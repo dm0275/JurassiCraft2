@@ -5,15 +5,10 @@ import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer.HudElementAr
 import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer.HudElementCompass;
 import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer.HudElementStatsDisplay;
 import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer.HudElementTachometer;
-import org.jurassicraft.client.render.overlay.HelicopterHUDRenderer.HudOverlay;
-import org.jurassicraft.server.entity.vehicle.VehicleEntity.Seat;
-import org.jurassicraft.server.entity.vehicle.VehicleEntity.WheelData;
 import org.jurassicraft.server.item.ItemHandler;
-import org.jurassicraft.server.util.MutableVec3;
-
-import net.minecraft.init.Items;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
 public class TransportHelicopterEntity extends HelicopterEntity {
@@ -45,10 +40,17 @@ public class TransportHelicopterEntity extends HelicopterEntity {
 	protected WheelData createWheels() {
 		return new WheelData(1, 2, -1, -2.2);
 	}
+	
+    @Override
+    public void doPlayerRotations(EntityPlayer player, float partialTicks) {
+    	double offsetY = this.getMountedYOffset() + player.getYOffset();
+        GlStateManager.translate(0, offsetY, 0);
+        GlStateManager.rotate(this.pitch, 1, 0, 0);
+        GlStateManager.translate(0, -offsetY, 0);
+    }
 
 	@Override
 	public void dropItems() {
-		// super.dropItems();
 		this.entityDropItem(new ItemStack(ItemHandler.VEHICLE_ITEM, 1, 2), 0.1f);
 	}
 
