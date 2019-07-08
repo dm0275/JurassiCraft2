@@ -37,3 +37,4 @@
 *Fixed corals destroying themselves when spreading
 *Changed dinosaurs drinking AI to rely more on their mental features
 *Fixed wrong T. Rex skull rotation
++Corals now render properly underwater (waterlogged effect)
