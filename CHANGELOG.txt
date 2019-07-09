@@ -39,3 +39,4 @@
 *Fixed wrong T. Rex skull rotation
 *Fixed Helicopter graphical glitch in water
 +Corals now render properly underwater (waterlogged effect)
+*Fixed incompatibility with BOP
