@@ -552,7 +552,6 @@ public enum RenderingHandler {
     }
 
     public static void registerItemRenderer(Item item) {
-    	System.out.println("CRAZY: " + item.getUnlocalizedName().substring("item.".length()));
         registerItemRenderer(item, item.getUnlocalizedName().substring("item.".length()));
     }
 
