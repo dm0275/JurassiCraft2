@@ -38,5 +38,6 @@
 *Changed dinosaurs drinking AI to rely more on their mental features
 *Fixed wrong T. Rex skull rotation
 *Fixed Helicopter graphical glitch in water
++Helicopters rotation is now applied on the player
 +Corals now render properly underwater (waterlogged effect)
 *Fixed incompatibility with BOP
