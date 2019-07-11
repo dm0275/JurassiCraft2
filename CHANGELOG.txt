@@ -40,3 +40,4 @@
 +Corals now render properly underwater (waterlogged effect)
 *Fixed Helicopter graphical glitch in water
 *Fixed incompatibility with BOP
++Helicopters rotation is now applied on the player
