@@ -191,7 +191,7 @@ public class JurassiCraftJEIPlugin implements IModPlugin {
 
         registry.addRecipes(getDinos(CultivateInput::new, dino -> dino.getMetadata().getBirthType() == Dinosaur.BirthType.LIVE_BIRTH), CULTIVATEOR);
         registry.addRecipes(getDinos(IncubatorInput::new, dino -> dino.getMetadata().getBirthType() == Dinosaur.BirthType.EGG_LAYING), INCUBATOR);
-        registry.addRecipes(getDinos(CalcificationInput::new), EMBRYO_CALCIFICATION_MACHINE);
+        registry.addRecipes(getDinos(CalcificationInput::new, dino -> dino.getMetadata().getBirthType() == Dinosaur.BirthType.EGG_LAYING), EMBRYO_CALCIFICATION_MACHINE);
         registry.addRecipes(getDinos(EmbryoInput.DinosaurInput::new), EMBRYOMIC_MACHINE);
         registry.addRecipes(getPlants(EmbryoInput.PlantInput::new), EMBRYOMIC_MACHINE);
 
@@ -236,7 +236,7 @@ public class JurassiCraftJEIPlugin implements IModPlugin {
     }
 
     private static <T> List<T> getDinos(Function<Dinosaur,T> func) {
-        return getDinos(func, dino -> dino.getMetadata().getBirthType() == Dinosaur.BirthType.EGG_LAYING);
+        return getDinos(func, dino -> true/*dino -> dino.getMetadata().getBirthType() == Dinosaur.BirthType.EGG_LAYING*/);
     }
 
     private static <T> List<T> getDinos(Function<Dinosaur,T> func, Predicate<Dinosaur> filter) {

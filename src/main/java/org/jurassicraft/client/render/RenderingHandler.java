@@ -532,10 +532,13 @@ public enum RenderingHandler {
         }, SPAWN_EGG);
 
         itemColors.registerItemColorHandler(((stack, tintIndex) -> tintIndex == 1 ? ((Dart)stack.getItem()).getDartColor(stack) : -1), DART_POISON_CYCASIN, DART_POISON_EXECUTIONER_CONCOCTION, DART_TIPPED_POTION, DART_TRANQUILIZER);
-        if(mc.entityRenderer.getClass() == EntityRenderer.class) {
-        	entityRenderer = new OverridenEntityRenderer(Minecraft.getMinecraft(), Minecraft.getMinecraft().getResourceManager());
-        	Minecraft.getMinecraft().entityRenderer = entityRenderer;
-        }
+		if (JurassiCraftConfig.VEHICLES.helicopterZoomout) {
+			if (mc.entityRenderer.getClass() == EntityRenderer.class) {
+				entityRenderer = new OverridenEntityRenderer(Minecraft.getMinecraft(),
+						Minecraft.getMinecraft().getResourceManager());
+				Minecraft.getMinecraft().entityRenderer = entityRenderer;
+			}
+		}
     }
 
     public void postInit() {

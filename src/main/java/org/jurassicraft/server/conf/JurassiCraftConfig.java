@@ -112,6 +112,10 @@ public class JurassiCraftConfig { //TODO: move all structures to same parent pac
     public static class Vehicles {
         @Config.Name("Helicopter Explosion")
         public boolean helicopterExplosion;
+        
+        @Config.Name("Helicopter zoom-out")
+        @Config.Comment("Experimental: This is still incompatible with Optifine")
+        public boolean helicopterZoomout = false;
 
         @Config.Name("Enable Tour Rail Blocks")
         public boolean tourRailBlockEnabled = true;
